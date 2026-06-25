@@ -88,7 +88,14 @@ const radii = [
   { c: 'rounded-full', n: 'full' },
 ];
 
-const featureIcons = ['layout-dashboard', 'stethoscope', 'pill', 'credit-card', 'chart-line', 'sparkles'];
+const featureIcons = [
+  'layout-dashboard',
+  'stethoscope',
+  'pill',
+  'credit-card',
+  'chart-line',
+  'sparkles',
+];
 ---
 
 <PageLayout
@@ -104,9 +111,8 @@ const featureIcons = ['layout-dashboard', 'stethoscope', 'pill', 'credit-card', 
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
       The visual contract. Every value below is a token from <code
         class="rounded-sm bg-surface-sunken px-1.5 py-0.5 font-mono text-sm">design.md</code
-      >. Toggle light/dark in the header — the entire system re-themes from CSS variables.
-      Use the <code class="rounded-sm bg-surface-sunken px-1.5 py-0.5 font-mono text-sm"
-        >Request a demo</code
+      >. Toggle light/dark in the header — the entire system re-themes from CSS variables. Use the <code
+        class="rounded-sm bg-surface-sunken px-1.5 py-0.5 font-mono text-sm">Request a demo</code
       > button states and the mega-menu above as live references.
     </p>
   </Section>
@@ -223,9 +229,7 @@ const featureIcons = ['layout-dashboard', 'stethoscope', 'pill', 'credit-card', 
               <p class="font-mono text-xs text-ink-400">{t.c}</p>
               {t.note && <p class="text-xs text-ink-400">{t.note}</p>}
             </div>
-            <p class:list={['font-display text-ink-900', t.c]}>
-              Care and commerce, one platform
-            </p>
+            <p class:list={['font-display text-ink-900', t.c]}>Care and commerce, one platform</p>
           </div>
         ))
       }
@@ -384,16 +388,25 @@ const featureIcons = ['layout-dashboard', 'stethoscope', 'pill', 'credit-card', 
     />
     <div class="mt-10 flex flex-wrap gap-6">
       {
-        ['shield-check', 'pill', 'stethoscope', 'credit-card', 'chart-line', 'sparkles', 'plug', 'lock', 'workflow', 'truck'].map(
-          (name) => (
-            <div class="flex flex-col items-center gap-2">
-              <div class="grid size-12 place-items-center rounded-md border border-line bg-surface">
-                <Icon name={`lucide:${name}`} class="icon size-6 text-purple-600" />
-              </div>
-              <span class="font-mono text-xs text-ink-400">{name}</span>
+        [
+          'shield-check',
+          'pill',
+          'stethoscope',
+          'credit-card',
+          'chart-line',
+          'sparkles',
+          'plug',
+          'lock',
+          'workflow',
+          'truck',
+        ].map((name) => (
+          <div class="flex flex-col items-center gap-2">
+            <div class="grid size-12 place-items-center rounded-md border border-line bg-surface">
+              <Icon name={`lucide:${name}`} class="icon size-6 text-purple-600" />
             </div>
-          ),
-        )
+            <span class="font-mono text-xs text-ink-400">{name}</span>
+          </div>
+        ))
       }
     </div>
   </Section>
@@ -404,14 +417,15 @@ const featureIcons = ['layout-dashboard', 'stethoscope', 'pill', 'credit-card', 
     <div class="mt-10">
       <Prose>
         <p>
-          Most teams stitch together a website builder, an EMR, a prescribing tool, a pharmacy,
-          and a payment processor — then spend months making them talk to each other.
+          Most teams stitch together a website builder, an EMR, a prescribing tool, a pharmacy, and
+          a payment processor — then spend months making them talk to each other.
         </p>
         <h2>One system, under your brand</h2>
         <p>
           Purple Label MD replaces that stack with a single, modular platform engineered for
-          direct-to-consumer healthcare. Every step of the patient journey lives in one place,
-          with <a href="#">the compliance built in</a>.
+          direct-to-consumer healthcare. Every step of the patient journey lives in one place, with <a
+            href="#">the compliance built in</a
+          >.
         </p>
         <ul>
           <li>Branded intake and storefronts</li>
@@ -432,7 +446,9 @@ const featureIcons = ['layout-dashboard', 'stethoscope', 'pill', 'credit-card', 
     <div class="mt-10 flex flex-col gap-6">
       <p class="text-body-lg text-ink-500">
         Trusted by
-        <Unconfirmed reason="Confirm real customer count before launch">250+ telehealth brands</Unconfirmed>
+        <Unconfirmed reason="Confirm real customer count before launch"
+          >250+ telehealth brands</Unconfirmed
+        >
         across the U.S.
       </p>
       <div class="flex flex-wrap gap-8">

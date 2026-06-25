@@ -4,3 +4,4 @@ node_modules/
 public/fonts/
 package-lock.json
 spec/
+BUILD-PROMPT.md

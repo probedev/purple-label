@@ -19,8 +19,15 @@ interface Props {
   class?: string;
 }
 
-const { value, label, caption, countTo, prefix = '', suffix = '', class: className = '' } =
-  Astro.props;
+const {
+  value,
+  label,
+  caption,
+  countTo,
+  prefix = '',
+  suffix = '',
+  class: className = '',
+} = Astro.props;
 
 const countAttrs =
   countTo != null

@@ -45,12 +45,7 @@ const surfaces: Record<string, string> = {
 
 <section
   id={id}
-  class:list={[
-    padding[size],
-    surfaces[surface],
-    bordered && 'border-t border-line',
-    className,
-  ]}
+  class:list={[padding[size], surfaces[surface], bordered && 'border-t border-line', className]}
 >
   {
     contained ? (

@@ -28,11 +28,7 @@ const focus = href
 ---
 
 <Tag class:list={[base, hover, focus, className]} {...href ? { href } : {}}>
-  {
-    icon && (
-      <Icon name={`lucide:${icon}`} class="icon mb-5 size-6 text-purple-600" />
-    )
-  }
+  {icon && <Icon name={`lucide:${icon}`} class="icon mb-5 size-6 text-purple-600" />}
   {title && <h3 class="font-display text-h4 text-ink-900">{title}</h3>}
   {
     (title || icon) && (

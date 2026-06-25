@@ -17,7 +17,8 @@ const EXTENSIONS = new Set(['.astro', '.ts', '.tsx']);
 // Matches a Tailwind utility carrying an arbitrary value, e.g. bg-[#fff], mt-[37px],
 // text-[14px], w-[200px], lg:top-[10%], hover:bg-[var(--x)]. Also matches arbitrary
 // properties like [mask-type:luminance].
-const ARBITRARY = /(?:^|[\s"'`])((?:[a-z][a-z0-9-]*:)*-?[a-z][a-z0-9-]*-\[[^\]\s]+\]|\[[a-z-]+:[^\]\s]+\])/g;
+const ARBITRARY =
+  /(?:^|[\s"'`])((?:[a-z][a-z0-9-]*:)*-?[a-z][a-z0-9-]*-\[[^\]\s]+\]|\[[a-z-]+:[^\]\s]+\])/g;
 
 /** Pull the contents of class / class:list / className attributes out of a source file. */
 function extractClassStrings(src) {

@@ -8,28 +8,28 @@ The build is driven by [`BUILD-PROMPT.md`](./BUILD-PROMPT.md) and the spec packa
 
 ## Status
 
-| Phase | Scope | State |
-| :-- | :-- | :-- |
-| 0 | Scaffold, tooling, CI | ✅ done |
-| 1 | Design system + `/styleguide` | ✅ done — **checkpoint: review `/styleguide`** |
-| 2 | Motion engine (GSAP) | ⬜ next |
-| 3 | Homepage | ⬜ |
-| 4–6 | Platform, feature, solutions, pricing, system pages | ⬜ |
-| 7 | SEO, polish, QA | ⬜ |
-| 8 | Deploy | ⬜ |
+| Phase | Scope                                               | State                                          |
+| :---- | :-------------------------------------------------- | :--------------------------------------------- |
+| 0     | Scaffold, tooling, CI                               | ✅ done                                        |
+| 1     | Design system + `/styleguide`                       | ✅ done — **checkpoint: review `/styleguide`** |
+| 2     | Motion engine (GSAP)                                | ⬜ next                                        |
+| 3     | Homepage                                            | ⬜                                             |
+| 4–6   | Platform, feature, solutions, pricing, system pages | ⬜                                             |
+| 7     | SEO, polish, QA                                     | ⬜                                             |
+| 8     | Deploy                                              | ⬜                                             |
 
 ## Commands
 
-| Command | Action |
-| :-- | :-- |
-| `npm run dev` | Dev server at `localhost:4321` |
-| `npm run build` | Production build to `./dist/` |
-| `npm run preview` | Preview the production build |
-| `npm run typecheck` | `astro check` (TS + template diagnostics) |
-| `npm run lint` | ESLint + Stylelint |
-| `npm run lint:classes` | **Fails on arbitrary Tailwind values** (design.md §8) |
-| `npm run format` / `format:check` | Prettier |
-| `npm run check` | typecheck + lint + lint:classes + format:check (CI gate) |
+| Command                           | Action                                                   |
+| :-------------------------------- | :------------------------------------------------------- |
+| `npm run dev`                     | Dev server at `localhost:4321`                           |
+| `npm run build`                   | Production build to `./dist/`                            |
+| `npm run preview`                 | Preview the production build                             |
+| `npm run typecheck`               | `astro check` (TS + template diagnostics)                |
+| `npm run lint`                    | ESLint + Stylelint                                       |
+| `npm run lint:classes`            | **Fails on arbitrary Tailwind values** (design.md §8)    |
+| `npm run format` / `format:check` | Prettier                                                 |
+| `npm run check`                   | typecheck + lint + lint:classes + format:check (CI gate) |
 
 ## Where the design system lives
 

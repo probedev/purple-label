@@ -27,6 +27,13 @@
     "declaration-block-no-redundant-longhand-properties": null,
     "no-descending-specificity": null,
     "alpha-value-notation": null,
-    "color-function-notation": null
+    "color-function-notation": null,
+    "color-function-alias-notation": null,
+    "color-hex-length": null,
+    "value-keyword-case": null,
+    "property-no-vendor-prefix": null,
+    "custom-property-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "rule-empty-line-before": null
   }
 }

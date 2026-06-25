@@ -20,11 +20,7 @@ const sizeClass = Tag === 'h1' ? 'text-h1' : Tag === 'h3' ? 'text-h3' : 'text-h2
 ---
 
 <div
-  class:list={[
-    'flex flex-col gap-4',
-    align === 'center' && 'items-center text-center',
-    className,
-  ]}
+  class:list={['flex flex-col gap-4', align === 'center' && 'items-center text-center', className]}
 >
   {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
   <Tag class:list={['font-display text-ink-900', sizeClass]}>{title}</Tag>

@@ -10,8 +10,14 @@ import '../styles/global.css';
 import { SITE, canonical, type SeoProps } from '../lib/seo';
 
 type Props = SeoProps;
-const { title, description, path = '/', ogImage = SITE.defaultOgImage, noindex = false, jsonLd = [] } =
-  Astro.props;
+const {
+  title,
+  description,
+  path = '/',
+  ogImage = SITE.defaultOgImage,
+  noindex = false,
+  jsonLd = [],
+} = Astro.props;
 
 const pageTitle = title.includes(SITE.name) ? title : `${title} · ${SITE.name}`;
 const canonicalUrl = canonical(path);

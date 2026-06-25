@@ -40,11 +40,7 @@ const classes = [base, variants[variant], className].filter(Boolean).join(' ');
 const Tag = href ? 'a' : 'button';
 ---
 
-<Tag
-  class={classes}
-  {...href ? { href } : { type, disabled }}
-  {...rest}
->
+<Tag class={classes} {...href ? { href } : { type, disabled }} {...rest}>
   <slot />
   {
     variant === 'link-arrow' && (
