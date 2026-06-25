@@ -1,0 +1,78 @@
+---
+/**
+ * BaseLayout — the HTML shell: head/meta, JSON-LD, skip-link, no-flash theme init.
+ * Page chrome (Header/Footer) lives in PageLayout, which wraps this.
+ */
+import '@fontsource-variable/geist/index.css';
+import '@fontsource-variable/geist-mono/index.css';
+import '@fontsource-variable/inter/index.css';
+import '../styles/global.css';
+import { SITE, canonical, type SeoProps } from '../lib/seo';
+
+type Props = SeoProps;
+const { title, description, path = '/', ogImage = SITE.defaultOgImage, noindex = false, jsonLd = [] } =
+  Astro.props;
+
+const pageTitle = title.includes(SITE.name) ? title : `${title} · ${SITE.name}`;
+const canonicalUrl = canonical(path);
+const ogImageUrl = new URL(ogImage, SITE.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={SITE.twitter} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {
+      jsonLd.map((data) => (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(data)} />
+      ))
+    }
+
+    {/* No-flash theme init: set data-theme before first paint. */}
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('pl-theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const theme = stored ?? (prefersDark ? 'dark' : 'light');
+          document.documentElement.dataset.theme = theme;
+        } catch {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:left-4 focus-visible:top-4 focus-visible:z-50 focus-visible:rounded-md focus-visible:bg-surface focus-visible:px-4 focus-visible:py-2 focus-visible:text-ink-900 focus-visible:shadow-md"
+    >
+      Skip to content
+    </a>
+    <slot />
+  </body>
+</html>

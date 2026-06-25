@@ -1,0 +1,31 @@
+---
+/**
+ * ThemeToggle — flips :root[data-theme] and persists to localStorage('pl-theme').
+ * Pairs with the no-flash init script in BaseLayout. Icons swap via the dark: variant.
+ */
+import { Icon } from 'astro-icon/components';
+---
+
+<button
+  type="button"
+  id="theme-toggle"
+  aria-label="Toggle color theme"
+  class="grid size-11 place-items-center rounded-md text-ink-700 transition-colors duration-150 hover:bg-surface-sunken hover:text-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+>
+  <Icon name="lucide:moon" class="icon size-5 dark:hidden" />
+  <Icon name="lucide:sun" class="icon hidden size-5 dark:block" />
+</button>
+
+<script>
+  const toggle = document.getElementById('theme-toggle');
+  toggle?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('pl-theme', next);
+    } catch {
+      /* storage unavailable — theme still applies for this session */
+    }
+  });
+</script>

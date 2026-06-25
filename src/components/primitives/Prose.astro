@@ -1,0 +1,14 @@
+---
+/**
+ * Prose — long-form copy wrapper (blog, legal, FAQ answers). Applies the .prose
+ * rules from global.css: real measure (≤ 68ch), §2 rhythm, token-styled links/code.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={['prose', className]}>
+  <slot />
+</div>

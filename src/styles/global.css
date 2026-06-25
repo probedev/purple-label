@@ -1,0 +1,261 @@
+/**
+ * Purple Label MD — global stylesheet
+ * Tailwind v4 + design-system token mapping. design.md is law: every utility below
+ * resolves to a token from tokens.css. No arbitrary values anywhere (enforced in CI).
+ */
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Attribute-based dark mode (we toggle :root[data-theme="dark"], not prefers-color-scheme). */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/**
+ * @theme inline maps Tailwind's utility namespaces onto our runtime CSS variables.
+ * `inline` keeps the var reference live in each utility, so flipping [data-theme] in
+ * tokens.css re-themes the whole site with no recompiled classes.
+ */
+@theme inline {
+  /* ---- Colors (§1) ---- */
+  --color-purple-50: var(--pl-purple-50);
+  --color-purple-100: var(--pl-purple-100);
+  --color-purple-200: var(--pl-purple-200);
+  --color-purple-300: var(--pl-purple-300);
+  --color-purple-400: var(--pl-purple-400);
+  --color-purple-500: var(--pl-purple-500);
+  --color-purple-600: var(--pl-purple-600);
+  --color-purple-700: var(--pl-purple-700);
+  --color-purple-800: var(--pl-purple-800);
+  --color-purple-900: var(--pl-purple-900);
+
+  --color-ink-900: var(--pl-ink-900);
+  --color-ink-700: var(--pl-ink-700);
+  --color-ink-500: var(--pl-ink-500);
+  --color-ink-400: var(--pl-ink-400);
+  --color-ink-300: var(--pl-ink-300);
+
+  --color-line: var(--pl-line);
+  --color-paper: var(--pl-paper);
+  --color-surface: var(--pl-surface);
+  --color-surface-sunken: var(--pl-surface-sunken);
+
+  --color-teal-400: var(--pl-teal-400);
+  --color-teal-500: var(--pl-teal-500);
+  --color-teal-600: var(--pl-teal-600);
+
+  --color-success: var(--pl-success);
+  --color-warning: var(--pl-warning);
+  --color-danger: var(--pl-danger);
+  --color-info: var(--pl-info);
+
+  /* Always-dark surfaces (footer, dark CTA bands) */
+  --color-dark-bg: var(--pl-dark-bg);
+  --color-dark-surface: var(--pl-dark-surface);
+  --color-dark-heading: var(--pl-dark-heading);
+  --color-dark-fg: var(--pl-dark-fg);
+  --color-dark-fg-muted: var(--pl-dark-fg-muted);
+  --color-dark-line: var(--pl-dark-line);
+
+  /* ---- Fonts (§2) ---- */
+  --font-display: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* ---- Type scale (§2.1–2.2): size + paired leading/tracking/weight ---- */
+  --text-display: var(--fs-display);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 600;
+
+  --text-h1: var(--fs-h1);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h1--font-weight: 600;
+
+  --text-h2: var(--fs-h2);
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: var(--fs-h3);
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 600;
+
+  --text-h4: var(--fs-h4);
+  --text-h4--line-height: 1.2;
+  --text-h4--letter-spacing: -0.01em;
+  --text-h4--font-weight: 600;
+
+  --text-body-lg: var(--fs-body-lg);
+  --text-body-lg--line-height: 1.5;
+
+  --text-body: var(--fs-body);
+  --text-body--line-height: 1.6;
+
+  --text-sm: var(--fs-sm);
+  --text-sm--line-height: 1.5;
+
+  --text-xs: var(--fs-xs);
+  --text-xs--line-height: 1.4;
+
+  --text-stat: var(--fs-stat);
+  --text-stat--line-height: 1;
+  --text-stat--letter-spacing: -0.02em;
+  --text-stat--font-weight: 500;
+
+  /* eyebrow tracking helper */
+  --tracking-eyebrow: 0.12em;
+
+  /* ---- Radius (§4): static, inlined ---- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* ---- Elevation (§4): runtime vars so dark mode softens shadows ---- */
+  --shadow-sm: var(--pl-shadow-sm);
+  --shadow-md: var(--pl-shadow-md);
+  --shadow-cta: var(--pl-shadow-cta);
+
+  /* ---- Container widths (§3.1) ---- */
+  --container-content: 75rem; /* 1200px */
+  --container-wide: 82.5rem; /* 1320px */
+  --container-prose: 68ch;
+}
+
+/* ============================================================================
+   Base layer — reset, document defaults, typography, focus, motion
+   ============================================================================ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* offset sticky 72px header for in-page anchors */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--pl-paper);
+    color: var(--pl-ink-500);
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    color: var(--pl-ink-900);
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  ::selection {
+    background-color: var(--pl-purple-100);
+    color: var(--pl-purple-900);
+  }
+
+  /* §5.1 / §9 — focus is never removed; a visible token-colored ring everywhere */
+  :focus-visible {
+    outline: 2px solid var(--pl-purple-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Lucide icons render at 1.5px stroke per §5.7 (CSS overrides the 2px attribute) */
+  [data-icon] svg,
+  svg.icon {
+    stroke-width: 1.5;
+  }
+
+  /* §6.3 — reduced motion is a hard requirement: kill all transitions/animations */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ============================================================================
+   Prose — long-form copy (blog, legal, FAQ answers). Real measure, §2 rhythm.
+   ============================================================================ */
+@layer components {
+  .prose {
+    max-width: var(--container-prose);
+    color: var(--pl-ink-500);
+    font-size: var(--fs-body-lg);
+    line-height: 1.7;
+  }
+  .prose > * + * {
+    margin-top: var(--space-6);
+  }
+  .prose h2 {
+    margin-top: var(--space-12);
+    font-size: var(--fs-h3);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .prose h3 {
+    margin-top: var(--space-8);
+    font-size: var(--fs-h4);
+  }
+  .prose a {
+    color: var(--pl-purple-600);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .prose strong {
+    color: var(--pl-ink-900);
+    font-weight: 600;
+  }
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background-color: var(--pl-surface-sunken);
+    padding: 0.15em 0.4em;
+    border-radius: var(--radius-sm);
+  }
+  .prose ul,
+  .prose ol {
+    padding-left: var(--space-6);
+  }
+  .prose li + li {
+    margin-top: var(--space-2);
+  }
+}

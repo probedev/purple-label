@@ -1,0 +1,19 @@
+---
+/**
+ * PageLayout — standard marketing page wrapper: Header + <main> + Footer over BaseLayout.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import type { SeoProps } from '../lib/seo';
+
+type Props = SeoProps;
+---
+
+<BaseLayout {...Astro.props}>
+  <Header />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer />
+</BaseLayout>

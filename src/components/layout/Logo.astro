@@ -1,0 +1,33 @@
+---
+/**
+ * Logo — typographic wordmark. Deliberately a placeholder mark, not a fabricated
+ * brand logo: swap for licensed assets before launch (see README "Before launch").
+ */
+interface Props {
+  /** Use on dark backgrounds (footer) to invert the wordmark. */
+  invert?: boolean;
+  class?: string;
+}
+const { invert = false, class: className = '' } = Astro.props;
+---
+
+<a
+  href="/"
+  aria-label="Purple Label MD — home"
+  class:list={['group inline-flex items-center gap-2.5', className]}
+>
+  <span
+    aria-hidden="true"
+    class="grid size-7 place-items-center rounded-sm bg-purple-600 font-display text-sm font-semibold text-white transition-colors duration-150 group-hover:bg-purple-700"
+  >
+    P
+  </span>
+  <span
+    class:list={[
+      'font-display text-base font-semibold tracking-tight',
+      invert ? 'text-white' : 'text-ink-900',
+    ]}
+  >
+    Purple Label <span class="text-purple-600">MD</span>
+  </span>
+</a>

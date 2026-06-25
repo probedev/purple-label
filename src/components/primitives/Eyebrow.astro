@@ -1,0 +1,20 @@
+---
+/**
+ * Eyebrow / overline — design.md §2.2. Uppercase, tracked, purple-600.
+ * The top line of the repeating §5.6 section-header lockup.
+ */
+interface Props {
+  as?: 'p' | 'span' | 'div';
+  class?: string;
+}
+const { as: Tag = 'p', class: className = '' } = Astro.props;
+---
+
+<Tag
+  class:list={[
+    'font-display text-xs font-semibold uppercase tracking-eyebrow text-purple-600',
+    className,
+  ]}
+>
+  <slot />
+</Tag>

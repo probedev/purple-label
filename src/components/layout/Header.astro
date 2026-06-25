@@ -1,0 +1,172 @@
+---
+/**
+ * Header — sticky, 72px, paper@80% + blur (§5.3). Bottom hairline appears only after
+ * scroll > 8px. Logo left · mega-menu center · Sign in + Request a demo right.
+ * Mobile: full-screen sheet with native <details> accordions (keyboard-accessible, no JS).
+ */
+import { Icon } from 'astro-icon/components';
+import Container from './Container.astro';
+import Logo from './Logo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import MegaMenu from './MegaMenu.astro';
+import Button from '../primitives/Button.astro';
+import { HEADER_GROUPS, HEADER_LINKS, CTA } from '../../lib/nav';
+---
+
+<header id="site-header" class="sticky top-0 z-50 bg-paper/80 backdrop-blur-md">
+  <Container as="div" class="flex h-18 items-center justify-between gap-4">
+    <Logo />
+
+    <!-- Desktop nav -->
+    <nav aria-label="Primary" class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {HEADER_GROUPS.map((group) => <MegaMenu group={group} />)}
+        {
+          HEADER_LINKS.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="inline-flex h-11 items-center rounded-md px-3 text-sm font-semibold text-ink-700 transition-colors duration-150 hover:text-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <!-- Right cluster -->
+    <div class="flex items-center gap-2">
+      <ThemeToggle />
+      <Button variant="ghost" href={CTA.signin.href} class="hidden lg:inline-flex">
+        {CTA.signin.label}
+      </Button>
+      <Button variant="primary" href={CTA.primary.href} class="hidden sm:inline-flex">
+        {CTA.primary.label}
+      </Button>
+      <button
+        type="button"
+        id="menu-open"
+        aria-label="Open menu"
+        aria-controls="mobile-sheet"
+        aria-expanded="false"
+        class="grid size-11 place-items-center rounded-md text-ink-700 transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 lg:hidden"
+      >
+        <Icon name="lucide:menu" class="icon size-6" />
+      </button>
+    </div>
+  </Container>
+
+  <!-- Mobile sheet -->
+  <div
+    id="mobile-sheet"
+    class="fixed inset-0 z-50 hidden flex-col bg-paper lg:hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Site menu"
+  >
+    <Container as="div" class="flex h-18 items-center justify-between">
+      <Logo />
+      <button
+        type="button"
+        id="menu-close"
+        aria-label="Close menu"
+        class="grid size-11 place-items-center rounded-md text-ink-700 transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+      >
+        <Icon name="lucide:x" class="icon size-6" />
+      </button>
+    </Container>
+
+    <Container as="nav" class="flex flex-1 flex-col overflow-y-auto pb-8">
+      <ul class="divide-y divide-line border-y border-line">
+        {
+          HEADER_GROUPS.map((group) => (
+            <li>
+              <details class="group/acc">
+                <summary class="flex cursor-pointer items-center justify-between py-4 text-base font-semibold text-ink-900 marker:content-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">
+                  {group.label}
+                  <Icon
+                    name="lucide:chevron-down"
+                    class="icon size-5 text-ink-400 transition-transform duration-200 group-open/acc:rotate-180"
+                  />
+                </summary>
+                <ul class="pb-4">
+                  {group.items.map((item) => (
+                    <li>
+                      <a
+                        href={item.href}
+                        class="block rounded-md px-3 py-2.5 text-sm text-ink-500 transition-colors duration-150 hover:bg-surface-sunken hover:text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+          ))
+        }
+        {
+          HEADER_LINKS.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="block py-4 text-base font-semibold text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-8 flex flex-col gap-3">
+        <Button variant="primary" href={CTA.primary.href}>{CTA.primary.label}</Button>
+        <Button variant="secondary" href={CTA.signin.href}>{CTA.signin.label}</Button>
+      </div>
+    </Container>
+  </div>
+</header>
+
+<style>
+  /* §5.3 — hairline appears only after scroll > 8px (token-colored). */
+  #site-header {
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  #site-header[data-scrolled] {
+    border-bottom-color: var(--pl-line);
+  }
+</style>
+
+<script>
+  // Scroll hairline
+  const header = document.getElementById('site-header');
+  const onScroll = () => {
+    if (!header) return;
+    if (window.scrollY > 8) header.setAttribute('data-scrolled', '');
+    else header.removeAttribute('data-scrolled');
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Mobile sheet
+  const sheet = document.getElementById('mobile-sheet');
+  const openBtn = document.getElementById('menu-open');
+  const closeBtn = document.getElementById('menu-close');
+  const setOpen = (open: boolean) => {
+    if (!sheet) return;
+    sheet.classList.toggle('hidden', !open);
+    sheet.classList.toggle('flex', open);
+    document.body.classList.toggle('overflow-hidden', open);
+    openBtn?.setAttribute('aria-expanded', String(open));
+    if (open) closeBtn?.focus();
+    else openBtn?.focus();
+  };
+  openBtn?.addEventListener('click', () => setOpen(true));
+  closeBtn?.addEventListener('click', () => setOpen(false));
+  sheet?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sheet && !sheet.classList.contains('hidden')) setOpen(false);
+  });
+</script>

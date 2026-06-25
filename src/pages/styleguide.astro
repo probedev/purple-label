@@ -1,0 +1,457 @@
+---
+/**
+ * /styleguide — the visual contract (BUILD-PROMPT Phase 1 deliverable).
+ * Renders the full static design system: palette, type, spacing, elevation, and every
+ * primitive + state. Review this before any pages are built. Motion demos land in Phase 2.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Card from '../components/primitives/Card.astro';
+import StatCard from '../components/primitives/StatCard.astro';
+import Badge from '../components/primitives/Badge.astro';
+import Prose from '../components/primitives/Prose.astro';
+import Unconfirmed from '../components/marketing/Unconfirmed.astro';
+import { Icon } from 'astro-icon/components';
+
+const purples = [
+  { c: 'bg-purple-50', n: '50', hex: '#F4F0FB' },
+  { c: 'bg-purple-100', n: '100', hex: '#E7DDF6' },
+  { c: 'bg-purple-200', n: '200', hex: '#CBB6EA' },
+  { c: 'bg-purple-300', n: '300', hex: '#AC8BDC' },
+  { c: 'bg-purple-400', n: '400', hex: '#8B5FCC' },
+  { c: 'bg-purple-500', n: '500 · base', hex: '#6E3DB8' },
+  { c: 'bg-purple-600', n: '600 · actions', hex: '#5A2C9E' },
+  { c: 'bg-purple-700', n: '700 · hover', hex: '#471F7E' },
+  { c: 'bg-purple-800', n: '800', hex: '#341659' },
+  { c: 'bg-purple-900', n: '900', hex: '#21103A' },
+];
+
+const inks = [
+  { c: 'bg-ink-900', n: 'ink-900', hex: '#100B1A' },
+  { c: 'bg-ink-700', n: 'ink-700', hex: '#2A2335' },
+  { c: 'bg-ink-500', n: 'ink-500', hex: '#564E63' },
+  { c: 'bg-ink-400', n: 'ink-400', hex: '#7C7589' },
+  { c: 'bg-ink-300', n: 'ink-300', hex: '#A8A2B3' },
+];
+
+const surfaces = [
+  { c: 'bg-paper', n: 'paper', hex: '#FBFAFD' },
+  { c: 'bg-surface', n: 'surface', hex: '#FFFFFF' },
+  { c: 'bg-surface-sunken', n: 'surface-sunken', hex: '#F4F2F8' },
+  { c: 'bg-line', n: 'line', hex: '#E6E2EC' },
+];
+
+const teals = [
+  { c: 'bg-teal-400', n: 'teal-400', hex: '#2DD4BF' },
+  { c: 'bg-teal-500', n: 'teal-500', hex: '#14B8A6' },
+  { c: 'bg-teal-600', n: 'teal-600', hex: '#0D9488' },
+];
+
+const semantics = [
+  { c: 'bg-success', n: 'success', hex: '#0D9488' },
+  { c: 'bg-warning', n: 'warning', hex: '#B45309' },
+  { c: 'bg-danger', n: 'danger', hex: '#B42318' },
+  { c: 'bg-info', n: 'info', hex: '#5A2C9E' },
+];
+
+const typeScale = [
+  { c: 'text-display', n: 'display', note: 'hero H1 · Geist 600 · -0.02em' },
+  { c: 'text-h1', n: 'h1', note: 'Geist 600' },
+  { c: 'text-h2', n: 'h2', note: 'section headline' },
+  { c: 'text-h3', n: 'h3', note: '' },
+  { c: 'text-h4', n: 'h4', note: '' },
+  { c: 'text-body-lg', n: 'body-lg', note: 'lead paragraphs' },
+  { c: 'text-body', n: 'body', note: 'default 16px · Inter' },
+  { c: 'text-sm', n: 'sm', note: '' },
+  { c: 'text-xs', n: 'xs', note: 'captions, eyebrows' },
+];
+
+const spacing = [
+  { c: 'w-2', n: '2 · 8px' },
+  { c: 'w-4', n: '4 · 16px' },
+  { c: 'w-6', n: '6 · 24px' },
+  { c: 'w-8', n: '8 · 32px' },
+  { c: 'w-12', n: '12 · 48px' },
+  { c: 'w-16', n: '16 · 64px' },
+  { c: 'w-24', n: '24 · 96px' },
+  { c: 'w-32', n: '32 · 128px · section' },
+];
+
+const radii = [
+  { c: 'rounded-sm', n: 'sm · 8px' },
+  { c: 'rounded-md', n: 'md · 12px' },
+  { c: 'rounded-lg', n: 'lg · 16px' },
+  { c: 'rounded-xl', n: 'xl · 24px' },
+  { c: 'rounded-full', n: 'full' },
+];
+
+const featureIcons = ['layout-dashboard', 'stethoscope', 'pill', 'credit-card', 'chart-line', 'sparkles'];
+---
+
+<PageLayout
+  title="Styleguide"
+  description="The Purple Label MD design system — palette, type, spacing, and components."
+  path="/styleguide"
+  noindex={true}
+>
+  <!-- Header -->
+  <Section size="sm" class="border-b border-line">
+    <Eyebrow>Design system</Eyebrow>
+    <h1 class="mt-3 font-display text-display text-ink-900">Styleguide</h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      The visual contract. Every value below is a token from <code
+        class="rounded-sm bg-surface-sunken px-1.5 py-0.5 font-mono text-sm">design.md</code
+      >. Toggle light/dark in the header — the entire system re-themes from CSS variables.
+      Use the <code class="rounded-sm bg-surface-sunken px-1.5 py-0.5 font-mono text-sm"
+        >Request a demo</code
+      > button states and the mega-menu above as live references.
+    </p>
+  </Section>
+
+  <!-- Color -->
+  <Section bordered>
+    <SectionHeader
+      eyebrow="§1 Color"
+      title="A tight, earned palette"
+      lead="Mostly ink-on-paper. Purple appears with intent; teal is the single accent for data and health signals."
+    />
+    <div class="mt-12 flex flex-col gap-10">
+      <div>
+        <Eyebrow as="h3">Brand — Purple</Eyebrow>
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+          {
+            purples.map((s) => (
+              <div class="overflow-hidden rounded-md border border-line">
+                <div class:list={[s.c, 'h-16 w-full']} />
+                <div class="bg-surface px-3 py-2">
+                  <p class="text-sm font-semibold text-ink-900">{s.n}</p>
+                  <p class="font-mono text-xs text-ink-400">{s.hex}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="grid gap-10 lg:grid-cols-2">
+        <div>
+          <Eyebrow as="h3">Ink (purple-tinted neutrals)</Eyebrow>
+          <div class="mt-4 grid grid-cols-5 gap-3">
+            {
+              inks.map((s) => (
+                <div class="overflow-hidden rounded-md border border-line">
+                  <div class:list={[s.c, 'h-16 w-full']} />
+                  <div class="bg-surface px-2 py-2">
+                    <p class="text-xs font-semibold text-ink-900">{s.n}</p>
+                    <p class="font-mono text-xs text-ink-400">{s.hex}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div>
+          <Eyebrow as="h3">Paper & surfaces</Eyebrow>
+          <div class="mt-4 grid grid-cols-4 gap-3">
+            {
+              surfaces.map((s) => (
+                <div class="overflow-hidden rounded-md border border-line">
+                  <div class:list={[s.c, 'h-16 w-full']} />
+                  <div class="bg-surface px-2 py-2">
+                    <p class="text-xs font-semibold text-ink-900">{s.n}</p>
+                    <p class="font-mono text-xs text-ink-400">{s.hex}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-10 lg:grid-cols-2">
+        <div>
+          <Eyebrow as="h3">Accent — Teal (data only)</Eyebrow>
+          <div class="mt-4 grid grid-cols-3 gap-3">
+            {
+              teals.map((s) => (
+                <div class="overflow-hidden rounded-md border border-line">
+                  <div class:list={[s.c, 'h-16 w-full']} />
+                  <div class="bg-surface px-3 py-2">
+                    <p class="text-xs font-semibold text-ink-900">{s.n}</p>
+                    <p class="font-mono text-xs text-ink-400">{s.hex}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div>
+          <Eyebrow as="h3">Semantic</Eyebrow>
+          <div class="mt-4 grid grid-cols-4 gap-3">
+            {
+              semantics.map((s) => (
+                <div class="overflow-hidden rounded-md border border-line">
+                  <div class:list={[s.c, 'h-16 w-full']} />
+                  <div class="bg-surface px-2 py-2">
+                    <p class="text-xs font-semibold text-ink-900">{s.n}</p>
+                    <p class="font-mono text-xs text-ink-400">{s.hex}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Typography -->
+  <Section bordered surface="sunken">
+    <SectionHeader
+      eyebrow="§2 Typography"
+      title="Type does the work"
+      lead="Two typefaces: Geist for display, Inter for body, Geist Mono for metrics and code. Hierarchy comes from scale, weight, and spacing — not boxes and color."
+    />
+    <div class="mt-12 flex flex-col divide-y divide-line">
+      {
+        typeScale.map((t) => (
+          <div class="flex flex-col gap-2 py-6 sm:flex-row sm:items-baseline sm:gap-8">
+            <div class="w-40 shrink-0">
+              <p class="font-mono text-xs text-ink-400">{t.c}</p>
+              {t.note && <p class="text-xs text-ink-400">{t.note}</p>}
+            </div>
+            <p class:list={['font-display text-ink-900', t.c]}>
+              Care and commerce, one platform
+            </p>
+          </div>
+        ))
+      }
+      <div class="flex flex-col gap-2 py-6 sm:flex-row sm:items-baseline sm:gap-8">
+        <div class="w-40 shrink-0">
+          <p class="font-mono text-xs text-ink-400">text-stat · mono</p>
+        </div>
+        <p class="font-mono text-stat text-ink-900">$1B+</p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Spacing, radius, elevation -->
+  <Section bordered>
+    <SectionHeader
+      eyebrow="§3–4 Space, radius, elevation"
+      title="Whitespace is a feature"
+      lead="An 8-point grid. Borders do the structural work; shadows are soft, low, and rare — one elevated layer per viewport."
+    />
+    <div class="mt-12 grid gap-12 lg:grid-cols-3">
+      <div>
+        <Eyebrow as="h3">Spacing scale</Eyebrow>
+        <div class="mt-4 flex flex-col gap-3">
+          {
+            spacing.map((s) => (
+              <div class="flex items-center gap-4">
+                <div class:list={[s.c, 'h-3 rounded-sm bg-purple-300']} />
+                <span class="font-mono text-xs text-ink-400">{s.n}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <div>
+        <Eyebrow as="h3">Radius</Eyebrow>
+        <div class="mt-4 flex flex-col gap-3">
+          {
+            radii.map((r) => (
+              <div class="flex items-center gap-4">
+                <div class:list={[r.c, 'size-12 border border-line bg-surface-sunken']} />
+                <span class="font-mono text-xs text-ink-400">{r.n}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <div>
+        <Eyebrow as="h3">Elevation</Eyebrow>
+        <div class="mt-4 flex flex-col gap-6">
+          <div class="flex items-center gap-4">
+            <div class="size-16 rounded-md bg-surface shadow-sm"></div>
+            <span class="font-mono text-xs text-ink-400">shadow-sm</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="size-16 rounded-md bg-surface shadow-md"></div>
+            <span class="font-mono text-xs text-ink-400">shadow-md</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="size-16 rounded-md bg-purple-600 shadow-cta"></div>
+            <span class="font-mono text-xs text-ink-400">shadow-cta · CTA hover only</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Buttons -->
+  <Section bordered surface="sunken">
+    <SectionHeader
+      eyebrow="§5.1 Buttons"
+      title="One primary per section"
+      lead="Four variants, full state set, 44px tap target. Hover the primary for the lift + purple glow; tab to any button for the focus ring."
+    />
+    <div class="mt-12 flex flex-col gap-10">
+      <div class="flex flex-wrap items-center gap-4">
+        <Button variant="primary" href="#">Request a demo</Button>
+        <Button variant="secondary" href="#">Talk to sales</Button>
+        <Button variant="ghost" href="#">Sign in</Button>
+        <Button variant="link-arrow" href="#">Explore the platform</Button>
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        <Button variant="primary" disabled>Disabled primary</Button>
+        <Button variant="secondary" disabled>Disabled secondary</Button>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Section header lockup -->
+  <Section bordered>
+    <SectionHeader
+      eyebrow="§5.6 Lockup"
+      title="The repeating spine"
+      lead="Eyebrow → H2 → lead. This three-part lockup opens nearly every section. Shown left-aligned here and centered below."
+    />
+    <div class="mt-12 rounded-lg border border-line bg-surface p-8 sm:p-12">
+      <SectionHeader
+        align="center"
+        eyebrow="Centered variant"
+        title="Care and commerce, finally on one platform"
+        lead="A single, modular platform engineered for direct-to-consumer healthcare."
+      />
+    </div>
+  </Section>
+
+  <!-- Cards & stats -->
+  <Section bordered surface="sunken">
+    <SectionHeader
+      eyebrow="§5.2 Cards & stats"
+      title="Flat, hairline, restrained"
+      lead="Feature cards: icon → H4 → body. Interactive cards lift on hover. Stat cards use mono numerals for the real-infrastructure feel."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        featureIcons.slice(0, 3).map((icon, i) => (
+          <Card
+            icon={icon}
+            title={['Experience Builder', 'EMR & E-Prescribing', 'Pharmacy & Fulfillment'][i]}
+            href="#"
+          >
+            {
+              [
+                'No-code intake, patient portals, and branded storefronts.',
+                'A clinical workspace with secure, certified prescribing.',
+                'A nationwide 503A/503B network, or bring your own.',
+              ][i]
+            }
+          </Card>
+        ))
+      }
+    </div>
+    <div class="mt-10 grid gap-8 rounded-lg border border-line bg-surface p-8 sm:grid-cols-3">
+      <StatCard value="6.4M+" label="Patients served" caption="Across the platform" />
+      <StatCard value="10.5M+" label="Orders fulfilled" caption="To all 50 states" />
+      <StatCard value="$1B+" label="Transactions" caption="Processed end to end" />
+    </div>
+  </Section>
+
+  <!-- Badges + status -->
+  <Section bordered>
+    <SectionHeader eyebrow="§5 Badges" title="Small signals, used sparingly" />
+    <div class="mt-10 flex flex-wrap items-center gap-3">
+      <Badge>Neutral</Badge>
+      <Badge tone="purple">Most popular</Badge>
+      <Badge tone="success" dot>Live</Badge>
+      <Badge tone="success" dot>All systems operational</Badge>
+      <Badge tone="purple" icon="shield-check">HIPAA-ready</Badge>
+    </div>
+  </Section>
+
+  <!-- Iconography -->
+  <Section bordered surface="sunken">
+    <SectionHeader
+      eyebrow="§5.7 Iconography"
+      title="One set: Lucide, 1.5px stroke"
+      lead="No mixed sets, no emoji, no multicolor. Icons are ink-700 or purple-600."
+    />
+    <div class="mt-10 flex flex-wrap gap-6">
+      {
+        ['shield-check', 'pill', 'stethoscope', 'credit-card', 'chart-line', 'sparkles', 'plug', 'lock', 'workflow', 'truck'].map(
+          (name) => (
+            <div class="flex flex-col items-center gap-2">
+              <div class="grid size-12 place-items-center rounded-md border border-line bg-surface">
+                <Icon name={`lucide:${name}`} class="icon size-6 text-purple-600" />
+              </div>
+              <span class="font-mono text-xs text-ink-400">{name}</span>
+            </div>
+          ),
+        )
+      }
+    </div>
+  </Section>
+
+  <!-- Prose -->
+  <Section bordered>
+    <SectionHeader eyebrow="Long-form" title="Prose" lead="Real measure (≤ 68ch), §2 rhythm." />
+    <div class="mt-10">
+      <Prose>
+        <p>
+          Most teams stitch together a website builder, an EMR, a prescribing tool, a pharmacy,
+          and a payment processor — then spend months making them talk to each other.
+        </p>
+        <h2>One system, under your brand</h2>
+        <p>
+          Purple Label MD replaces that stack with a single, modular platform engineered for
+          direct-to-consumer healthcare. Every step of the patient journey lives in one place,
+          with <a href="#">the compliance built in</a>.
+        </p>
+        <ul>
+          <li>Branded intake and storefronts</li>
+          <li>Clinical visits and <code>e-prescribing</code></li>
+          <li>Nationwide pharmacy fulfillment</li>
+        </ul>
+      </Prose>
+    </div>
+  </Section>
+
+  <!-- Content integrity -->
+  <Section bordered surface="sunken">
+    <SectionHeader
+      eyebrow="Content integrity"
+      title="Unverified claims are flagged, never shipped as fact"
+      lead="Every [CONFIRM] item renders through <Unconfirmed> — visually obvious in draft and greppable. The footer trust badges above use it too."
+    />
+    <div class="mt-10 flex flex-col gap-6">
+      <p class="text-body-lg text-ink-500">
+        Trusted by
+        <Unconfirmed reason="Confirm real customer count before launch">250+ telehealth brands</Unconfirmed>
+        across the U.S.
+      </p>
+      <div class="flex flex-wrap gap-8">
+        <Unconfirmed reason="Confirm all scale-strip figures" display="block">
+          <StatCard value="$1B+" label="Transactions processed" />
+        </Unconfirmed>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Motion note -->
+  <Section bordered>
+    <SectionHeader
+      eyebrow="§6 Motion"
+      title="Motion demos arrive in Phase 2"
+      lead="The GSAP engine (section reveals, hero timeline, metric count-up, the single pinned flow, marquee) is built next. All motion respects prefers-reduced-motion. This page is the static contract that gates that work."
+    />
+    <div class="mt-8">
+      <Badge tone="purple" icon="clock">Phase 2 · motion engine</Badge>
+    </div>
+  </Section>
+</PageLayout>

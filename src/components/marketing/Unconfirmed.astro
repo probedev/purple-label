@@ -1,0 +1,33 @@
+---
+/**
+ * Unconfirmed — wraps any [CONFIRM] claim (metric, certification, customer name, quote)
+ * so it is impossible to mistake for verified fact in a draft build, and trivially
+ * greppable (`rg "Unconfirmed"`). Never let an unverified claim ship as fact.
+ *
+ * Visual: a dashed warning-toned outline + a small "UNCONFIRMED" tag. The `reason`
+ * explains what Gregg must verify before launch.
+ */
+interface Props {
+  reason: string;
+  /** inline keeps it in text flow; block adds spacing for standalone figures. */
+  display?: 'inline' | 'block';
+  class?: string;
+}
+const { reason, display = 'inline', class: className = '' } = Astro.props;
+---
+
+<span
+  data-unconfirmed
+  title={`UNCONFIRMED — ${reason}`}
+  class:list={[
+    display === 'block' ? 'block' : 'inline-block',
+    'relative rounded-sm border border-dashed border-warning/70 px-1.5 py-0.5',
+    className,
+  ]}
+>
+  <span
+    class="mr-1.5 select-none align-middle font-mono text-xs font-semibold uppercase tracking-eyebrow text-warning"
+    aria-hidden="true">⚠ Unconfirmed</span
+  ><slot />
+  <span class="sr-only"> (unconfirmed claim — pending verification: {reason})</span>
+</span>

@@ -1,0 +1,33 @@
+---
+/**
+ * Home — interim landing for the Phase 1 checkpoint. The full homepage (hero timeline,
+ * pinned flow, scale strip, etc.) is assembled in Phase 3 from content.md §1.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Badge from '../components/primitives/Badge.astro';
+---
+
+<PageLayout
+  title="Purple Label MD — launch and run your own telemedicine brand"
+  description="The platform to launch and run your own telemedicine brand — branded intake, clinical visits, e-prescribing, nationwide pharmacy fulfillment, and payments on one system."
+  path="/"
+>
+  <Section size="lg">
+    <Badge tone="purple" icon="hammer">Phase 1 checkpoint · design system ready</Badge>
+    <Eyebrow class="mt-8">White-label telemedicine platform</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Launch your telemedicine brand. Run the whole business on one platform.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      The design system and component library are built and verified. The full homepage and
+      pages are assembled next. In the meantime, review the visual contract.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/styleguide">View the styleguide</Button>
+      <Button variant="link-arrow" href="/styleguide">See every component &amp; state</Button>
+    </div>
+  </Section>
+</PageLayout>

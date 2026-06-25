@@ -1,0 +1,45 @@
+---
+/**
+ * Badge — small status/label pill. Tones map to semantic tokens (§1.4).
+ * Restrained by default (neutral); colored tones used sparingly.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  tone?: 'neutral' | 'purple' | 'success' | 'warning' | 'danger';
+  /** Show a leading status dot (e.g. system-status pill). */
+  dot?: boolean;
+  icon?: string;
+  class?: string;
+}
+
+const { tone = 'neutral', dot = false, icon, class: className = '' } = Astro.props;
+
+const tones: Record<string, string> = {
+  neutral: 'border-line bg-surface text-ink-700',
+  purple: 'border-purple-200 bg-purple-50 text-purple-700',
+  success: 'border-teal-400 bg-surface text-teal-600',
+  warning: 'border-line bg-surface text-warning',
+  danger: 'border-line bg-surface text-danger',
+};
+
+const dotColors: Record<string, string> = {
+  neutral: 'bg-ink-400',
+  purple: 'bg-purple-500',
+  success: 'bg-teal-500',
+  warning: 'bg-warning',
+  danger: 'bg-danger',
+};
+---
+
+<span
+  class:list={[
+    'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold',
+    tones[tone],
+    className,
+  ]}
+>
+  {dot && <span class:list={['size-1.5 rounded-full', dotColors[tone]]} aria-hidden="true" />}
+  {icon && <Icon name={`lucide:${icon}`} class="icon size-3.5" />}
+  <slot />
+</span>

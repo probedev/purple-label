@@ -1,0 +1,45 @@
+---
+/**
+ * Card — design.md §5.2. Surface + hairline + radius lg. Flat by default;
+ * interactive cards gain a purple-200 border and shadow-md on hover (150ms).
+ * Set `icon` for the feature-card pattern: icon → H4 → body.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  /** Lucide icon name without the "lucide:" prefix, e.g. "layout-dashboard". */
+  icon?: string;
+  title?: string;
+  href?: string;
+  interactive?: boolean;
+  class?: string;
+}
+
+const { icon, title, href, interactive = Boolean(href), class: className = '' } = Astro.props;
+
+const base = 'rounded-lg border border-line bg-surface p-6 sm:p-8';
+const hover = interactive
+  ? 'transition duration-150 ease-out hover:border-purple-200 hover:shadow-md'
+  : '';
+const Tag = href ? 'a' : 'div';
+const focus = href
+  ? 'block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500'
+  : '';
+---
+
+<Tag class:list={[base, hover, focus, className]} {...href ? { href } : {}}>
+  {
+    icon && (
+      <Icon name={`lucide:${icon}`} class="icon mb-5 size-6 text-purple-600" />
+    )
+  }
+  {title && <h3 class="font-display text-h4 text-ink-900">{title}</h3>}
+  {
+    (title || icon) && (
+      <div class="mt-3 text-body text-ink-500">
+        <slot />
+      </div>
+    )
+  }
+  {!title && !icon && <slot />}
+</Tag>

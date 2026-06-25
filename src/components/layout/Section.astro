@@ -1,0 +1,64 @@
+---
+/**
+ * Section — the vertical-rhythm spine (design.md §3). Generous top/bottom padding is
+ * non-negotiable: it's what separates "engineered" from "cramped template."
+ *   default → 96px mobile / 128px desktop   (--space-24 → --space-32)
+ *   lg      → 128px mobile / 160px desktop   (--space-32 → --space-40, major breaks)
+ *   sm      → 64px  mobile / 96px desktop
+ * Wraps content in a Container by default; set `contained={false}` for full-bleed canvases.
+ */
+import Container from './Container.astro';
+
+interface Props {
+  id?: string;
+  size?: 'sm' | 'default' | 'lg';
+  surface?: 'paper' | 'surface' | 'sunken';
+  /** Hairline divider along the top edge (§4 — borders do the structural work). */
+  bordered?: boolean;
+  contained?: boolean;
+  wide?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  size = 'default',
+  surface = 'paper',
+  bordered = false,
+  contained = true,
+  wide = false,
+  class: className = '',
+} = Astro.props;
+
+const padding: Record<string, string> = {
+  sm: 'py-16 md:py-24',
+  default: 'py-24 md:py-32',
+  lg: 'py-32 md:py-40',
+};
+
+const surfaces: Record<string, string> = {
+  paper: 'bg-paper',
+  surface: 'bg-surface',
+  sunken: 'bg-surface-sunken',
+};
+---
+
+<section
+  id={id}
+  class:list={[
+    padding[size],
+    surfaces[surface],
+    bordered && 'border-t border-line',
+    className,
+  ]}
+>
+  {
+    contained ? (
+      <Container wide={wide}>
+        <slot />
+      </Container>
+    ) : (
+      <slot />
+    )
+  }
+</section>

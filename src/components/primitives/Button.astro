@@ -1,0 +1,57 @@
+---
+/**
+ * Button — design.md §5.1. Four variants, full state set, 44px min tap target.
+ * Polymorphic: renders <a> when `href` is set, otherwise <button>.
+ * One primary per section (§10).
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'link-arrow';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  variant = 'primary',
+  href,
+  type = 'button',
+  disabled = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const base =
+  'inline-flex items-center justify-center gap-2 font-sans text-sm font-semibold transition duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 disabled:pointer-events-none disabled:opacity-50';
+
+const boxed = 'h-11 rounded-md px-6';
+
+const variants: Record<string, string> = {
+  primary: `${boxed} bg-purple-600 text-white hover:-translate-y-px hover:bg-purple-700 hover:shadow-cta active:translate-y-0`,
+  secondary: `${boxed} border border-line bg-transparent text-ink-900 hover:bg-surface-sunken`,
+  ghost: `${boxed} text-ink-700 hover:text-purple-600`,
+  'link-arrow': 'group gap-1.5 text-sm font-semibold text-purple-600 hover:text-purple-700',
+};
+
+const classes = [base, variants[variant], className].filter(Boolean).join(' ');
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class={classes}
+  {...href ? { href } : { type, disabled }}
+  {...rest}
+>
+  <slot />
+  {
+    variant === 'link-arrow' && (
+      <Icon
+        name="lucide:arrow-right"
+        class="icon size-4 transition-transform duration-150 ease-out group-hover:translate-x-1"
+      />
+    )
+  }
+</Tag>

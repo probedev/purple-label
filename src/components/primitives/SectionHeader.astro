@@ -1,0 +1,38 @@
+---
+/**
+ * SectionHeader — the §5.6 lockup: [eyebrow] / H2 / lead. The repeating spine of
+ * every section. Consistency here is what makes the site read as designed, not assembled.
+ */
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  align?: 'left' | 'center';
+  /** Heading level — use h1 only for a page's single hero header. */
+  as?: 'h1' | 'h2' | 'h3';
+  class?: string;
+}
+
+const { eyebrow, title, lead, align = 'left', as: Tag = 'h2', class: className = '' } = Astro.props;
+const sizeClass = Tag === 'h1' ? 'text-h1' : Tag === 'h3' ? 'text-h3' : 'text-h2';
+---
+
+<div
+  class:list={[
+    'flex flex-col gap-4',
+    align === 'center' && 'items-center text-center',
+    className,
+  ]}
+>
+  {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+  <Tag class:list={['font-display text-ink-900', sizeClass]}>{title}</Tag>
+  {
+    lead && (
+      <p class:list={['max-w-prose text-body-lg text-ink-500', align === 'center' && 'mx-auto']}>
+        {lead}
+      </p>
+    )
+  }
+</div>

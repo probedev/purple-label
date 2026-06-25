@@ -1,0 +1,35 @@
+---
+/**
+ * StatCard — design.md §5.2. Mono metric number → label eyebrow → one-line caption.
+ * Renders its final value statically (crawler-visible, no-JS safe). When `countTo`
+ * is provided, the Phase 2 motion engine reads the data attributes and tweens 0→value
+ * on scroll-in (§6.2.3).
+ */
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+  /** Final display string, always rendered, e.g. "$1B+" or "6,400,000+". */
+  value: string;
+  label: string;
+  caption?: string;
+  /** Numeric target for the count-up animation. Omit for non-numeric values. */
+  countTo?: number;
+  prefix?: string;
+  suffix?: string;
+  class?: string;
+}
+
+const { value, label, caption, countTo, prefix = '', suffix = '', class: className = '' } =
+  Astro.props;
+
+const countAttrs =
+  countTo != null
+    ? { 'data-countup': String(countTo), 'data-prefix': prefix, 'data-suffix': suffix }
+    : {};
+---
+
+<div class:list={['flex flex-col gap-2', className]}>
+  <span class="font-mono text-stat text-ink-900" {...countAttrs}>{value}</span>
+  <Eyebrow as="span">{label}</Eyebrow>
+  {caption && <p class="text-sm text-ink-400">{caption}</p>}
+</div>
