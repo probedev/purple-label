@@ -1,0 +1,104 @@
+---
+/**
+ * Contact `/contact` — a BOOK-A-MEETING calendar flow, not a form (memory: purplelabel-positioning
+ * locked decision #4). Every site CTA ("Request a demo", "Talk to sales") lands here.
+ *
+ * GO LIVE: set CAL_LINK to your Cal.com link ("username/event-slug", e.g. "purplelabel/intro") —
+ * the inline embed wires itself up. Provider chosen: Cal.com, inline embed, calendar-only (no form,
+ * no email fallback) per Gregg 2026-06-26. The embed height comes from --size-scheduler (tokens.css)
+ * via .cal-embed (global.css). Until CAL_LINK is set, the card shows a gated interim state so nothing
+ * ships as a working calendar that isn't.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Unconfirmed from '../components/marketing/Unconfirmed.astro';
+import { Icon } from 'astro-icon/components';
+
+// ── Set your Cal.com link here to go live (your "username/event-slug") ─────
+const CAL_LINK = '';
+// ──────────────────────────────────────────────────────────────────────────
+
+const expectations = [
+  {
+    icon: 'monitor-play',
+    title: 'See the platform live',
+    body: 'A working walkthrough of intake, visits, e-prescribing, pharmacy, payments, and the developer surface — not slideware.',
+  },
+  {
+    icon: 'code',
+    title: 'Scope your build with an engineer',
+    body: 'Bring your stack and your agents. We map what you’d call, what you’d inherit, and how fast you can go live.',
+  },
+  {
+    icon: 'building-2',
+    title: 'Talk Enterprise, if you need it',
+    body: 'Dedicated silo, per-tenant encryption keys, custom data residency, data portability — and the BAA.',
+  },
+];
+---
+
+<PageLayout
+  title="Book a meeting — see Purple Label MD"
+  description="Book a time to see the platform live and scope your build with an engineer — intake, visits, e-prescribing, pharmacy, payments, and the developer surface. Enterprise: dedicated silo, BYOK, data residency, and the BAA."
+  path="/contact"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Book a meeting</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Let's talk about what you're building.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Pick a time to see the platform live and scope your build with an engineer. No form that
+      disappears into a CRM — just a conversation about what you'd call, what you'd inherit, and how
+      fast you can launch.
+    </p>
+  </Section>
+
+  {/* Booking */}
+  <Section surface="surface" bordered>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-start">
+      {/* What to expect */}
+      <div>
+        <SectionHeader eyebrow="What to expect" title="A working session, not a pitch." />
+        <ul class="mt-8 flex flex-col gap-6">
+          {
+            expectations.map((e) => (
+              <li class="flex gap-4">
+                <Icon name={`lucide:${e.icon}`} class="icon size-6 shrink-0 text-purple-600" />
+                <div>
+                  <p class="font-display text-h4 text-ink-900">{e.title}</p>
+                  <p class="mt-1 text-body text-ink-500">{e.body}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      {/* Scheduler */}
+      <div class="rounded-lg border border-line bg-paper p-8">
+        <p class="font-display text-h3 text-ink-900">Pick a time</p>
+        <p class="mt-2 text-body text-ink-500">
+          Choose a slot that works for you — you'll get a calendar invite with the details.
+        </p>
+        {
+          CAL_LINK ? (
+            <Fragment>
+              <div id="cal-inline" class="cal-embed mt-8" data-cal-link={CAL_LINK} />
+              <script is:inline src="/cal-embed.js" />
+            </Fragment>
+          ) : (
+            <div class="mt-8">
+              <Unconfirmed reason="Cal.com booking link pending from Gregg — set CAL_LINK (your username/event-slug) in contact.astro to go live">
+                Booking calendar is being connected.
+              </Unconfirmed>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </Section>
+</PageLayout>

@@ -1,33 +1,277 @@
 ---
 /**
- * Home — interim landing for the Phase 1 checkpoint. The full homepage (hero timeline,
- * pinned flow, scale strip, etc.) is assembled in Phase 3 from content.md §1.
+ * Home `/` — repositioned homepage from spec/content.md §1 (AI-agent-first positioning),
+ * with Batch-1 facts woven in: the moat (cleared audits), the reconciled care story,
+ * scale-driven drug pricing, and the "3 years in market" proof. Static render; the Phase 2
+ * motion engine layers in the hero timeline, pinned flow, and count-up tweens.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
 import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Button from '../components/primitives/Button.astro';
+import Card from '../components/primitives/Card.astro';
+import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
+
+const modules = [
+  {
+    icon: 'clipboard-list',
+    title: 'Intake',
+    body: 'Agent- and API-first patient intake with identity verification built in. Assemble condition-aware questionnaires from tested components and prompts; your agents run them.',
+    href: '/platform/intake',
+  },
+  {
+    icon: 'stethoscope',
+    title: 'Visits & E-Prescribing',
+    body: 'Synchronous and async telemedicine visits with certified e-prescribing, routed by a real-time, multi-state provider engine.',
+    href: '/platform/visits',
+  },
+  {
+    icon: 'users',
+    title: 'Patient Management',
+    body: 'One longitudinal record, secure messaging, and care coordination across every module.',
+    href: '/platform/patients',
+  },
+  {
+    icon: 'pill',
+    title: 'Pharmacy & Fulfillment',
+    body: 'A nationwide 503A/503B network with lowest-in-class pricing passed straight through to you, shipping to all 50 states.',
+    href: '/platform/pharmacy-fulfillment',
+  },
+  {
+    icon: 'credit-card',
+    title: 'Payments',
+    body: 'Telehealth merchant accounts, subscriptions, and refunds — callable from your stack.',
+    href: '/platform/payments',
+  },
+  {
+    icon: 'trending-up',
+    title: 'Analytics & Growth',
+    body: 'Cohorts, retention, order economics, conversion, and BI as data and endpoints — not locked dashboards.',
+    href: '/platform/analytics',
+  },
+];
+
+const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
 ---
 
 <PageLayout
-  title="Purple Label MD — launch and run your own telemedicine brand"
-  description="The platform to launch and run your own telemedicine brand — branded intake, clinical visits, e-prescribing, nationwide pharmacy fulfillment, and payments on one system."
+  title="Purple Label MD — the telemedicine platform your agents can run"
+  description="A modular, API-first telemedicine stack — intake, visits, e-prescribing, pharmacy, payments, analytics, security — delivered as code. API tokens, agent-ready docs, MCP servers, and a prompt library so your AI agents can build and run a branded virtual-care business on infrastructure that's already cleared HIPAA, pharmacy-board, and payment-processor audits."
   path="/"
 >
+  {/* 1 — Hero */}
   <Section size="lg">
-    <Badge tone="purple" icon="hammer">Phase 1 checkpoint · design system ready</Badge>
-    <Eyebrow class="mt-8">White-label telemedicine platform</Eyebrow>
+    <Eyebrow>Telemedicine infrastructure for the agent era</Eyebrow>
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      Launch your telemedicine brand. Run the whole business on one platform.
+      The telemedicine platform your agents can run.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      The design system and component library are built and verified. The full homepage and pages
-      are assembled next. In the meantime, review the visual contract.
+      Purple Label MD is a modular, API-first telemedicine stack — intake, visits, e-prescribing,
+      pharmacy, payments, analytics, and security — delivered as code, not dashboards. You get API
+      tokens, agent-ready docs, MCP servers, and a customizable prompt library, so your AI agents
+      can stand up a branded virtual-care business, operate it, and extend it — on infrastructure
+      that already runs at scale.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/styleguide">View the styleguide</Button>
-      <Button variant="link-arrow" href="/styleguide">See every component &amp; state</Button>
+      <Button variant="primary" href="/contact">Request a demo</Button>
+      <Button variant="link-arrow" href="/developers">Read the docs</Button>
+    </div>
+    <p class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
+      <span>HIPAA-compliant</span>
+      <span aria-hidden="true">·</span>
+      <span>API-first</span>
+      <span aria-hidden="true">·</span>
+      <span>In market for 3 years</span>
+    </p>
+  </Section>
+
+  {/* 2 — Proof bar */}
+  <Section size="sm" surface="surface" bordered>
+    <p class="mx-auto max-w-prose text-center text-body text-ink-500">
+      The engine that's run a national telehealth operation in production for 3 years — hundreds of
+      thousands of patients, hundreds of millions of prescriptions.
+    </p>
+    <p class="mt-6 text-center text-xs uppercase tracking-eyebrow text-ink-400">
+      Customer logos — added once permitted
+    </p>
+  </Section>
+
+  {/* 3 — The thesis */}
+  <Section>
+    <SectionHeader
+      eyebrow="Why now"
+      title="White label was for the old web. Purple Label is for the agent era."
+      lead="For a decade, launching telehealth meant buying a no-code builder, a separate EMR, a prescribing tool, a pharmacy, and a payment processor — then wiring them together and running it all through a dozen dashboards. In 2026, your team builds with AI agents. So we skip the builders and the dashboards and give you the layer underneath: a modular, code-first platform your agents call directly."
+    />
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Best-of-breed modules, one API, full control. White label made you generic; Purple Label is
+      the tailored, AI-native version — the same pipelines that already scaled, shaped to your
+      brand.
+    </p>
+  </Section>
+
+  {/* 4 — The moat */}
+  <Section surface="sunken" bordered>
+    <SectionHeader
+      eyebrow="The moat"
+      title="Production infrastructure that's already passed the audits."
+      lead="Anyone can generate a telehealth site. Almost no one can pass a state pharmacy-board inspection."
+    />
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Competitors spinning up no-code or AI-generated sites hit a wall the moment they try to ship a
+      prescription across state lines, refund a patient, or pass a state pharmacy-board inspection.
+      We've already paid those costs — you launch on infrastructure that's already cleared HIPAA,
+      pharmacy-board, and payment-processor audits, on a HIPAA-compliant data layer with end-to-end
+      encryption.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-3">
+      {
+        audits.map((a) => (
+          <Badge tone="success" icon="badge-check">
+            {a} — cleared
+          </Badge>
+        ))
+      }
+    </div>
+    <p class="mt-8 max-w-prose text-body-lg text-ink-700">
+      Underneath, a regulated multi-party pipeline is collapsed into a single durable function — it
+      can't double-charge, double-prescribe, or strand a patient mid-flow. Your agents drive it with
+      a few API and MCP calls.
+    </p>
+    <div class="mt-6">
+      <Button variant="link-arrow" href="/architecture">See the architecture</Button>
+    </div>
+  </Section>
+
+  {/* 5 — What you actually get (the product form) */}
+  <Section>
+    <SectionHeader
+      eyebrow="What you actually get"
+      title="Three things turn into a running telemedicine business."
+      lead="The product is code, not a console. Your agents do the assembly; you keep full control."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <Card icon="key" title="API tokens & a programmable surface">
+        Every module — intake, visits, prescribing, pharmacy, payments, analytics — is callable.
+        Scoped tokens, sandbox and production.
+      </Card>
+      <Card icon="terminal" title="Agent-ready docs & MCP servers">
+        Documentation formatted for AI agents to read and act on, plus MCP servers that connect your
+        agents directly to the platform — no glue code.
+      </Card>
+      <Card icon="sparkles" title="A customizable prompt library">
+        Vetted prompts to build, launch, and operate each module, tailored to your brand and your
+        agents.
+      </Card>
+    </div>
+    <p class="mt-8 max-w-prose text-body text-ink-500">
+      With these, your agents stand up the site, manage it, pull reporting, integrate any tool, and
+      customize any component. And where a human must act — a clinician reviewing a visit, an
+      operator handling an exception — there's a focused console. Everything else is yours to
+      assemble in code.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-6">
+      <Button variant="link-arrow" href="/developers">Read the docs</Button>
+      <Button variant="link-arrow" href="/developers">Explore the API</Button>
+    </div>
+  </Section>
+
+  {/* 6 — The modular toolkit */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="The modular toolkit"
+      title="Best-of-breed modules, battle-tested at scale."
+      lead="Adopt the modules you need and call them from your stack. One source of truth for patients, orders, and clinical data."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        modules.map((m) => (
+          <Card icon={m.icon} title={m.title} href={m.href}>
+            {m.body}
+          </Card>
+        ))
+      }
+    </div>
+    <div class="mt-6">
+      <Card icon="shield-check" title="Security & Compliance">
+        A HIPAA-compliant data layer with end-to-end encryption and access governance under every
+        module — behind three cleared audits.
+      </Card>
+    </div>
+  </Section>
+
+  {/* 7 — Why build on Purple Label (the 3 differentiators) */}
+  <Section>
+    <SectionHeader
+      eyebrow="Why build on Purple Label"
+      title="You inherit infrastructure that already scaled."
+      lead="The agent-first product is how you build. These are why teams choose us."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <Card icon="server" title="Proven scale, top-tier security">
+        The same engine behind a national telehealth operation — hundreds of thousands of patients,
+        hundreds of millions of prescriptions — cleared through HIPAA, pharmacy-board, and
+        payment-processor audits.
+      </Card>
+      <Card icon="circle-dollar-sign" title="Lowest-in-class drug pricing">
+        We pass our huge-volume Rx discounts straight through to you with no markup — keep the
+        margin, or pass the savings to patients.
+      </Card>
+      <Card icon="headset" title="World-class, US-based care">
+        AI-first support resolves routine volume instantly; complex and clinical issues escalate to
+        US-based human experts.
+      </Card>
+    </div>
+  </Section>
+
+  {/* 8 — Scale strip */}
+  <Section surface="surface" bordered>
+    <div class="grid gap-8 sm:grid-cols-3">
+      <StatCard
+        value="Hundreds of thousands"
+        label="Patients managed"
+        caption="On the engine you inherit"
+      />
+      <StatCard
+        value="Hundreds of millions"
+        label="Prescriptions processed"
+        caption="Through the platform"
+      />
+      <StatCard value="3 years" label="In market" caption="Production, at national scale" />
+    </div>
+  </Section>
+
+  {/* 9 — Security & Developers teasers */}
+  <Section surface="sunken" bordered>
+    <div class="grid gap-6 md:grid-cols-2">
+      <Card icon="shield-check" title="Built for PHI from day one" href="/security">
+        A HIPAA-compliant data layer with end-to-end encryption, MFA, and granular access control —
+        the controls behind three cleared audits.
+      </Card>
+      <Card icon="code" title="Everything is programmable" href="/developers">
+        Point your agents at our API, MCP servers, agent-ready docs, and prompt library and build
+        the rest.
+      </Card>
+    </div>
+  </Section>
+
+  {/* 10 — Customer proof */}
+  <Section size="sm">
+    <p class="text-center text-body text-ink-400">Customer stories coming soon.</p>
+  </Section>
+
+  {/* 11 — Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Build telemedicine your agents can run — on infrastructure that's already proven."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Request a demo</Button>
+      <Button variant="secondary" href="/developers">Read the docs</Button>
     </div>
   </Section>
 </PageLayout>

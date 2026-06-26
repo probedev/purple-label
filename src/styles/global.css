@@ -258,4 +258,11 @@
   .prose li + li {
     margin-top: var(--space-2);
   }
+  /* Inline Cal.com scheduler embed container (src/pages/contact.astro). */
+  .cal-embed {
+    width: 100%;
+    min-height: var(--size-scheduler);
+    overflow: hidden;
+    border-radius: var(--radius-md);
+  }
 }

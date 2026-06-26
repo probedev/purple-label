@@ -1,0 +1,139 @@
+---
+/**
+ * Visits & E-Prescribing `/platform/visits` (sitemap.md §4, content.md §4).
+ * The clinical encounter as API/agent-drivable infrastructure: sync + async visits, Surescripts
+ * e-prescribing, our own 50-state-licensed network OR bring-your-own-providers, provider routing.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+import Unconfirmed from '../../components/marketing/Unconfirmed.astro';
+
+const features = [
+  {
+    icon: 'video',
+    title: 'Synchronous & async visits',
+    body: 'Run video visits and store-and-forward async care on the same infrastructure — driven by your stack, not locked in a clinician app.',
+  },
+  {
+    icon: 'route',
+    title: 'Real-time provider routing',
+    body: 'A real-time, multi-state, multi-therapy routing engine matches each patient to an available, appropriately licensed provider.',
+  },
+  {
+    icon: 'users',
+    title: 'Your providers or ours',
+    body: 'Activate our own clinical network licensed across all 50 states, or bring your own providers — or both.',
+  },
+  {
+    icon: 'file-text',
+    title: 'Certified e-prescribing',
+    body: 'Send prescriptions electronically through Surescripts — certified, and connected to the nationwide pharmacy network.',
+    note: 'Controlled-substance e-prescribing (EPCS) is supported where clinically appropriate and permitted by state and federal law.',
+  },
+  {
+    icon: 'clipboard-list',
+    title: 'A complete record',
+    body: 'Every visit, decision, and order flows into Patient Management as one longitudinal record.',
+  },
+  {
+    icon: 'code',
+    title: 'Callable by your agents',
+    body: 'Create visits, fetch status, and act on outcomes through the API — your agents drive the workflow.',
+  },
+];
+
+const visitSample = `POST /v1/visits
+{
+  "patient_id": "pat_77a1...",
+  "type": "async",
+  "provider_pool": "our-network"
+}
+
+201 Created
+{ "visit_id": "vst_3p9d...", "status": "pending-review" }`;
+---
+
+<PageLayout
+  title="Visits & E-Prescribing — telemedicine visits callable from your stack"
+  description="Synchronous and async telemedicine visits with certified e-prescribing via Surescripts, real-time multi-state provider routing, and your own 50-state-licensed network or bring-your-own-providers — all driven by the API."
+  path="/platform/visits"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Visits & E-Prescribing</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Telemedicine visits and prescribing, callable from your stack.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Run synchronous and asynchronous visits and send prescriptions electronically through
+      Surescripts — with a complete record behind every decision and an API your agents can drive.
+      Use our own clinical network licensed across all 50 states, or bring your own providers.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="link-arrow" href="/developers">Read the docs</Button>
+    </div>
+  </Section>
+
+  {/* Features */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="What's inside"
+      title="The clinical encounter, as infrastructure."
+      lead="Everything a visit needs — providers, routing, prescribing, records — exposed as API instead of a closed application."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((f) => (
+          <Card icon={f.icon} title={f.title}>
+            {f.body}
+            {f.note && (
+              <span class="mt-2 block text-ink-500">
+                <Unconfirmed reason="EPCS / controlled-substance prescribing — confirm certification & exact wording with counsel">
+                  {f.note}
+                </Unconfirmed>
+              </span>
+            )}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Code sample */}
+  <Section>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <SectionHeader
+          eyebrow="Driven by your agents"
+          title="Create a visit in one call."
+          lead="Route to our network or your own, sync or async — your agent decides, the platform executes."
+        />
+      </div>
+      <div>
+        <pre
+          class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{visitSample}</code></pre>
+        <p class="mt-3 text-sm text-ink-400">
+          Illustrative — the live API surface is published in the docs.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Run visits and prescribing on proven infrastructure."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="secondary" href="/developers">Read the docs</Button>
+    </div>
+  </Section>
+</PageLayout>

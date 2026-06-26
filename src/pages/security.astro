@@ -1,0 +1,138 @@
+---
+/**
+ * Security & Compliance `/security` — the trust page (sitemap.md §9, content.md §9).
+ * Carries differentiator #1 for the non-technical compliance/legal buyer: human-legible,
+ * not API-jargon. Attestations pulled from lib/nav TRUST_BADGES (HIPAA/LegitScript/Surescripts
+ * confirmed; SOC 2 shown as in-progress).
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Card from '../components/primitives/Card.astro';
+import Badge from '../components/primitives/Badge.astro';
+import { TRUST_BADGES } from '../lib/nav';
+
+const pillars = [
+  {
+    icon: 'lock',
+    title: 'Encryption everywhere',
+    body: 'A HIPAA-compliant data layer with end-to-end encryption — protected health information is encrypted in transit and at rest as a foundational control.',
+  },
+  {
+    icon: 'key-round',
+    title: 'Access control & MFA',
+    body: 'Multi-factor authentication and granular, role-based access — every action happens in a controlled, least-privilege environment.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'HIPAA & PHI handling',
+    body: 'HIPAA-compliant infrastructure, with PHI handling and patient-rights controls built in. We sign Business Associate Agreements with every customer.',
+  },
+  {
+    icon: 'refresh-cw',
+    title: 'Continuous compliance',
+    body: 'Controls are monitored and kept in force continuously — not just at audit time.',
+  },
+  {
+    icon: 'fingerprint',
+    title: 'Identity & device management',
+    body: 'Identity verification and device controls govern who and what can reach the platform.',
+  },
+  {
+    icon: 'database',
+    title: 'Data ownership & governance',
+    body: 'Clear data ownership and information governance — your data stays yours, with a documented chain of custody.',
+  },
+];
+---
+
+<PageLayout
+  title="Security & Compliance — enterprise-grade protection for PHI"
+  description="HIPAA-compliant infrastructure with end-to-end encryption, MFA, and access governance — behind cleared HIPAA, pharmacy-board, and payment-processor audits. LegitScript certified, Surescripts connected, SOC 2 in progress. We sign BAAs."
+  path="/security"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Security & Compliance</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Enterprise-grade protection for protected health information.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Security governance, risk management, and continuous compliance are built into the platform —
+      the same controls behind a national telehealth operation, on HIPAA-compliant infrastructure.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-3">
+      {
+        TRUST_BADGES.map((b) =>
+          b.status === 'confirmed' ? (
+            <Badge tone="success" icon="badge-check">
+              {b.label}
+            </Badge>
+          ) : (
+            <Badge tone="neutral">{b.label} — in progress</Badge>
+          ),
+        )
+      }
+    </div>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="link-arrow" href="/platform">See the platform</Button>
+    </div>
+  </Section>
+
+  {/* Trust pillars */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="The controls"
+      title="Protection built in at every layer."
+      lead="The controls your compliance, clinical, and legal teams will ask about — already in place."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        pillars.map((p) => (
+          <Card icon={p.icon} title={p.title}>
+            {p.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* The audits */}
+  <Section>
+    <SectionHeader
+      eyebrow="The proof"
+      title="We've already passed the audits."
+      lead="New partners launch on infrastructure that's already cleared the inspections most telehealth projects never survive."
+    />
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Competitors spinning up no-code or AI-generated sites hit a wall the moment they try to ship a
+      prescription across state lines, refund a patient, or pass a state pharmacy-board inspection.
+      We've already paid those costs.
+    </p>
+    <div class="mt-8 grid gap-6 md:grid-cols-3">
+      <Card icon="badge-check" title="HIPAA audit"> HIPAA-compliant infrastructure, cleared. </Card>
+      <Card icon="badge-check" title="Pharmacy-board audit">
+        State board of pharmacy licensure and inspection, cleared.
+      </Card>
+      <Card icon="badge-check" title="Payment-processor audit">
+        Healthcare-commerce payment processing, cleared.
+      </Card>
+    </div>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Talk to us"
+      title="Bring your compliance team. We'll bring the documentation."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="secondary" href="/platform">Explore the platform</Button>
+    </div>
+  </Section>
+</PageLayout>

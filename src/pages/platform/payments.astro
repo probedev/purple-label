@@ -1,0 +1,140 @@
+---
+/**
+ * Payments `/platform/payments` (sitemap.md §4, content.md). Telehealth merchant accounts,
+ * subscriptions, refunds — on each client's own merchant. Back-references /architecture
+ * (refunds = the saga's compensation path; client-side tokenization → SAQ-A). The PCI/SAQ-A claim is
+ * counsel-gated via <Unconfirmed>. Processing rates live on /pricing.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+import Unconfirmed from '../../components/marketing/Unconfirmed.astro';
+
+const features = [
+  {
+    icon: 'credit-card',
+    title: 'Telehealth-ready merchant accounts',
+    body: 'Payment setup built for virtual care, on each client’s own merchant account — your payments, your margin.',
+  },
+  {
+    icon: 'repeat',
+    title: 'Subscriptions & rebills',
+    body: 'Recurring therapy billing with dunning and retries, so refills bill themselves and revenue doesn’t leak.',
+  },
+  {
+    icon: 'rotate-ccw',
+    title: 'Refunds & adjustments',
+    body: 'Issue refunds programmatically — wired to the order saga’s compensation path, so a refund and a cancelled order can’t drift apart.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Card data never touches us',
+    note: 'Client-side tokenization keeps cardholder data off our systems — SAQ-A scope, not full PCI-DSS.',
+  },
+  {
+    icon: 'building-2',
+    title: 'Your merchant, your margin',
+    body: 'Payments run through your own merchant account — no platform middleman taking a cut of every charge.',
+  },
+  {
+    icon: 'code',
+    title: 'Callable by your agents',
+    body: 'Create charges and subscriptions, issue refunds, and react to payment.captured events through the API.',
+  },
+];
+
+const paymentSample = `POST /v1/subscriptions
+{
+  "patient_id": "pat_77a1...",
+  "plan": "monthly-therapy",
+  "payment_token": "tok_live_..."
+}
+
+201 Created
+{ "subscription_id": "sub_9k4d...", "status": "active" }`;
+---
+
+<PageLayout
+  title="Payments — telehealth billing on your own merchant"
+  description="Telehealth-ready merchant accounts, subscriptions and rebills, programmatic refunds wired to the order saga, and client-side tokenization that keeps cardholder data off our systems — all driven by the API."
+  path="/platform/payments"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Payments</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Telehealth payments, on your own merchant.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Charge, subscribe, and refund through your own merchant account — with billing built for
+      recurring therapy and refunds tied to the order saga so money and fulfillment never drift
+      apart. Cardholder data is tokenized client-side and never touches our systems.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="link-arrow" href="/pricing">See pricing</Button>
+    </div>
+  </Section>
+
+  {/* Features */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="What's inside"
+      title="Billing that keeps up with care."
+      lead="Merchant accounts, subscriptions, refunds, and minimized PCI scope — exposed as API."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((f) => (
+          <Card icon={f.icon} title={f.title}>
+            {f.body}
+            {f.note && (
+              <Unconfirmed reason="PCI scope (SAQ-A) & tokenization wording — confirm with counsel before launch">
+                {f.note}
+              </Unconfirmed>
+            )}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Architecture back-reference */}
+  <Section>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <SectionHeader
+          eyebrow="How it fits"
+          title="A refund is just the saga, run backwards."
+          lead="Payments aren’t a standalone integration — charges and refunds are steps in the durable order workflow. When an order can’t be completed, the saga’s compensation path reverses the charge automatically. Idempotency keys mean a retried charge is a no-op: at-most-once billing."
+        />
+        <div class="mt-6">
+          <Button variant="link-arrow" href="/architecture">See the architecture</Button>
+        </div>
+      </div>
+      <div>
+        <pre
+          class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{paymentSample}</code></pre>
+        <p class="mt-3 text-sm text-ink-400">
+          Illustrative — the live API surface is published in the docs.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Bill for care on infrastructure that can't double-charge."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="secondary" href="/pricing">See pricing</Button>
+    </div>
+  </Section>
+</PageLayout>

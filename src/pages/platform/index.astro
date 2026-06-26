@@ -1,0 +1,156 @@
+---
+/**
+ * Platform `/platform` — the modular toolkit overview (sitemap.md §2, content.md §2).
+ * Summarizes all seven modules with deep-links, plus the agent/Developers spine and the
+ * inherit-our-scale section.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+import StatCard from '../../components/primitives/StatCard.astro';
+
+const modules = [
+  {
+    icon: 'clipboard-list',
+    title: 'Intake',
+    body: 'Agent- and API-first patient intake with identity verification built in. Assemble condition-aware questionnaires from tested components and prompts.',
+    href: '/platform/intake',
+  },
+  {
+    icon: 'stethoscope',
+    title: 'Visits & E-Prescribing',
+    body: 'Synchronous and async telemedicine visits with certified e-prescribing, routed by a real-time, multi-state provider engine.',
+    href: '/platform/visits',
+  },
+  {
+    icon: 'users',
+    title: 'Patient Management',
+    body: 'One longitudinal record, secure messaging, and care coordination — available as API and events.',
+    href: '/platform/patients',
+  },
+  {
+    icon: 'pill',
+    title: 'Pharmacy & Fulfillment',
+    body: 'A nationwide 503A/503B network with lowest-in-class pricing passed straight through to you, shipping to all 50 states.',
+    href: '/platform/pharmacy-fulfillment',
+  },
+  {
+    icon: 'credit-card',
+    title: 'Payments',
+    body: 'Telehealth merchant accounts, subscriptions, and refunds — callable from your stack.',
+    href: '/platform/payments',
+  },
+  {
+    icon: 'trending-up',
+    title: 'Analytics & Growth',
+    body: 'Cohorts, retention, order economics, conversion, and BI as data and endpoints — not locked dashboards.',
+    href: '/platform/analytics',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Security & Compliance',
+    body: 'A HIPAA-compliant data layer with end-to-end encryption and access governance under every module — behind three cleared audits.',
+    href: '/security',
+  },
+];
+---
+
+<PageLayout
+  title="Platform — one modular toolkit for the entire telemedicine business"
+  description="Purple Label MD is modular by design and programmable end to end: intake, visits, e-prescribing, patient management, pharmacy, payments, analytics, and security — one source of truth, one API for your agents."
+  path="/platform"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>The platform</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      One modular toolkit for the entire telemedicine business.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Purple Label MD is modular by design and programmable end to end. Adopt the modules you need,
+      call them from your stack, and run the whole intake-to-delivery engine — with one source of
+      truth for patients, orders, and clinical data, and one API for your agents.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Request a demo</Button>
+      <Button variant="link-arrow" href="/developers">Read the docs</Button>
+    </div>
+  </Section>
+
+  {/* Modular, not monolithic */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="Modular, not monolithic"
+      title="Every module is callable. Adopt one, or run the whole engine."
+      lead="Start with Intake alone, or run intake → visit → e-prescribe → fulfill → deliver as one system. Shared identity, data, and compliance across all of it — no integration tax between your own modules."
+    />
+  </Section>
+
+  {/* The modules */}
+  <Section>
+    <SectionHeader
+      eyebrow="The modules"
+      title="Best-of-breed, battle-tested at scale."
+      lead="Each module is production infrastructure that already runs a national telehealth operation."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        modules.map((m) => (
+          <Card icon={m.icon} title={m.title} href={m.href}>
+            {m.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* The agent spine */}
+  <Section surface="sunken" bordered>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <SectionHeader
+          eyebrow="The agent spine"
+          title="This is how you build on it."
+          lead="Every module is exposed through one programmable surface: API tokens, agent-ready docs, MCP servers, and a customizable prompt library. Your agents do the assembly; you keep full control."
+        />
+        <div class="mt-8">
+          <Button variant="primary" href="/developers">Explore the developer surface</Button>
+        </div>
+      </div>
+      <Card icon="code" title="One API for your agents">
+        Point your agents at the platform and let them stand up, operate, and extend each module —
+        with a focused console where a human must act.
+      </Card>
+    </div>
+  </Section>
+
+  {/* Inherit our scale */}
+  <Section>
+    <SectionHeader
+      eyebrow="Inherit our scale"
+      title="The same architecture that's run in production for 3 years."
+      lead="You build on infrastructure that already operates at national scale and has cleared HIPAA, pharmacy-board, and payment-processor audits."
+    />
+    <div class="mt-12 grid gap-8 sm:grid-cols-3">
+      <StatCard value="Hundreds of thousands" label="Patients managed" />
+      <StatCard value="Hundreds of millions" label="Prescriptions processed" />
+      <StatCard value="3 years" label="In market" />
+    </div>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Build telemedicine your agents can run."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Request a demo</Button>
+      <Button variant="secondary" href="/developers">Read the docs</Button>
+    </div>
+  </Section>
+</PageLayout>

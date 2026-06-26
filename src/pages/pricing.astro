@@ -1,0 +1,223 @@
+---
+/**
+ * Pricing `/pricing` — the two-tier spine (memory: purplelabel-plans). Platform (multi-tenant) vs
+ * Enterprise (dedicated). AXIS = data sovereignty & control, NOT security level: both tiers share
+ * the same audited floor (security-parity banner makes this explicit). Enterprise GA features
+ * (silo, BYOK, residency, bulk export) are real per Gregg 2026-06-26. Dollar figures are still open
+ * (Batch 4 grill) — page leads with "talk to sales for pricing", no invented numbers.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Badge from '../components/primitives/Badge.astro';
+import { Icon } from 'astro-icon/components';
+
+const tiers = [
+  {
+    name: 'Platform',
+    badge: 'Multi-tenant',
+    tagline: 'The full platform, multi-tenant.',
+    audience: 'For teams building agent-run telemedicine.',
+    points: [
+      'Every module — intake, visits, e-prescribing, pharmacy, payments, analytics',
+      'Developer docs, API, MCP servers, and the prompt library',
+      'The durable order pipeline, built and operated for you',
+      'HIPAA-compliant, encrypted infrastructure — behind the same cleared audits',
+      'Our scale, and pass-through Rx pricing with no markup',
+    ],
+    start: 'Self-serve a sandbox and API keys today; sign a BAA and onboard to go live.',
+    primary: { label: 'Start building', href: '/developers' },
+    secondary: { label: 'Talk to sales', href: '/contact' },
+    featured: false,
+  },
+  {
+    name: 'Enterprise',
+    badge: 'Dedicated',
+    tagline: 'Everything in Platform, on dedicated infrastructure.',
+    audience: 'For organizations with sovereignty, compliance, or residency requirements.',
+    points: [
+      'Dedicated data silo — single-tenant deployment',
+      'Per-tenant encryption keys (BYOK)',
+      'Custom data residency',
+      'On-demand data export & portability',
+      'Everything in Platform, on the same audited foundation',
+    ],
+    start: 'Scoped to your compliance and procurement requirements.',
+    primary: { label: 'Talk to sales', href: '/contact' },
+    secondary: null,
+    featured: true,
+  },
+];
+
+const matrix = [
+  { label: 'Every platform module', platform: true, enterprise: true },
+  { label: 'Developer docs, API, MCP, prompt library', platform: true, enterprise: true },
+  { label: 'HIPAA-compliant, encrypted, audited foundation', platform: true, enterprise: true },
+  { label: 'Row-level tenant isolation', platform: true, enterprise: true },
+  { label: 'We sign a Business Associate Agreement', platform: true, enterprise: true },
+  { label: 'Pass-through Rx pricing, no markup', platform: true, enterprise: true },
+  { label: 'Dedicated data silo (single-tenant)', platform: false, enterprise: true },
+  { label: 'Per-tenant encryption keys (BYOK)', platform: false, enterprise: true },
+  { label: 'Custom data residency', platform: false, enterprise: true },
+  { label: 'Bulk data export & portability', platform: false, enterprise: true },
+];
+---
+
+<PageLayout
+  title="Pricing — Platform and Enterprise plans"
+  description="Two ways to build on Purple Label MD. Platform: the full multi-tenant telemedicine stack with developer docs, API, MCP, and pass-through Rx pricing. Enterprise: a dedicated data silo, per-tenant encryption keys, custom data residency, and data portability — on the same audited security foundation."
+  path="/pricing"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Plans</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Two ways to build on Purple Label.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Start on the multi-tenant Platform with the full toolkit your agents need, or run on dedicated
+      Enterprise infrastructure with your own keys and data residency. Both ride the same proven
+      pipeline — and the same cleared audits.
+    </p>
+  </Section>
+
+  {/* Security-parity banner — kills the "shared = less secure" trap */}
+  <Section size="sm" surface="sunken" bordered>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <Icon name="lucide:shield-check" class="icon size-6 shrink-0 text-success" />
+      <div>
+        <p class="font-display text-h4 text-ink-900">Same security floor, both tiers.</p>
+        <p class="mt-2 max-w-prose text-body text-ink-500">
+          Enterprise isn't more secure — it's more sovereign. Every tenant gets HIPAA-compliant,
+          end-to-end-encrypted infrastructure with row-level isolation, behind the same cleared
+          HIPAA, pharmacy-board, and payment-processor audits. Enterprise adds dedicated
+          infrastructure, your own encryption keys, and your choice of data residency.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  {/* Tier cards */}
+  <Section>
+    <div class="grid gap-6 lg:grid-cols-2">
+      {
+        tiers.map((t) => (
+          <div
+            class:list={[
+              'flex flex-col rounded-lg border bg-surface p-8',
+              t.featured ? 'border-purple-300' : 'border-line',
+            ]}
+          >
+            <div class="flex items-center gap-3">
+              <h2 class="font-display text-h3 text-ink-900">{t.name}</h2>
+              <Badge tone={t.featured ? 'purple' : 'neutral'}>{t.badge}</Badge>
+            </div>
+            <p class="mt-3 text-body-lg text-ink-700">{t.tagline}</p>
+            <p class="mt-1 text-sm text-ink-400">{t.audience}</p>
+            <ul class="mt-6 flex flex-col gap-3">
+              {t.points.map((p) => (
+                <li class="flex gap-3">
+                  <Icon name="lucide:check" class="icon size-5 shrink-0 text-success" />
+                  <span class="text-body text-ink-700">{p}</span>
+                </li>
+              ))}
+            </ul>
+            <p class="mt-6 text-sm text-ink-500">{t.start}</p>
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+              <Button variant="primary" href={t.primary.href}>
+                {t.primary.label}
+              </Button>
+              {t.secondary && (
+                <Button variant="link-arrow" href={t.secondary.href}>
+                  {t.secondary.label}
+                </Button>
+              )}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-8 text-center text-sm text-ink-400">
+      Pricing is tailored to your volume and requirements — talk to sales for a quote.
+    </p>
+  </Section>
+
+  {/* Comparison matrix */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="Compare"
+      title="What's in each plan."
+      lead="Everything on the Platform is in Enterprise too — Enterprise adds sovereignty and control."
+    />
+    <div class="mt-12 overflow-x-auto">
+      <table class="w-full border-collapse text-left">
+        <thead>
+          <tr class="border-b border-line">
+            <th scope="col" class="py-4 pr-4 font-display text-sm font-semibold text-ink-900"
+              >Capability</th
+            >
+            <th
+              scope="col"
+              class="px-4 py-4 text-center font-display text-sm font-semibold text-ink-900"
+              >Platform</th
+            >
+            <th
+              scope="col"
+              class="px-4 py-4 text-center font-display text-sm font-semibold text-ink-900"
+              >Enterprise</th
+            >
+          </tr>
+        </thead>
+        <tbody>
+          {
+            matrix.map((row) => (
+              <tr class="border-b border-line">
+                <th scope="row" class="py-4 pr-4 text-body font-normal text-ink-700">
+                  {row.label}
+                </th>
+                <td class="px-4 py-4 text-center">
+                  {row.platform ? (
+                    <Icon name="lucide:check" class="icon mx-auto size-5 text-success" />
+                  ) : (
+                    <span class="text-ink-300">—</span>
+                  )}
+                  <span class="sr-only">{row.platform ? 'Included' : 'Not included'}</span>
+                </td>
+                <td class="px-4 py-4 text-center">
+                  {row.enterprise ? (
+                    <Icon name="lucide:check" class="icon mx-auto size-5 text-success" />
+                  ) : (
+                    <span class="text-ink-300">—</span>
+                  )}
+                  <span class="sr-only">{row.enterprise ? 'Included' : 'Not included'}</span>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-8 max-w-prose text-body text-ink-500">
+      Same architecture powers both — pooled with row-level isolation, or a dedicated silo with your
+      own keys and residency.
+    </p>
+    <div class="mt-4">
+      <Button variant="link-arrow" href="/architecture">See the architecture</Button>
+    </div>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Build on the Platform, or scale on a dedicated silo."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/developers">Start building</Button>
+      <Button variant="secondary" href="/contact">Talk to sales</Button>
+    </div>
+  </Section>
+</PageLayout>

@@ -1,0 +1,135 @@
+---
+/**
+ * Pharmacy & Fulfillment `/platform/pharmacy-fulfillment` (sitemap.md §4, content.md).
+ * Nationwide 503A/503B network, lowest-in-class pricing passed through with NO markup
+ * ([[purplelabel-differentiators]] #2), 50-state shipping, dispense/shipment events. Back-references
+ * /architecture (anti-corruption adapters → swap partners without re-integrating). Pricing specifics
+ * live on /pricing.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+
+const features = [
+  {
+    icon: 'pill',
+    title: 'Nationwide 503A/503B network',
+    body: 'Retail, mail-order, and compounding fulfillment across a vetted national network — one integration, many pharmacies.',
+  },
+  {
+    icon: 'circle-dollar-sign',
+    title: 'Lowest-in-class pricing, passed through',
+    body: 'Our huge-volume Rx discounts pass straight through to you with no markup — keep the margin, or pass the savings to patients.',
+  },
+  {
+    icon: 'truck',
+    title: 'Ships to all 50 states',
+    body: 'Dispense and delivery nationwide, with dispense status and shipment tracking surfaced to your stack as events.',
+  },
+  {
+    icon: 'route',
+    title: 'Routed by state, therapy & cost',
+    body: 'Routing rules pick the right pharmacy for each order automatically — by the patient’s state, the therapy, and price.',
+  },
+  {
+    icon: 'replace',
+    title: 'Swap pharmacies without re-integrating',
+    body: 'Each partner sits behind an adapter that normalizes it to our model, so changing or adding a pharmacy never ripples into your code.',
+  },
+  {
+    icon: 'code',
+    title: 'Callable by your agents',
+    body: 'Create fulfillments, fetch dispense status, and react to shipment.updated events through the API.',
+  },
+];
+
+const fulfillmentSample = `POST /v1/fulfillments
+{
+  "prescription_id": "rx_a91f...",
+  "ship_to": "patient",
+  "routing": "lowest-cost"
+}
+
+201 Created
+{ "fulfillment_id": "ful_5x2k...", "status": "queued" }`;
+---
+
+<PageLayout
+  title="Pharmacy & Fulfillment — a nationwide network, callable from your stack"
+  description="A nationwide 503A/503B pharmacy network with lowest-in-class pricing passed straight through with no markup, shipping to all 50 states, cost-aware routing, and dispense and shipment events — driven by the API."
+  path="/platform/pharmacy-fulfillment"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Pharmacy & Fulfillment</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      A nationwide pharmacy network, callable from your stack.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Dispense and ship to all 50 states across a vetted 503A/503B network — with our high-volume Rx
+      pricing passed straight through to you, cost-aware routing, and shipment tracking as events.
+      One integration, many pharmacies, swappable without touching your code.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="link-arrow" href="/pricing">See pricing</Button>
+    </div>
+  </Section>
+
+  {/* Features */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="What's inside"
+      title="Fulfillment as infrastructure, not a single vendor lock-in."
+      lead="A network you route across, priced at our scale and passed through — exposed as API."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((f) => (
+          <Card icon={f.icon} title={f.title}>
+            {f.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Architecture back-reference */}
+  <Section>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <SectionHeader
+          eyebrow="How it fits"
+          title="Modular pharmacies, behind one model."
+          lead="A routing service selects the partner; an anti-corruption adapter normalizes each one's API and webhooks to our canonical model. Add or swap a pharmacy and nothing changes upstream — that's how the network stays modular without lock-in."
+        />
+        <div class="mt-6">
+          <Button variant="link-arrow" href="/architecture">See the architecture</Button>
+        </div>
+      </div>
+      <div>
+        <pre
+          class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{fulfillmentSample}</code></pre>
+        <p class="mt-3 text-sm text-ink-400">
+          Illustrative — the live API surface is published in the docs.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Fill prescriptions at our scale — and our pricing."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="secondary" href="/pricing">See pricing</Button>
+    </div>
+  </Section>
+</PageLayout>

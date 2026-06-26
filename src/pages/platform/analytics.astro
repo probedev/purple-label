@@ -1,0 +1,130 @@
+---
+/**
+ * Analytics & Growth `/platform/analytics` (sitemap.md §4, content.md). BI as data + endpoints, not
+ * locked dashboards; CQRS read models served to agents over MCP. Back-references /architecture
+ * (event backbone → CQRS read models) and /developers (MCP).
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+
+const features = [
+  {
+    icon: 'trending-up',
+    title: 'Cohorts & retention',
+    body: 'Patient cohorts, retention curves, and lifetime value computed straight from the event stream.',
+  },
+  {
+    icon: 'coins',
+    title: 'Order economics',
+    body: 'Revenue, refunds, drug cost, and margin per order and per therapy — the numbers that decide what to scale.',
+  },
+  {
+    icon: 'filter',
+    title: 'Conversion & funnels',
+    body: 'Intake-to-order conversion across every step, so you can see exactly where patients drop and why.',
+  },
+  {
+    icon: 'database',
+    title: 'Data, not dashboards',
+    body: 'Reach every metric as an API endpoint, a warehouse table, or an MCP query — no locked BI console deciding what you’re allowed to ask.',
+  },
+  {
+    icon: 'brain',
+    title: 'Served to your agents over MCP',
+    body: 'Your agents query the whole patient lifecycle over MCP — reporting, cohorts, and economics without ever touching a database.',
+  },
+  {
+    icon: 'code',
+    title: 'Callable by your agents',
+    body: 'Pull any metric programmatically and pipe it into your own tools, models, and growth loops.',
+  },
+];
+
+const analyticsSample = `POST /v1/metrics/query
+{
+  "metric": "net_revenue",
+  "group_by": "therapy",
+  "window": "last_90d"
+}
+
+200 OK
+{ "rows": [ { "therapy": "...", "value": ... } ] }`;
+---
+
+<PageLayout
+  title="Analytics & Growth — your data, as data"
+  description="Cohorts, retention, order economics, and conversion as queryable data and API endpoints — and served to your agents over MCP. Not a locked dashboard: reach every metric programmatically."
+  path="/platform/analytics"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Analytics & Growth</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Your data, as data — not a locked dashboard.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Cohorts, retention, order economics, and conversion — computed from the event stream and
+      reached however you work: as API endpoints, as warehouse tables, or as MCP queries your agents
+      run directly. The platform reports on itself; you decide what to ask.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="link-arrow" href="/developers">Read the docs</Button>
+    </div>
+  </Section>
+
+  {/* Features */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="What's inside"
+      title="The metrics that grow a virtual-care business."
+      lead="Retention, economics, and conversion — as data you query, not charts you’re handed."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((f) => (
+          <Card icon={f.icon} title={f.title}>
+            {f.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Architecture back-reference */}
+  <Section>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <SectionHeader
+          eyebrow="How it fits"
+          title="Read models, projected from every event."
+          lead="Analytics is the CQRS read side of the event backbone: domain events project into read models and a warehouse, and the same layer answers your agents’ MCP read queries. Because it’s built from the event log, the numbers reconcile with the system of record by construction."
+        />
+        <div class="mt-6 flex flex-wrap items-center gap-6">
+          <Button variant="link-arrow" href="/architecture">See the architecture</Button>
+          <Button variant="link-arrow" href="/developers#mcp-servers">Explore MCP</Button>
+        </div>
+      </div>
+      <div>
+        <pre
+          class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{analyticsSample}</code></pre>
+        <p class="mt-3 text-sm text-ink-400">
+          Illustrative — the live API surface is published in the docs.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader align="center" eyebrow="Get started" title="Point your agents at the numbers." />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="secondary" href="/developers">Read the docs</Button>
+    </div>
+  </Section>
+</PageLayout>

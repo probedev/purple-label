@@ -6,7 +6,6 @@
  */
 import Container from './Container.astro';
 import Logo from './Logo.astro';
-import Unconfirmed from '../marketing/Unconfirmed.astro';
 import { FOOTER_COLUMNS, TRUST_BADGES } from '../../lib/nav';
 import { SITE } from '../../lib/seo';
 
@@ -52,10 +51,11 @@ const year = 2026; // build-time constant; bump in CI if desired
       <ul class="flex flex-wrap items-center gap-x-6 gap-y-3">
         {
           TRUST_BADGES.map((badge) => (
-            <li>
-              <Unconfirmed reason={`Confirm ${badge} attestation/certification before display`}>
-                <span class="text-sm font-semibold text-dark-fg">{badge}</span>
-              </Unconfirmed>
+            <li class="text-sm font-semibold text-dark-fg">
+              {badge.label}
+              {badge.status === 'in-progress' && (
+                <span class="ml-1 font-normal text-dark-fg-muted">(in progress)</span>
+              )}
             </li>
           ))
         }

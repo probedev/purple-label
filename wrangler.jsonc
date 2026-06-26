@@ -1,0 +1,12 @@
+{
+  // Cloudflare Workers — static-assets deploy of the Astro build output (dist/).
+  // Used by `npx wrangler deploy` in Cloudflare Workers Builds. No `main` worker
+  // script: this is an assets-only Worker (pure static site). `name` becomes the
+  // Worker name and the *.workers.dev subdomain; attach purplelabelmd.com as a
+  // custom domain in the Cloudflare dashboard once content is launch-ready.
+  "name": "purplelabelmd",
+  "compatibility_date": "2026-06-26",
+  "assets": {
+    "directory": "./dist",
+  },
+}

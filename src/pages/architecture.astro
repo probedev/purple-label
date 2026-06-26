@@ -1,0 +1,449 @@
+---
+/**
+ * Architecture `/architecture` — the build-vs-buy "glimpse under the hood" for enterprise devs
+ * (memory: purplelabel-architecture). Patterns-first / "diluted": no infra vendor names (pending
+ * Gregg's reveal-depth decision). Sequence: why it's hard → the order saga → event backbone →
+ * why this stack → CTA. Every section closes the loop: complexity → we operate it → you drive it
+ * via API + MCP. Static-but-animatable (Phase 2 can sweep the flows). Compliance specifics gated.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Card from '../components/primitives/Card.astro';
+import Unconfirmed from '../components/marketing/Unconfirmed.astro';
+import { Icon } from 'astro-icon/components';
+
+const pipeline = [
+  {
+    n: '01',
+    title: 'Qualify',
+    patient: 'A patient answers a medical intake to see if they’re eligible.',
+    behind: 'Clinical eligibility rules, per medication and per state.',
+  },
+  {
+    n: '02',
+    title: 'Pay',
+    patient: 'They check out for their therapy or subscription.',
+    behind: 'Tokenized payments through each client’s own merchant — we hold no card data.',
+  },
+  {
+    n: '03',
+    title: 'See a doctor',
+    patient: 'A telemedicine visit with a licensed provider.',
+    behind: 'Routed to a provider licensed in the patient’s state.',
+  },
+  {
+    n: '04',
+    title: 'Prescribed',
+    patient: 'If appropriate, the doctor writes a prescription.',
+    behind: 'E-prescription routed to a partner pharmacy in the patient’s state.',
+  },
+  {
+    n: '05',
+    title: 'Delivered',
+    patient: 'Medication is dispensed and shipped to the patient.',
+    behind: 'Fulfillment pharmacy, dispense status, and shipment tracking.',
+  },
+  {
+    n: '06',
+    title: 'Follow-up & titrate',
+    patient: 'Follow-up visits adjust the dose over months.',
+    behind: 'The whole cycle re-runs for every refill — nothing can be dropped.',
+  },
+];
+
+const saga = [
+  { name: 'ChargePayment', tags: ['idempotency-key', 'retry'] },
+  { name: 'RouteProvider', tags: ['retry'] },
+  { name: 'ScheduleVisit', tags: ['retry', 'partner'] },
+  { name: 'Await visit', tags: ['durable timer'] },
+  { name: 'RecordRx', tags: ['PHI', 'retry'] },
+  { name: 'SubmitERx', tags: ['idempotency-key', 'partner'] },
+  { name: 'Await shipment', tags: ['durable timer'] },
+  { name: 'Await follow-up', tags: ['long timer', 'loops'] },
+];
+
+const compensation = [
+  { name: 'RefundPayment', note: 'reverse the charge' },
+  { name: 'CancelOrder', note: 'release the reservation' },
+  { name: 'NotifyPatient', note: 'explain & offer next steps' },
+];
+
+const sagaProps = [
+  {
+    icon: 'database',
+    title: 'Durable state',
+    body: 'Workflow state is persisted after every step. A worker can crash or redeploy mid-journey and the saga resumes exactly where it left off — nothing in flight is lost.',
+  },
+  {
+    icon: 'refresh-cw',
+    title: 'Automatic retries',
+    body: 'Activities retry with exponential backoff on partner errors and timeouts. Transient outages self-heal without touching the workflow.',
+  },
+  {
+    icon: 'key-round',
+    title: 'Idempotency keys',
+    body: 'Charges and prescriptions carry a stable key, so a retried step is a no-op at the processor and pharmacy — at-most-once charges and prescriptions.',
+  },
+  {
+    icon: 'timer',
+    title: 'Durable timers',
+    body: 'The weeks between visits are a single sleep — no cron, no polling table. The timer survives deploys and fires the follow-up cycle on schedule.',
+  },
+];
+
+const producers = [
+  { label: 'Eligibility', events: ['patient.qualified'] },
+  { label: 'Order & subscription', events: ['order.created', 'order.titrated'] },
+  { label: 'Payments', events: ['payment.captured'] },
+  { label: 'Clinical', events: ['visit.completed', 'rx.prescribed'], phi: true },
+  { label: 'Pharmacy', events: ['shipment.updated'] },
+  { label: 'Tenant & onboarding', events: ['tenant.provisioned'] },
+  { label: 'Partner adapters', events: ['webhook → event'] },
+];
+
+const consumers = [
+  {
+    icon: 'workflow',
+    title: 'Saga orchestrator',
+    body: 'Consumes events and drives the next step of the patient journey — retries, timeouts, compensation.',
+  },
+  {
+    icon: 'archive',
+    title: 'Audit & event store',
+    body: 'An immutable, append-only copy of every event — the compliance and lifecycle log.',
+  },
+  {
+    icon: 'chart-bar',
+    title: 'Analytics & CQRS',
+    body: 'Projects events into read models and a warehouse — serves reporting and your agents’ MCP read queries.',
+  },
+  {
+    icon: 'bell',
+    title: 'Notifications',
+    body: 'Fans out patient and client messaging from journey events — email, SMS, push.',
+  },
+];
+
+const whyShape = [
+  {
+    icon: 'unlink',
+    title: 'Loose coupling',
+    body: 'Services never call each other’s databases — they react to events. Any agent can build and deploy its service independently.',
+  },
+  {
+    icon: 'list-tree',
+    title: 'One source of truth',
+    body: 'The ordered, append-only event stream — not any one database — is authoritative. Read models are rebuildable by replay.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Audit for free',
+    body: 'Every state change is already an event, so the full patient lifecycle is logged by construction — the evidence your HIPAA and SOC 2 reviews need, on tap.',
+  },
+];
+
+const stack = [
+  {
+    area: 'Cloud & runtime',
+    choice: 'Managed, BAA-covered cloud',
+    why: 'Stateful workers run the saga; serverless data scales idle tenants toward zero cost.',
+  },
+  {
+    area: 'Identity',
+    choice: 'Org-per-tenant identity',
+    why: 'Each tenant is an organization; each agent gets its own revocable machine client; entitlements change at runtime without re-issuing tokens.',
+  },
+  {
+    area: 'Data',
+    choice: 'DB-per-service + transactional outbox',
+    why: '“Change state and emit event” is atomic in one local transaction — no distributed transactions. The event log is authoritative; read models rebuild by replay.',
+  },
+  {
+    area: 'Orchestration',
+    choice: 'Durable saga + choreography',
+    why: 'The workflow survives restarts; activities auto-retry; idempotency keys give at-most-once charges and prescriptions; compensation is a try/catch.',
+  },
+  {
+    area: 'Messaging',
+    choice: 'Managed event bus',
+    why: 'Schema registry and archive/replay built in; one queue and dead-letter queue per consumer; idempotent consumers keyed on a processed-event table.',
+  },
+  {
+    area: 'Multi-tenancy',
+    choice: 'Row-level security',
+    why: 'The database enforces isolation, not app code — a missing clause can’t leak another tenant’s data. Every tenant runs on the same audited floor; Enterprise can move to a dedicated silo with its own encryption keys and data residency. Same model, more sovereignty.',
+  },
+  {
+    area: 'Partners',
+    choice: 'Routing + anti-corruption adapters',
+    why: 'Rules pick the partner by state, therapy, and cost; each adapter normalizes one partner to our model, so swapping a pharmacy, processor, or network never ripples into core.',
+  },
+  {
+    area: 'Compliance',
+    choice: 'PHI-segregated, PCI-minimized',
+    why: 'PHI is field-encrypted; an append-only audit log is compliance evidence by construction; controlled-substance e-prescribing (EPCS) runs under DEA and state rules; cards are tokenized client-side so card data never touches us — SAQ-A scope, not full PCI-DSS.',
+    gated: true,
+  },
+  {
+    area: 'Delivery',
+    choice: 'Contract-first',
+    why: 'Generated stubs and mocks let agents build against a contract before the service exists; contract tests catch breaking changes; semver’d events avoid lockstep deploys.',
+  },
+];
+---
+
+<PageLayout
+  title="Architecture — the regulated pipeline, collapsed into one durable system"
+  description="A glimpse under the hood of Purple Label MD: the multi-party medical order saga, an event-sourced backbone with audit-for-free, and the decisions behind a platform built for correctness and compliance — all driven by your agents via API and MCP."
+  path="/architecture"
+>
+  {/* Hero — why it's hard */}
+  <Section size="lg">
+    <Eyebrow>Under the hood</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      It isn’t a shopping cart. It’s a regulated, multi-party medical pipeline.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      What a patient experiences as six simple steps is, underneath, a chain of hand-offs between
+      doctors, pharmacies, payment processors, and regulators. We’ve already built, operated, and
+      audited every one — and we expose it to your agents as a few API and MCP calls. That’s the
+      build-vs-buy question in one sentence: you don’t want to own this.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/developers">Read the docs</Button>
+      <Button variant="link-arrow" href="/contact">Talk to sales</Button>
+    </div>
+  </Section>
+
+  {/* The pipeline */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="The domain"
+      title="Six patient steps. A dozen regulated hand-offs."
+      lead="Each step is a hand-off between a different system, partner, and regulator. We’ve mapped every one."
+    />
+    <div class="mt-12 flex gap-3 overflow-x-auto pb-4">
+      {
+        pipeline.map((s, i) => (
+          <Fragment>
+            <div class="w-64 shrink-0 rounded-lg border border-line bg-paper p-5">
+              <span class="font-mono text-xs font-semibold uppercase tracking-eyebrow text-purple-600">
+                Step {s.n}
+              </span>
+              <h3 class="mt-2 font-display text-h4 text-ink-900">{s.title}</h3>
+              <p class="mt-2 text-sm text-ink-500">{s.patient}</p>
+              <p class="mt-4 text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                Behind it
+              </p>
+              <p class="mt-1 text-sm text-ink-700">{s.behind}</p>
+            </div>
+            {i < pipeline.length - 1 && (
+              <Icon
+                name="lucide:chevron-right"
+                class="icon size-5 shrink-0 self-center text-ink-400"
+              />
+            )}
+          </Fragment>
+        ))
+      }
+    </div>
+    <div class="mt-8 rounded-lg border border-line bg-surface-sunken p-6">
+      <Eyebrow>Why it’s hard</Eyebrow>
+      <p class="mt-2 max-w-prose text-body-lg text-ink-700">
+        Every step is a hand-off between systems, partners, and regulators. Lose one and you lose a
+        patient — or a license. The architecture exists to make that impossible.
+      </p>
+    </div>
+  </Section>
+
+  {/* The order saga */}
+  <Section>
+    <SectionHeader
+      eyebrow="The order saga"
+      title="The whole journey, collapsed into one durable function."
+      lead="A single durable workflow drives every order — its state is persisted after each step and survives worker crashes and deploys."
+    />
+    <div class="mt-12 flex gap-3 overflow-x-auto pb-4">
+      {
+        saga.map((s, i) => (
+          <Fragment>
+            <div class="w-56 shrink-0 rounded-lg border border-line bg-surface p-4">
+              <p class="font-mono text-sm font-semibold text-ink-900">{s.name}</p>
+              <div class="mt-3 flex flex-wrap gap-1.5">
+                {s.tags.map((t) => (
+                  <span class="rounded-full border border-line bg-surface-sunken px-2 py-0.5 font-mono text-xs text-ink-500">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+            {i < saga.length - 1 && (
+              <Icon
+                name="lucide:chevron-right"
+                class="icon size-5 shrink-0 self-center text-ink-400"
+              />
+            )}
+          </Fragment>
+        ))
+      }
+    </div>
+
+    <div class="mt-6 rounded-lg border border-line bg-surface-sunken p-6">
+      <span class="font-display text-xs font-semibold uppercase tracking-eyebrow text-warning">
+        Compensation
+      </span>
+      <p class="mt-2 max-w-prose text-sm text-ink-500">
+        On unrecoverable failure, a plain try/catch unwinds the whole workflow.
+      </p>
+      <div class="mt-4 flex flex-wrap gap-3">
+        {
+          compensation.map((c) => (
+            <div class="rounded-lg border border-line bg-paper px-4 py-3">
+              <p class="font-mono text-sm font-semibold text-ink-900">{c.name}</p>
+              <p class="mt-1 text-xs text-ink-500">{c.note}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        sagaProps.map((p) => (
+          <Card icon={p.icon} title={p.title}>
+            {p.body}
+          </Card>
+        ))
+      }
+    </div>
+
+    <div class="mt-8 rounded-lg border border-line bg-surface-sunken p-6">
+      <Eyebrow>Net effect</Eyebrow>
+      <p class="mt-2 max-w-prose text-body-lg text-ink-700">
+        The patient journey is a single durable function — it cannot lose state, double-charge,
+        double-prescribe, or strand a patient mid-flow. You don’t operate any of it: your agents
+        start the journey with one call, and the platform guarantees the rest.
+      </p>
+    </div>
+  </Section>
+
+  {/* Event backbone */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="The event backbone"
+      title="Database-per-service. The event log is the source of truth."
+      lead="Each service owns its data and publishes domain events. The ordered event stream — not any one database — is authoritative."
+    />
+
+    <p class="mt-12 text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+      Producers — each owns its database, publishes domain events
+    </p>
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        producers.map((p) => (
+          <div class="rounded-lg border border-line bg-paper p-4">
+            <p class="font-display text-sm font-semibold text-ink-900">{p.label}</p>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              {p.events.map((e) => (
+                <span class="font-mono text-xs text-purple-700">{e}</span>
+              ))}
+            </div>
+            {p.phi && (
+              <p class="mt-3 text-xs uppercase tracking-eyebrow text-ink-400">
+                PHI · stricter auth
+              </p>
+            )}
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="flex justify-center py-4">
+      <Icon name="lucide:arrow-down" class="icon size-6 text-ink-400" />
+    </div>
+
+    <div class="rounded-lg border border-purple-200 bg-purple-50 p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="font-display text-h4 text-ink-900">Event bus</p>
+        <span
+          class="rounded-full border border-purple-200 bg-paper px-3 py-1 text-xs font-semibold text-purple-700"
+        >
+          System of record
+        </span>
+      </div>
+      <p class="mt-2 text-body text-ink-500">
+        Ordered domain events · at-least-once delivery · idempotent consumers · dead-letter queues.
+      </p>
+    </div>
+
+    <div class="flex justify-center py-4">
+      <Icon name="lucide:arrow-down" class="icon size-6 text-ink-400" />
+    </div>
+
+    <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">Consumers</p>
+    <div class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        consumers.map((c) => (
+          <Card icon={c.icon} title={c.title}>
+            {c.body}
+          </Card>
+        ))
+      }
+    </div>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        whyShape.map((w) => (
+          <Card icon={w.icon} title={w.title}>
+            {w.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Why this stack */}
+  <Section>
+    <SectionHeader
+      eyebrow="Decision rationale"
+      title="Why this stack — optimized for correctness and compliance."
+      lead="Every choice is made to keep the patient journey correct, the data isolated, and the partners swappable. A glimpse of the reasoning, not the full blueprint."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        stack.map((d) => (
+          <div class="rounded-lg border border-line bg-surface p-6">
+            <Eyebrow>{d.area}</Eyebrow>
+            <p class="mt-2 font-display text-base font-semibold text-ink-900">{d.choice}</p>
+            <p class="mt-2 text-sm text-ink-500">
+              {d.gated ? (
+                <Unconfirmed reason="PCI scope (SAQ-A), WORM audit log & PAN-handling wording — confirm with counsel before launch">
+                  {d.why}
+                </Unconfirmed>
+              ) : (
+                d.why
+              )}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="And you get all of it"
+      title="The whole pipeline — as API and MCP."
+      lead="We built, operate, and audit the hard part. Your agents drive it with a few calls."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/developers">Read the docs</Button>
+      <Button variant="secondary" href="/contact">Talk to sales</Button>
+    </div>
+  </Section>
+</PageLayout>
