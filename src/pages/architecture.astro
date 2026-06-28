@@ -30,26 +30,44 @@ const pipeline = [
   },
   {
     n: '03',
+    title: 'Verify identity',
+    patient: 'The patient confirms who they are before the visit.',
+    behind: 'Third-party ID verification — a legal gate for a real prescription.',
+  },
+  {
+    n: '04',
     title: 'See a doctor',
     patient: 'A telemedicine visit with a licensed provider.',
     behind: 'Routed to a provider licensed in the patient’s state.',
   },
   {
-    n: '04',
-    title: 'Prescribed',
-    patient: 'If appropriate, the doctor writes a prescription.',
-    behind: 'E-prescription routed to a partner pharmacy in the patient’s state.',
+    n: '05',
+    meta: 'Optional',
+    badge: 'select Rx',
+    tone: 'optional',
+    title: 'Labs',
+    patient: 'Some therapies require bloodwork before the doctor prescribes.',
+    behind: 'A lab order and results gate the prescription — only for medications that need it.',
   },
   {
-    n: '05',
+    n: '06',
+    title: 'Prescribed',
+    patient: 'If appropriate, the doctor writes a prescription.',
+    behind: 'E-prescription to a partner pharmacy under controlled-substance rules.',
+    gated: true,
+  },
+  {
+    n: '07',
     title: 'Delivered',
     patient: 'Medication is dispensed and shipped to the patient.',
     behind: 'Fulfillment pharmacy, dispense status, and shipment tracking.',
   },
   {
-    n: '06',
+    n: '08',
+    meta: 'Repeats',
+    tone: 'repeats',
     title: 'Follow-up & titrate',
-    patient: 'Follow-up visits adjust the dose over months.',
+    patient: 'Follow-up visits adjust the dose up or down over months.',
     behind: 'The whole cycle re-runs for every refill — nothing can be dropped.',
   },
 ];
@@ -207,7 +225,7 @@ const stack = [
       It isn’t a shopping cart. It’s a regulated, multi-party medical pipeline.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      What a patient experiences as six simple steps is, underneath, a chain of hand-offs between
+      What a patient experiences as a few simple steps is, underneath, a chain of hand-offs between
       doctors, pharmacies, payment processors, and regulators. We’ve already built, operated, and
       audited every one — and we expose it to your agents as a few API and MCP calls. That’s the
       build-vs-buy question in one sentence: you don’t want to own this.
@@ -221,34 +239,77 @@ const stack = [
   {/* The pipeline */}
   <Section surface="surface" bordered>
     <SectionHeader
-      eyebrow="The domain"
-      title="Six patient steps. A dozen regulated hand-offs."
-      lead="Each step is a hand-off between a different system, partner, and regulator. We’ve mapped every one."
+      eyebrow="The domain we’re engineering for"
+      title="Eight steps the patient sees. A dozen hand-offs they don’t."
+      lead="Every card below is a hand-off between a different system, partner, and regulator — and a place the journey can break. We’ve mapped every one."
     />
-    <div class="mt-12 flex gap-3 overflow-x-auto pb-4">
+    <div class="mt-12 flex items-stretch gap-3 overflow-x-auto pb-4">
       {
         pipeline.map((s, i) => (
           <Fragment>
-            <div class="w-64 shrink-0 rounded-lg border border-line bg-paper p-5">
+            <div
+              class:list={[
+                'flex w-64 shrink-0 flex-col rounded-lg border p-5',
+                s.tone === 'optional'
+                  ? 'border-warning bg-warning-50'
+                  : s.tone === 'repeats'
+                    ? 'border-purple-300 bg-purple-50'
+                    : 'border-line bg-paper',
+              ]}
+            >
               <span class="font-mono text-xs font-semibold uppercase tracking-eyebrow text-purple-600">
                 Step {s.n}
+                {s.meta ? ` · ${s.meta}` : ''}
               </span>
-              <h3 class="mt-2 font-display text-h4 text-ink-900">{s.title}</h3>
+              <div class="mt-2 flex items-center gap-2">
+                <h3
+                  class:list={[
+                    'font-display text-h4',
+                    s.tone === 'repeats' ? 'text-purple-700' : 'text-ink-900',
+                  ]}
+                >
+                  {s.title}
+                </h3>
+                {s.badge && (
+                  <span class="rounded-full border border-warning bg-paper px-2 py-0.5 font-mono text-xs text-warning">
+                    {s.badge}
+                  </span>
+                )}
+              </div>
               <p class="mt-2 text-sm text-ink-500">{s.patient}</p>
-              <p class="mt-4 text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
-                Behind it
-              </p>
-              <p class="mt-1 text-sm text-ink-700">{s.behind}</p>
+              <div class="mt-auto border-t border-line pt-4">
+                <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                  Behind it
+                </p>
+                <p class="mt-1 text-sm text-ink-700">
+                  {s.gated ? (
+                    <Unconfirmed reason="controlled-substance / EPCS wording — counsel pass before launch">
+                      {s.behind}
+                    </Unconfirmed>
+                  ) : (
+                    s.behind
+                  )}
+                </p>
+              </div>
             </div>
             {i < pipeline.length - 1 && (
               <Icon
                 name="lucide:chevron-right"
-                class="icon size-5 shrink-0 self-center text-ink-400"
+                class="icon size-5 shrink-0 self-center text-ink-300"
               />
             )}
           </Fragment>
         ))
       }
+    </div>
+    <div
+      class="mt-6 flex items-center gap-3 rounded-lg border border-dashed border-purple-300 bg-purple-50 px-5 py-3"
+    >
+      <Icon name="lucide:rotate-ccw" class="icon size-5 shrink-0 text-purple-600" />
+      <p class="text-sm font-medium text-purple-700">
+        Each follow-up re-enters at the doctor visit (Step 04) — the cycle repeats for the life of
+        the therapy.
+      </p>
     </div>
     <div class="mt-8 rounded-lg border border-line bg-surface-sunken p-6">
       <Eyebrow>Why it’s hard</Eyebrow>

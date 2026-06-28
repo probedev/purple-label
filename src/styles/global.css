@@ -44,6 +44,7 @@
 
   --color-success: var(--pl-success);
   --color-warning: var(--pl-warning);
+  --color-warning-50: var(--pl-warning-50);
   --color-danger: var(--pl-danger);
   --color-info: var(--pl-info);
 

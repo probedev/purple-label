@@ -36,6 +36,7 @@
   /* §1.4 Semantic */
   --pl-success: #0d9488;
   --pl-warning: #b45309;
+  --pl-warning-50: #fdf6ec; /* light amber surface — optional-step tint */
   --pl-danger: #b42318;
   --pl-info: #5a2c9e;
 
@@ -112,6 +113,7 @@
   --pl-ink-400: #7e7790;
   --pl-ink-300: #6a6480;
   --pl-line: #271f38;
+  --pl-warning-50: #2a1d0a; /* dark amber surface — optional-step tint */
   /* Purple brightens slightly to hold contrast on dark */
   --pl-purple-500: #9a6ce8;
   --pl-purple-600: #8b5fcc;
