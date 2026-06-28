@@ -8,7 +8,7 @@
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
 import SectionHeader from '../components/primitives/SectionHeader.astro';
-import Eyebrow from '../components/primitives/Eyebrow.astro';
+import { Icon } from 'astro-icon/components';
 import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
@@ -55,6 +55,9 @@ const modules = [
 
 const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
 
+// Initial server-rendered value for the live Rx ticker (kept in sync with the hero <script>).
+const RX_ANCHOR = 728487;
+
 const programs = [
   {
     icon: 'activity',
@@ -96,28 +99,52 @@ const programs = [
 >
   {/* 1 — Hero */}
   <Section size="lg">
-    <Eyebrow>Telemedicine infrastructure for the agent era</Eyebrow>
-    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      The telemedicine platform your agents can run.
-    </h1>
-    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Purple Label MD is a modular, API-first telemedicine stack — intake, visits, e-prescribing,
-      pharmacy, payments, analytics, and security — delivered as code, not dashboards. You get API
-      tokens, agent-ready docs, MCP servers, and a customizable prompt library, so your AI agents
-      can stand up a branded virtual-care business, operate it, and extend it — on infrastructure
-      that already runs at scale.
-    </p>
-    <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Request a demo</Button>
-      <Button variant="link-arrow" href="/developers">Read the docs</Button>
+    <div class="relative isolate">
+      {
+        /* Subtle health "aurora" behind the hero — no stock imagery (GSAP-animated, right-weighted) */
+      }
+      <div class="hero-aurora" aria-hidden="true">
+        <span class="hero-blob hero-blob-1"></span>
+        <span class="hero-blob hero-blob-2"></span>
+        <span class="hero-blob hero-blob-3"></span>
+      </div>
+
+      <div class="relative">
+        <p
+          class="flex flex-wrap items-baseline gap-x-2 text-xs uppercase tracking-eyebrow text-ink-400"
+        >
+          <span>Prescriptions filled on the platform</span>
+          <span
+            id="rx-counter"
+            class="font-mono text-sm tabular-nums tracking-normal text-purple-600 normal-case"
+            >{RX_ANCHOR.toLocaleString('en-US')}</span
+          >
+        </p>
+        <h1 class="mt-5 max-w-prose font-display text-display text-ink-900">
+          Everything it takes to launch a telehealth brand.
+          <span class="text-purple-600">Your agents run it.</span>
+        </h1>
+        <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+          Providers, pharmacy, payments, and compliance — the proven infrastructure behind 100+
+          telehealth brands, now delivered as code your agents call directly. Not a builder, not a
+          dashboard: the layer underneath.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <Button variant="primary" href="/developers">Start building</Button>
+          <Button variant="link-arrow" href="/contact">Talk to sales</Button>
+        </div>
+        <p class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
+          <span class="inline-flex items-center gap-1.5">
+            <Icon name="lucide:shield-check" class="icon size-4 text-success" />
+            LegitScript Enterprise Partner
+          </span>
+          <span aria-hidden="true">·</span>
+          <span>HIPAA-compliant</span>
+          <span aria-hidden="true">·</span>
+          <span>50-state network</span>
+        </p>
+      </div>
     </div>
-    <p class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
-      <span>HIPAA-compliant</span>
-      <span aria-hidden="true">·</span>
-      <span>API-first</span>
-      <span aria-hidden="true">·</span>
-      <span>In market for 3 years</span>
-    </p>
   </Section>
 
   {/* 2 — Proof bar */}
@@ -322,3 +349,114 @@ const programs = [
     </div>
   </Section>
 </PageLayout>
+
+<style>
+  /* Hero "aurora" — soft, slowly drifting health-toned gradient (GSAP-animated).
+     All colors trace to design tokens, so it re-themes with light/dark automatically. */
+  .hero-aurora {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .hero-blob {
+    position: absolute;
+    border-radius: var(--radius-full);
+    filter: blur(64px);
+    will-change: transform;
+  }
+  /* Right-weighted so the left-aligned copy stays clean and legible. */
+  .hero-blob-1 {
+    top: -30%;
+    right: -5%;
+    width: 45%;
+    height: 130%;
+    background: radial-gradient(circle at 50% 40%, var(--pl-purple-400), transparent 68%);
+    opacity: 0.5;
+  }
+  .hero-blob-2 {
+    right: 6%;
+    bottom: -40%;
+    width: 40%;
+    height: 120%;
+    background: radial-gradient(circle at 50% 50%, var(--pl-teal-400), transparent 70%);
+    opacity: 0.36;
+  }
+  .hero-blob-3 {
+    top: -12%;
+    right: 22%;
+    width: 34%;
+    height: 110%;
+    background: radial-gradient(circle at 50% 50%, var(--pl-purple-300), transparent 72%);
+    opacity: 0.42;
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+
+  /*
+   * Live "prescriptions filled" ticker. Seeds from a time-anchored base (so it keeps
+   * climbing across reloads/sessions), then ticks up in irregular bursts for a live feel:
+   * variable interval (~0.9–3.2s) and variable step (+1/+2/+3), far faster than a flat rate.
+   */
+  const ANCHOR_MS = Date.UTC(2026, 5, 28);
+  const ANCHOR_COUNT = 728_487;
+  const AVG_PER_DAY = 60_000; // seeds the base across sessions (≈ the live tick average)
+
+  const counter = document.getElementById('rx-counter');
+  if (counter) {
+    const fmt = new Intl.NumberFormat('en-US');
+    let count = ANCHOR_COUNT + Math.floor(((Date.now() - ANCHOR_MS) / 86_400_000) * AVG_PER_DAY);
+    counter.textContent = fmt.format(count);
+
+    const step = () => {
+      const r = Math.random();
+      return r > 0.9 ? 3 : r > 0.65 ? 2 : 1;
+    };
+    const schedule = () => {
+      setTimeout(
+        () => {
+          count += step();
+          counter.textContent = fmt.format(count);
+          schedule();
+        },
+        900 + Math.random() * 2300,
+      );
+    };
+    schedule();
+  }
+
+  // Subtle, looping drift on the gradient blobs — disabled when the user prefers reduced motion.
+  const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (motionOk) {
+    gsap.to('.hero-blob-1', {
+      xPercent: 10,
+      yPercent: -8,
+      scale: 1.12,
+      duration: 18,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    });
+    gsap.to('.hero-blob-2', {
+      xPercent: -8,
+      yPercent: 10,
+      scale: 1.1,
+      duration: 22,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    });
+    gsap.to('.hero-blob-3', {
+      xPercent: 6,
+      yPercent: 6,
+      scale: 1.18,
+      rotation: 18,
+      duration: 26,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    });
+  }
+</script>

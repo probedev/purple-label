@@ -1,0 +1,102 @@
+---
+/**
+ * /login — mockup of the dashboard SSO sign-in (shadcn-style). NON-FUNCTIONAL: every control
+ * is inert (no auth wired up) — the "Dashboard" header button points here. Standalone chrome
+ * (no marketing Header/Footer), noindex.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/layout/Logo.astro';
+import Button from '../components/primitives/Button.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<BaseLayout
+  title="Sign in"
+  description="Sign in to your Purple Label MD dashboard."
+  path="/login"
+  noindex={true}
+>
+  <main id="main" class="grid min-h-screen place-items-center bg-paper px-6 py-16">
+    <div class="w-full max-w-md">
+      <div class="flex justify-center"><Logo /></div>
+
+      <div class="mt-8 rounded-xl border border-line bg-surface p-8 shadow-md">
+        <div class="text-center">
+          <h1 class="font-display text-h3 text-ink-900">Sign in to your dashboard</h1>
+          <p class="mt-2 text-sm text-ink-400">Access your Purple Label workspace.</p>
+        </div>
+
+        <div class="mt-8 flex flex-col gap-3">
+          <Button variant="secondary" class="w-full" type="button">
+            <Icon name="lucide:chrome" class="icon size-5" />
+            Continue with Google
+          </Button>
+          <Button variant="secondary" class="w-full" type="button">
+            <Icon name="lucide:building-2" class="icon size-5" />
+            Continue with SAML SSO
+          </Button>
+        </div>
+
+        <div class="my-6 flex items-center gap-4">
+          <span class="h-px flex-1 bg-line"></span>
+          <span class="text-xs uppercase tracking-eyebrow text-ink-400">or</span>
+          <span class="h-px flex-1 bg-line"></span>
+        </div>
+
+        <form class="flex flex-col gap-4">
+          <div>
+            <label for="email" class="block text-sm font-medium text-ink-700">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="you@company.com"
+              class="mt-1.5 h-11 w-full rounded-md border border-line bg-surface px-3 text-sm text-ink-900 placeholder:text-ink-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+            />
+          </div>
+          <div>
+            <div class="flex items-center justify-between">
+              <label for="password" class="block text-sm font-medium text-ink-700">Password</label>
+              <a
+                href="/login"
+                class="text-xs font-semibold text-purple-600 transition-colors duration-150 hover:text-purple-700"
+                >Forgot password?</a
+              >
+            </div>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+              class="mt-1.5 h-11 w-full rounded-md border border-line bg-surface px-3 text-sm text-ink-900 placeholder:text-ink-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+            />
+          </div>
+          <Button variant="primary" class="mt-2 w-full" type="button">Sign in</Button>
+        </form>
+
+        <p class="mt-6 text-center text-xs text-ink-400">
+          Preview — single sign-on isn't connected yet.
+        </p>
+      </div>
+
+      <p class="mt-6 text-center text-sm text-ink-400">
+        Don't have an account?
+        <a
+          href="/contact"
+          class="font-semibold text-purple-600 transition-colors duration-150 hover:text-purple-700"
+          >Talk to sales</a
+        >
+      </p>
+      <p class="mt-4 text-center">
+        <a
+          href="/"
+          class="inline-flex items-center gap-1.5 text-sm text-ink-400 transition-colors duration-150 hover:text-ink-700"
+        >
+          <Icon name="lucide:arrow-left" class="icon size-4" /> Back to site
+        </a>
+      </p>
+    </div>
+  </main>
+</BaseLayout>

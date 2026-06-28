@@ -1,7 +1,7 @@
 ---
 /**
  * Header — sticky, 72px, paper@80% + blur (§5.3). Bottom hairline appears only after
- * scroll > 8px. Logo left · mega-menu center · Sign in + Request a demo right.
+ * scroll > 8px. Logo left · mega-menu center · Dashboard + Book a consult right.
  * Mobile: full-screen sheet with native <details> accordions (keyboard-accessible, no JS).
  */
 import { Icon } from 'astro-icon/components';
@@ -39,11 +39,11 @@ import { HEADER_GROUPS, HEADER_LINKS, CTA } from '../../lib/nav';
     <!-- Right cluster -->
     <div class="flex items-center gap-2">
       <ThemeToggle />
-      <Button variant="ghost" href={CTA.signin.href} class="hidden lg:inline-flex">
-        {CTA.signin.label}
+      <Button variant="secondary" href={CTA.dashboard.href} class="hidden lg:inline-flex">
+        {CTA.dashboard.label}
       </Button>
-      <Button variant="primary" href={CTA.primary.href} class="hidden sm:inline-flex">
-        {CTA.primary.label}
+      <Button variant="primary" href={CTA.consult.href} class="hidden sm:inline-flex">
+        {CTA.consult.label}
       </Button>
       <button
         type="button"
@@ -121,8 +121,8 @@ import { HEADER_GROUPS, HEADER_LINKS, CTA } from '../../lib/nav';
         }
       </ul>
       <div class="mt-8 flex flex-col gap-3">
-        <Button variant="primary" href={CTA.primary.href}>{CTA.primary.label}</Button>
-        <Button variant="secondary" href={CTA.signin.href}>{CTA.signin.label}</Button>
+        <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+        <Button variant="secondary" href={CTA.dashboard.href}>{CTA.dashboard.label}</Button>
       </div>
     </Container>
   </div>

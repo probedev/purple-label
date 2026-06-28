@@ -1,8 +1,9 @@
 ---
 /**
- * MegaMenu — one desktop nav group (§5.3). Trigger links to the group overview;
- * the panel reveals on hover and on keyboard focus-within (200ms fade + rise).
- * Each item is title + one-line description.
+ * MegaMenu — one desktop nav group (§5.3), shadcn-style detail dropdown. Trigger links to
+ * the group overview; the panel reveals on hover and on keyboard focus-within (200ms fade +
+ * rise). Each item is icon + title + one-line description; a footer link returns the overview.
+ * Groups with >6 items render a wider 3-column panel (e.g. Programs).
  */
 import { Icon } from 'astro-icon/components';
 import type { NavGroup } from '../../lib/nav';
@@ -12,6 +13,7 @@ interface Props {
 }
 const { group } = Astro.props;
 const triggerHref = group.href ?? group.items[0]?.href ?? '#';
+const wide = group.items.length > 6;
 ---
 
 <li class="group relative">
@@ -28,24 +30,48 @@ const triggerHref = group.href ?? group.items[0]?.href ?? '#';
   </a>
 
   <div
-    class="invisible absolute left-0 top-full z-40 w-144 translate-y-1 pt-2 opacity-0 transition duration-200 ease-out group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100"
+    class:list={[
+      'invisible absolute left-0 top-full z-40 translate-y-1 pt-2 opacity-0 transition duration-200 ease-out group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100',
+      wide ? 'w-180' : 'w-144',
+    ]}
   >
     <div class="rounded-lg border border-line bg-surface p-2 shadow-md">
-      <ul class="grid grid-cols-1 gap-1 sm:grid-cols-2">
+      <ul class:list={['grid grid-cols-1 gap-1', wide ? 'sm:grid-cols-3' : 'sm:grid-cols-2']}>
         {
           group.items.map((item) => (
             <li>
               <a
                 href={item.href}
-                class="block rounded-md p-3 transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                class="flex items-start gap-3 rounded-md p-3 transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
               >
-                <span class="block text-sm font-semibold text-ink-900">{item.label}</span>
-                {item.desc && <span class="mt-0.5 block text-xs text-ink-400">{item.desc}</span>}
+                {item.icon && (
+                  <Icon
+                    name={`lucide:${item.icon}`}
+                    class="icon mt-0.5 size-5 shrink-0 text-purple-600"
+                  />
+                )}
+                <span class="min-w-0">
+                  <span class="block text-sm font-semibold text-ink-900">{item.label}</span>
+                  {item.desc && <span class="mt-0.5 block text-xs text-ink-400">{item.desc}</span>}
+                </span>
               </a>
             </li>
           ))
         }
       </ul>
+      {
+        group.href && (
+          <div class="mt-1 border-t border-line pt-1">
+            <a
+              href={group.href}
+              class="flex items-center justify-between rounded-md p-3 text-sm font-semibold text-purple-600 transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+            >
+              <span>Explore {group.label}</span>
+              <Icon name="lucide:arrow-right" class="icon size-4" />
+            </a>
+          </div>
+        )
+      }
     </div>
   </div>
 </li>
