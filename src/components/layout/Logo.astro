@@ -1,12 +1,13 @@
 ---
 /**
- * Logo — carrot logomark (public/noun-carrot-8096334.svg) + typographic wordmark.
- * The SVG is inlined with fill="currentColor" so the mark inherits a token-based
- * text color and flips automatically for light/dark — and for the always-dark
- * footer via `invert`. (An <img> can't be recolored, hence inlining.)
+ * Logo — brand lockup per the Purple Label MD brand guidelines: the carrot mark in a soft
+ * purple-tint badge + the "purplelabelMD" wordmark (one word, lowercase Geist Semibold, tight
+ * tracking, "MD" in brand purple). Carrot is inlined with fill="currentColor" so the badge can
+ * recolor it. Light: tint badge + purple carrot. Dark theme / footer `invert`: brand-purple
+ * badge + white carrot (the brand app-icon treatment).
  */
 interface Props {
-  /** Use on dark backgrounds (footer): brightens the mark + wordmark. */
+  /** Use on dark backgrounds (footer): brand-purple badge + white mark + light wordmark. */
   invert?: boolean;
   class?: string;
 }
@@ -21,13 +22,13 @@ const { invert = false, class: className = '' } = Astro.props;
   <span
     aria-hidden="true"
     class:list={[
-      'inline-flex size-7 items-center justify-center transition-colors duration-150',
+      'grid size-9 shrink-0 place-items-center rounded-lg border transition-colors duration-150',
       invert
-        ? 'text-purple-400 group-hover:text-purple-300'
-        : 'text-purple-600 group-hover:text-purple-700',
+        ? 'border-transparent bg-purple-600 text-white group-hover:bg-purple-700'
+        : 'border-purple-200 bg-purple-50 text-purple-600 group-hover:bg-purple-100 dark:border-transparent dark:bg-purple-600 dark:text-white dark:group-hover:bg-purple-700',
     ]}
   >
-    <svg viewBox="0 0 1200 1200" class="size-full" fill="currentColor" aria-hidden="true">
+    <svg viewBox="0 0 1200 1200" class="size-5" fill="currentColor" aria-hidden="true">
       <path
         d="m233.26 387.37c7.125 6 15.75 9 24.375 9 10.5 0 21-4.5 28.5-13.125 13.5-15.75 11.625-39.375-3.75-52.875l-109.5-94.125c-15.75-13.5-39.375-11.625-52.875 3.75-13.5 15.75-11.625 39.375 3.75 52.875l109.5 94.125z"
       ></path>
@@ -53,10 +54,10 @@ const { invert = false, class: className = '' } = Astro.props;
   </span>
   <span
     class:list={[
-      'font-display text-base font-semibold tracking-tight',
+      'font-display text-lg font-semibold tracking-tighter',
       invert ? 'text-white' : 'text-ink-900',
     ]}
   >
-    Purple Label <span class:list={[invert ? 'text-purple-400' : 'text-purple-600']}>MD</span>
+    purplelabel<span class:list={[invert ? 'text-purple-300' : 'text-purple-600']}>MD</span>
   </span>
 </a>

@@ -5,17 +5,17 @@
  */
 
 :root {
-  /* §1.1 Brand — Purple ("the Label") */
-  --pl-purple-50: #f4f0fb;
-  --pl-purple-100: #e7ddf6;
-  --pl-purple-200: #cbb6ea;
-  --pl-purple-300: #ac8bdc;
-  --pl-purple-400: #8b5fcc;
-  --pl-purple-500: #6e3db8; /* base brand */
-  --pl-purple-600: #5a2c9e; /* primary actions */
-  --pl-purple-700: #471f7e; /* hover / pressed */
-  --pl-purple-800: #341659;
-  --pl-purple-900: #21103a; /* deep plum, near-ink */
+  /* §1.1 Brand — Purple ("the Label"). Brand purple #6D28D9 (violet family) per brand guidelines. */
+  --pl-purple-50: #f5f3ff;
+  --pl-purple-100: #ede9fe;
+  --pl-purple-200: #ddd6fe;
+  --pl-purple-300: #c4b5fd;
+  --pl-purple-400: #a78bfa;
+  --pl-purple-500: #7c3aed; /* base brand */
+  --pl-purple-600: #6d28d9; /* primary actions — brand purple */
+  --pl-purple-700: #5b21b6; /* hover / pressed — deep purple */
+  --pl-purple-800: #4c1d95;
+  --pl-purple-900: #3b0764; /* deep plum, near-ink */
 
   /* §1.2 Ink & Paper (purple-tinted neutrals) */
   --pl-ink-900: #100b1a; /* primary text */
@@ -38,7 +38,7 @@
   --pl-warning: #b45309;
   --pl-warning-50: #fdf6ec; /* light amber surface — optional-step tint */
   --pl-danger: #b42318;
-  --pl-info: #5a2c9e;
+  --pl-info: #6d28d9;
 
   /* Always-dark surfaces (footer, dark CTA bands). Intentionally do NOT flip with theme —
      a deep-plum anchor that reads the same in light and dark. (§5.4 footer is dark by design.) */
@@ -115,9 +115,9 @@
   --pl-line: #271f38;
   --pl-warning-50: #2a1d0a; /* dark amber surface — optional-step tint */
   /* Purple brightens slightly to hold contrast on dark */
-  --pl-purple-500: #9a6ce8;
-  --pl-purple-600: #8b5fcc;
-  --pl-purple-700: #7a4fbf;
+  --pl-purple-500: #a78bfa;
+  --pl-purple-600: #8b5cf6;
+  --pl-purple-700: #7c3aed;
   /* Soften elevation on dark surfaces */
   --pl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
   --pl-shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
