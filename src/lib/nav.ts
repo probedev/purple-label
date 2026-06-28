@@ -106,6 +106,11 @@ export const SOLUTIONS: NavGroup = {
   href: '/solutions',
   items: [
     {
+      label: 'Programs',
+      href: '/programs',
+      desc: 'Condition verticals your agents can launch — weight loss, TRT, peptides, labs.',
+    },
+    {
       label: 'Launch a DTC telehealth brand',
       href: '/solutions/launch-dtc',
       desc: 'Concept to live, agent-built brand.',

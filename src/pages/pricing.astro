@@ -25,12 +25,12 @@ const tiers = [
       'Developer docs, API, MCP servers, and the prompt library',
       'The durable order pipeline, built and operated for you',
       'HIPAA-compliant, encrypted infrastructure — behind the same cleared audits',
-      'Our scale, and pass-through Rx pricing with no markup',
+      'Pass-through Rx pricing — our cost is your cost, no markup',
     ],
     start: 'Self-serve a sandbox and API keys today; sign a BAA and onboard to go live.',
     primary: { label: 'Start building', href: '/developers' },
     secondary: { label: 'Talk to sales', href: '/contact' },
-    featured: false,
+    featured: true,
   },
   {
     name: 'Enterprise',
@@ -47,7 +47,24 @@ const tiers = [
     start: 'Scoped to your compliance and procurement requirements.',
     primary: { label: 'Talk to sales', href: '/contact' },
     secondary: null,
-    featured: true,
+    featured: false,
+  },
+  {
+    name: 'Managed',
+    badge: 'Done-for-you',
+    tagline: 'We build, run, and grow it for you.',
+    audience: 'For operators who want a branded telehealth business without writing code.',
+    points: [
+      'We build, staff, and configure your branded store end to end',
+      'Licensed providers, pharmacy, and compliance handled for you',
+      'Marketing and analytics support to fill your programs',
+      'Pass-through Rx pricing — our cost is your cost, no markup',
+      'Revenue share — we only do well when you do',
+    ],
+    start: 'A high-touch launch with our team — typically live in about 30 days.',
+    primary: { label: 'Talk to sales', href: '/contact' },
+    secondary: null,
+    featured: false,
   },
 ];
 
@@ -66,20 +83,21 @@ const matrix = [
 ---
 
 <PageLayout
-  title="Pricing — Platform and Enterprise plans"
-  description="Two ways to build on Purple Label MD. Platform: the full multi-tenant telemedicine stack with developer docs, API, MCP, and pass-through Rx pricing. Enterprise: a dedicated data silo, per-tenant encryption keys, custom data residency, and data portability — on the same audited security foundation."
+  title="Pricing — Platform, Enterprise, and Managed plans"
+  description="Three ways to build on Purple Label MD. Platform: the full multi-tenant stack with developer docs, API, MCP, and pass-through Rx pricing. Enterprise: a dedicated data silo, per-tenant encryption keys, residency, and data portability. Managed: we build and operate your branded telehealth business for you — on the same audited foundation."
   path="/pricing"
 >
   {/* Hero */}
   <Section size="lg">
     <Eyebrow>Plans</Eyebrow>
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      Two ways to build on Purple Label.
+      Build it, own it, or have us run it.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Start on the multi-tenant Platform with the full toolkit your agents need, or run on dedicated
-      Enterprise infrastructure with your own keys and data residency. Both ride the same proven
-      pipeline — and the same cleared audits.
+      Start on the multi-tenant Platform with the full toolkit your agents need, run on dedicated
+      Enterprise infrastructure with your own keys and data residency, or have our team build and
+      operate the whole thing for you. Every path rides the same proven pipeline — and the same
+      cleared audits.
     </p>
   </Section>
 
@@ -88,7 +106,7 @@ const matrix = [
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
       <Icon name="lucide:shield-check" class="icon size-6 shrink-0 text-success" />
       <div>
-        <p class="font-display text-h4 text-ink-900">Same security floor, both tiers.</p>
+        <p class="font-display text-h4 text-ink-900">Same security floor, every tier.</p>
         <p class="mt-2 max-w-prose text-body text-ink-500">
           Enterprise isn't more secure — it's more sovereign. Every tenant gets HIPAA-compliant,
           end-to-end-encrypted infrastructure with row-level isolation, behind the same cleared
@@ -101,7 +119,7 @@ const matrix = [
 
   {/* Tier cards */}
   <Section>
-    <div class="grid gap-6 lg:grid-cols-2">
+    <div class="grid gap-6 lg:grid-cols-3">
       {
         tiers.map((t) => (
           <div
@@ -200,8 +218,9 @@ const matrix = [
       </table>
     </div>
     <p class="mt-8 max-w-prose text-body text-ink-500">
-      Same architecture powers both — pooled with row-level isolation, or a dedicated silo with your
-      own keys and residency.
+      The same architecture powers every tier — pooled with row-level isolation, or a dedicated silo
+      with your own keys and residency. Managed includes everything in Enterprise, with our team
+      building and operating it for you on revenue share.
     </p>
     <div class="mt-4">
       <Button variant="link-arrow" href="/architecture">See the architecture</Button>
@@ -213,7 +232,7 @@ const matrix = [
     <SectionHeader
       align="center"
       eyebrow="Get started"
-      title="Build on the Platform, or scale on a dedicated silo."
+      title="Build on the Platform, scale on a dedicated silo, or have us run it."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <Button variant="primary" href="/developers">Start building</Button>

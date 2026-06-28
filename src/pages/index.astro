@@ -54,6 +54,39 @@ const modules = [
 ];
 
 const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
+
+const programs = [
+  {
+    icon: 'activity',
+    title: 'Weight loss',
+    body: 'The category driving telehealth demand — GLP-1 and metabolic programs, end to end. Our flagship.',
+  },
+  {
+    icon: 'user',
+    title: "Men's health",
+    body: 'Sexual health, hormones, hair, and wellness under one branded program.',
+  },
+  {
+    icon: 'heart-pulse',
+    title: "Women's health",
+    body: 'Hormones, wellness, and longevity care, fully branded.',
+  },
+  {
+    icon: 'dumbbell',
+    title: 'TRT & HRT',
+    body: 'Testosterone and hormone therapy with labs and titration built in.',
+  },
+  {
+    icon: 'flask-conical',
+    title: 'Peptides',
+    body: 'Recovery and longevity protocols on compliant, compounded supply.',
+  },
+  {
+    icon: 'microscope',
+    title: 'Labs & diagnostics',
+    body: 'Baseline and monitoring panels, ordered and resulted inside the journey.',
+  },
+];
 ---
 
 <PageLayout
@@ -90,8 +123,9 @@ const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
   {/* 2 — Proof bar */}
   <Section size="sm" surface="surface" bordered>
     <p class="mx-auto max-w-prose text-center text-body text-ink-500">
-      The engine that's run a national telehealth operation in production for 3 years — hundreds of
-      thousands of patients, hundreds of millions of prescriptions.
+      The engine that's run a national telehealth operation in production at scale — 100+ telehealth
+      brands launched, 1M+ prescriptions filled every month, and 10,000+ orders shipped a week
+      across a 50-state network.
     </p>
     <p class="mt-6 text-center text-xs uppercase tracking-eyebrow text-ink-400">
       Customer logos — added once permitted
@@ -102,13 +136,12 @@ const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
   <Section>
     <SectionHeader
       eyebrow="Why now"
-      title="White label was for the old web. Purple Label is for the agent era."
+      title="Built for the way you build now: with agents."
       lead="For a decade, launching telehealth meant buying a no-code builder, a separate EMR, a prescribing tool, a pharmacy, and a payment processor — then wiring them together and running it all through a dozen dashboards. In 2026, your team builds with AI agents. So we skip the builders and the dashboards and give you the layer underneath: a modular, code-first platform your agents call directly."
     />
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Best-of-breed modules, one API, full control. White label made you generic; Purple Label is
-      the tailored, AI-native version — the same pipelines that already scaled, shaped to your
-      brand.
+      Best-of-breed modules, one API, full control — the same pipelines that already scaled to a
+      national operation, now shaped to your brand and driven by your agents.
     </p>
   </Section>
 
@@ -202,6 +235,27 @@ const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
     </div>
   </Section>
 
+  {/* 6.5 — Programs you can launch */}
+  <Section>
+    <SectionHeader
+      eyebrow="Programs you can launch"
+      title="Any compliant program, assembled by your agents."
+      lead="The same modules compose into complete, branded care programs — and these are already running on the platform at scale. Launch one, or a full menu."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        programs.map((p) => (
+          <Card icon={p.icon} title={p.title}>
+            {p.body}
+          </Card>
+        ))
+      }
+    </div>
+    <div class="mt-8">
+      <Button variant="link-arrow" href="/programs">See all programs</Button>
+    </div>
+  </Section>
+
   {/* 7 — Why build on Purple Label (the 3 differentiators) */}
   <Section>
     <SectionHeader
@@ -211,8 +265,8 @@ const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       <Card icon="server" title="Proven scale, top-tier security">
-        The same engine behind a national telehealth operation — hundreds of thousands of patients,
-        hundreds of millions of prescriptions — cleared through HIPAA, pharmacy-board, and
+        The same engine behind a national telehealth operation — 100+ brands launched, 1M+
+        prescriptions a month, 10,000+ orders a week — cleared through HIPAA, pharmacy-board, and
         payment-processor audits.
       </Card>
       <Card icon="circle-dollar-sign" title="Lowest-in-class drug pricing">
@@ -228,18 +282,11 @@ const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
 
   {/* 8 — Scale strip */}
   <Section surface="surface" bordered>
-    <div class="grid gap-8 sm:grid-cols-3">
-      <StatCard
-        value="Hundreds of thousands"
-        label="Patients managed"
-        caption="On the engine you inherit"
-      />
-      <StatCard
-        value="Hundreds of millions"
-        label="Prescriptions processed"
-        caption="Through the platform"
-      />
-      <StatCard value="3 years" label="In market" caption="Production, at national scale" />
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <StatCard value="1M+" label="Prescriptions / month" caption="Across the pharmacy network" />
+      <StatCard value="10,000+" label="Orders / week" caption="Shipped end to end" />
+      <StatCard value="100+" label="Brands launched" caption="In the last 6 months" />
+      <StatCard value="50-state" label="Provider network" caption="Board-certified, nationwide" />
     </div>
   </Section>
 

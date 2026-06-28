@@ -26,3 +26,6 @@ pnpm-debug.log*
 # stray installers / large binaries (not part of the site)
 *.pkg
 *.dmg
+
+# internal reference material (WLMD site capture / fold-in source — not site source)
+input/

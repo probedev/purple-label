@@ -11,6 +11,7 @@ import SectionHeader from '../components/primitives/SectionHeader.astro';
 import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
+import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
 import { TRUST_BADGES } from '../lib/nav';
 
@@ -44,6 +45,47 @@ const pillars = [
     icon: 'database',
     title: 'Data ownership & governance',
     body: 'Clear data ownership and information governance — your data stays yours, with a documented chain of custody.',
+  },
+];
+
+const legitWhy = [
+  {
+    icon: 'megaphone',
+    title: 'Advertise on Google & Meta',
+    body: 'The major ad networks require LegitScript certification to run healthcare and pharmacy ads. No certification, no paid traffic.',
+  },
+  {
+    icon: 'credit-card',
+    title: 'Get approved by processors',
+    body: "Most payment processors won't onboard a healthcare merchant without it — certification keeps your revenue flowing.",
+  },
+  {
+    icon: 'badge-check',
+    title: 'Earn patient trust',
+    body: 'The LegitScript seal signals to patients and partners that the brand operates legally, safely, and transparently.',
+  },
+  {
+    icon: 'refresh-cw',
+    title: 'Stay compliant as you scale',
+    body: 'Ongoing monitoring keeps every brand certified as regulations, catalogs, and networks change over time.',
+  },
+];
+
+const legitStack = [
+  {
+    icon: 'pill',
+    title: 'Pharmacies',
+    body: '503A and 503B pharmacies across the fulfillment network — certified and audit-ready.',
+  },
+  {
+    icon: 'stethoscope',
+    title: 'Providers',
+    body: 'Licensed prescribers credentialed and certified to operate compliantly in every state.',
+  },
+  {
+    icon: 'globe',
+    title: 'Websites & brands',
+    body: 'Each branded storefront certified so it can legally advertise from day one.',
   },
 ];
 ---
@@ -120,6 +162,52 @@ const pillars = [
       <Card icon="badge-check" title="Payment-processor audit">
         Healthcare-commerce payment processing, cleared.
       </Card>
+    </div>
+  </Section>
+
+  {/* LegitScript — the advertising / payments / trust gate */}
+  <Section surface="sunken" bordered>
+    <SectionHeader
+      eyebrow="LegitScript"
+      title="Certified to advertise, get paid, and be trusted."
+      lead="Compliance isn't a checkbox — it's the gate to traffic, payments, and patient trust. As a LegitScript Enterprise Partner, we certify the entire stack so your brand inherits a compliant foundation from day one."
+    />
+    <div class="mt-12 grid gap-8 sm:grid-cols-3">
+      <StatCard
+        value="250+"
+        label="Certifications completed"
+        caption="Pharmacies, providers, sites"
+      />
+      <StatCard
+        value="Enterprise"
+        label="LegitScript partner tier"
+        caption="Fast-tracked approval"
+      />
+      <StatCard value="50" label="States covered" caption="Nationwide operation" />
+    </div>
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        legitWhy.map((w) => (
+          <Card icon={w.icon} title={w.title}>
+            {w.body}
+          </Card>
+        ))
+      }
+    </div>
+    <div class="mt-12">
+      <SectionHeader
+        eyebrow="The whole stack"
+        title="Pharmacies, providers, and websites — all certified."
+      />
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
+        {
+          legitStack.map((s) => (
+            <Card icon={s.icon} title={s.title}>
+              {s.body}
+            </Card>
+          ))
+        }
+      </div>
     </div>
   </Section>
 
