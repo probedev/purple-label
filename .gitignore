@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# stray installers / large binaries (not part of the site)
+*.pkg
+*.dmg
