@@ -126,7 +126,7 @@ export const PROGRAMS_DATA: Program[] = [
     navDesc: 'ED, testosterone, hair, and wellness.',
     icon: 'user',
     eyebrow: "Men's health",
-    headline: 'Launch a men’s health brand your agents run.',
+    headline: "Launch a men's health brand your agents run.",
     intro:
       'Sexual health, hormones, hair, and wellness under one branded program — licensed providers, pharmacy fulfillment, and compliance on the same pipeline your agents call directly.',
     offerings: [
@@ -155,19 +155,19 @@ export const PROGRAMS_DATA: Program[] = [
     navDesc: 'Hormones, wellness, and longevity.',
     icon: 'heart-pulse',
     eyebrow: "Women's health",
-    headline: 'Launch a women’s health brand your agents run.',
+    headline: "Launch a women's health brand your agents run.",
     intro:
       'Hormones, wellness, and longevity care, fully branded — on the same compliant pipeline that already runs at national scale.',
     offerings: [
-      'Hormone therapy and optimization',
-      'Wellness and longevity protocols',
-      'Skin and hair treatments',
-      'Baseline and monitoring labs inside the journey',
+      'Hormone therapy and menopause support',
+      'Weight management programs',
+      'Hair, skin, and dermatology',
+      'Sexual wellness and general health',
     ],
     faqs: [
       {
-        q: 'Which treatments can I offer?',
-        a: 'Hormones, wellness, longevity, and skin and hair care — anything legal and compliant. Your agents shape the catalog from the same modules.',
+        q: "What can a women's health brand include?",
+        a: 'Hormone therapy and menopause support, weight management, hair, skin, and dermatology, and sexual wellness — anything legal and compliant. Your agents shape the catalog from the same modules.',
       },
       DOCTOR_FAQ,
       OWNERSHIP_FAQ,
@@ -188,10 +188,10 @@ export const PROGRAMS_DATA: Program[] = [
     intro:
       'Testosterone therapy with eligibility labs, dosing, and titration built in — on a compliant pipeline with licensed prescribers in all 50 states.',
     offerings: [
-      'Eligibility labs and baseline panels',
-      'Provider evaluation and prescribing, where clinically appropriate',
-      'Dosing and titration workflows',
-      'Subscription billing and automatic refills',
+      'Provider-evaluated testosterone therapy',
+      'Integrated baseline and monitoring labs',
+      'Pharmacy fulfillment at pass-through pricing',
+      'Recurring, subscription-based care',
     ],
     faqs: [
       DOCTOR_FAQ,
@@ -201,8 +201,8 @@ export const PROGRAMS_DATA: Program[] = [
       },
       OWNERSHIP_FAQ,
       {
-        q: 'Do you mark up the medication?',
-        a: 'No — pass-through pricing on medication and fulfillment. Your cost is our cost.',
+        q: 'Are labs included?',
+        a: 'Yes — baseline and monitoring labs are integrated into the program, ordered and resulted inside the branded journey.',
       },
     ],
   },
@@ -217,10 +217,10 @@ export const PROGRAMS_DATA: Program[] = [
     intro:
       'Hormone replacement therapy with monitoring panels and automatic refills — branded, recurring, and compliant from the first patient.',
     offerings: [
-      'Hormone replacement protocols',
-      'Monitoring panels and labs in-journey',
-      'Dosing, titration, and refills',
-      'Subscription billing under your brand',
+      'Provider-guided hormone optimization',
+      'Integrated lab testing and monitoring',
+      'Standard and compounded formulations',
+      'Ongoing care and refills',
     ],
     faqs: [
       DOCTOR_FAQ,
@@ -230,8 +230,8 @@ export const PROGRAMS_DATA: Program[] = [
         a: 'Programs run on a LegitScript-certified, HIPAA-compliant foundation. Prescribing follows clinical eligibility and applicable state and federal rules; licensed providers manage all clinical care.',
       },
       {
-        q: 'How fast can I launch?',
-        a: 'Your branded storefront can be standing up in days, on infrastructure that has already cleared the audits most telehealth projects never survive.',
+        q: 'Who is HRT for?',
+        a: 'Adults seeking provider-guided hormone optimization, evaluated for eligibility by licensed providers. Clinical decisions and prescribing stay with the provider network.',
       },
     ],
   },
@@ -246,10 +246,10 @@ export const PROGRAMS_DATA: Program[] = [
     intro:
       'Discreet, recurring erectile-dysfunction treatment — licensed providers, direct-to-door fulfillment, and compliance on one pipeline.',
     offerings: [
-      'Branded intake and eligibility checks',
-      'Provider evaluation and prescribing, where clinically appropriate',
-      'Discreet, direct-to-patient fulfillment',
-      'Subscription billing and refills',
+      'Provider-evaluated ED treatments',
+      'Discreet pharmacy fulfillment and delivery',
+      'Subscription and refill management',
+      'Branded, compliant patient experience',
     ],
     faqs: [
       DOCTOR_FAQ,
@@ -259,8 +259,8 @@ export const PROGRAMS_DATA: Program[] = [
       },
       OWNERSHIP_FAQ,
       {
-        q: 'Is it compliant?',
-        a: 'Treatment runs on a LegitScript-certified, HIPAA-compliant foundation with licensed prescribers and 50-state coverage.',
+        q: 'Is it discreet for patients?',
+        a: 'Yes — discreet, branded fulfillment ships direct to the patient. The entire experience runs under your brand on a LegitScript-certified, HIPAA-compliant foundation.',
       },
     ],
   },
@@ -276,9 +276,9 @@ export const PROGRAMS_DATA: Program[] = [
       'Hair-loss and dermatology programs on compounded and commercial supply — branded and recurring on a compliant pipeline.',
     offerings: [
       'Hair-loss treatments, oral and topical',
-      'Dermatology and skin protocols',
-      'Compounded and commercial supply',
-      'Subscription billing and refills',
+      'Dermatology and skincare',
+      'Provider evaluation and prescribing',
+      'Subscription fulfillment and refills',
     ],
     faqs: [
       {
@@ -300,10 +300,10 @@ export const PROGRAMS_DATA: Program[] = [
     intro:
       'Recovery and longevity protocols on compounded supply — branded and recurring, with the compliance qualifiers built in.',
     offerings: [
-      'Recovery and longevity protocols',
-      'Compounded supply through 503A/503B partners',
-      'Provider evaluation, where clinically appropriate',
-      'Subscription billing and refills',
+      'Provider-evaluated peptide protocols',
+      'Compounding-pharmacy sourcing',
+      'Recovery, performance, and longevity focus',
+      'Ongoing monitoring and refills',
     ],
     faqs: [
       {
@@ -325,10 +325,10 @@ export const PROGRAMS_DATA: Program[] = [
     intro:
       'Order, track, and act on lab work inside the same branded journey — from baseline panels to ongoing monitoring, resulted back into your platform.',
     offerings: [
-      'Nationwide lab integrations',
+      'Nationwide lab network integration',
       'Baseline and monitoring panels',
-      'Results delivered inside your platform',
-      'Triggers for titration and follow-up',
+      'Results inside your branded platform',
+      'Provider review and follow-up',
     ],
     faqs: [
       {
