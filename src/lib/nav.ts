@@ -69,6 +69,12 @@ export const PLATFORM: NavGroup = {
       desc: 'HIPAA-compliant data layer, encryption, three cleared audits.',
     },
     {
+      label: 'LegitScript',
+      href: '/security#legitscript',
+      icon: 'badge-check',
+      desc: 'Enterprise Partner — the gate to ads, payments, and patient trust.',
+    },
+    {
       label: 'Architecture',
       href: '/architecture',
       icon: 'git-merge',
