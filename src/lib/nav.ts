@@ -1,7 +1,9 @@
 /**
  * Information architecture. Single source for Header, MegaMenu, and Footer so navigation
- * never drifts from the IA. Header order (2026-06-28): Platform · Programs · Solutions ·
- * Developers · Pricing — Programs promoted to balance the bar toward consumer/conversion.
+ * never drifts from the IA. Header order (2026-06-28): Platform · Rx · Pricing · Developers.
+ * "Rx" is the consumer-facing label for the programs menu (route + data stay /programs); it
+ * leads with the lowest-cost medication catalog. Solutions was dropped — its pages never
+ * existed, and its use-cases live under Platform and the Managed plan.
  */
 import { PROGRAMS_DATA } from './programs';
 
@@ -75,8 +77,10 @@ export const PLATFORM: NavGroup = {
   ],
 };
 
+// Labeled "Rx" in the UI; the route and underlying data stay /programs. The menu leads the
+// consumer story with the lowest-cost medication catalog.
 export const PROGRAMS: NavGroup = {
-  label: 'Programs',
+  label: 'Rx',
   href: '/programs',
   items: PROGRAMS_DATA.map((p) => ({
     label: p.title,
@@ -135,53 +139,10 @@ export const DEVELOPERS: NavGroup = {
   ],
 };
 
-export const SOLUTIONS: NavGroup = {
-  label: 'Solutions',
-  href: '/solutions',
-  items: [
-    {
-      label: 'Launch a DTC telehealth brand',
-      href: '/solutions/launch-dtc',
-      icon: 'rocket',
-      desc: 'Concept to live, agent-built brand.',
-    },
-    {
-      label: 'Run a virtual clinic',
-      href: '/solutions/virtual-clinic',
-      icon: 'video',
-      desc: 'Scheduling, providers, async + video visits.',
-    },
-    {
-      label: 'Add prescribing & fulfillment',
-      href: '/solutions/prescribing-fulfillment',
-      icon: 'pill',
-      desc: 'Bolt e-Rx and pharmacy onto an existing brand.',
-    },
-    {
-      label: 'Scale on our engine',
-      href: '/solutions/enterprise',
-      icon: 'server',
-      desc: 'Inherit proven, high-volume infrastructure.',
-    },
-    {
-      label: 'Fully managed (done-for-you)',
-      href: '/managed',
-      icon: 'headset',
-      desc: 'We build, run, and grow it for you — revenue share.',
-    },
-    {
-      label: 'Build with our API & agents',
-      href: '/solutions/developers',
-      icon: 'code',
-      desc: 'For developer- and agent-first teams.',
-    },
-  ],
-};
-
-// Outcome-first bar: lead with Platform/Programs/Solutions and Pricing; Developers is
-// demoted to a plain trailing link (its depth lives on /developers + the footer), so the
-// top nav reads to an operator, not only a developer.
-export const HEADER_GROUPS: NavGroup[] = [PLATFORM, PROGRAMS, SOLUTIONS];
+// Outcome-first bar: Platform + Rx as mega-menus, then Pricing and Developers as plain
+// trailing links. Solutions was removed (its routes never existed); those use-cases now live
+// under Platform and the Managed plan.
+export const HEADER_GROUPS: NavGroup[] = [PLATFORM, PROGRAMS];
 
 export const HEADER_LINKS: NavItem[] = [
   { label: 'Pricing', href: '/pricing' },
@@ -204,7 +165,6 @@ export const FOOTER_COLUMNS: NavGroup[] = [
       { label: 'System Status', href: '/status' },
     ],
   },
-  SOLUTIONS,
   {
     label: 'Company',
     items: [

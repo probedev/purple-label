@@ -1,6 +1,6 @@
 ---
 /**
- * Footer — design.md §5.4. Always-dark anchor: 5 nav columns, a trust row (certs gated
+ * Footer — design.md §5.4. Always-dark anchor: 4 nav columns, a trust row (certs gated
  * with <Unconfirmed> until substantiated, per content integrity rules) + system-status
  * pill, and a bottom bar. Purple link hovers.
  */
@@ -14,7 +14,7 @@ const year = 2026; // build-time constant; bump in CI if desired
 
 <footer class="bg-dark-bg text-dark-fg">
   <Container as="div" class="py-16 md:py-24">
-    <div class="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-3 lg:grid-cols-6">
+    <div class="grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-3 lg:grid-cols-5">
       <!-- Brand column -->
       <div class="col-span-2 lg:col-span-1">
         <Logo invert />
