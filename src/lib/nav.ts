@@ -66,6 +66,12 @@ export const PLATFORM: NavGroup = {
       icon: 'shield-check',
       desc: 'HIPAA-compliant data layer, encryption, three cleared audits.',
     },
+    {
+      label: 'Architecture',
+      href: '/architecture',
+      icon: 'git-merge',
+      desc: 'Under the hood: the patient journey and the durable order saga.',
+    },
   ],
 };
 

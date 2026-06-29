@@ -252,7 +252,7 @@ const webhookSample = `POST https://yourbrand.com/webhooks
 
   {/* Integrations teaser */}
   <Section id="integrations" surface="sunken" bordered>
-    <div class="grid gap-6 md:grid-cols-2">
+    <div class="grid gap-6 md:grid-cols-3">
       <Card icon="plug" title="Connect the rest of your stack" href="/integrations">
         Pharmacies, providers, labs, analytics, and CRMs — wired through the same API and webhooks
         your agents already use.
@@ -260,6 +260,10 @@ const webhookSample = `POST https://yourbrand.com/webhooks
       <Card icon="badge-check" title="On infrastructure that's cleared audits" href="/security">
         Build on a HIPAA-compliant data layer with end-to-end encryption, behind three cleared
         audits.
+      </Card>
+      <Card icon="git-merge" title="See under the hood" href="/architecture">
+        The patient journey and the durable order saga your agents drive — the architecture behind
+        every call.
       </Card>
     </div>
   </Section>
