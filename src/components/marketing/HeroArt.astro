@@ -1,0 +1,202 @@
+---
+/**
+ * HeroArt — the homepage hero canvas (replaces the old, imperceptible aurora). Two layers on
+ * the plain page background (no gradient):
+ *   1. uniform two-tone purple+teal capsules (pills) that drop from the top on an accelerating
+ *      schedule (one super-slow, then a few, then a bunch), bounce, and settle into a loose pile
+ *      bottom-right — then the whole pile gets swept off the table in a fast brush-off, and the
+ *      gag loops. The timing contrast (slow pile-up → snappy sweep) is the joke.
+ *   2. a faint ECG "pulse" line with a lit blip that travels it on its own loop.
+ * Direction: "friendly pharmacy motif," warm but restrained — whimsical, subtle palette.
+ * Right-weighted (masked to fade toward the copy) so the hero text stays clean. Every color
+ * traces to design tokens, so it re-themes with light/dark. All motion is GSAP-driven and gated
+ * on prefers-reduced-motion (which shows the settled pile directly + a parked pulse blip).
+ */
+---
+
+<div class="hero-art" aria-hidden="true">
+  {/* faint pulse line (drawn behind the capsules) */}
+  <svg class="ha-pulse" viewBox="0 0 800 220" preserveAspectRatio="none" fill="none">
+    <path class="ha-pulse-track" pathLength="1000" d="M0,120 H300 l22,-66 l20,128 l18,-92 l14,30 H800" />
+    <path class="ha-pulse-sweep" pathLength="1000" d="M0,120 H300 l22,-66 l20,128 l18,-92 l14,30 H800" />
+  </svg>
+
+  {/* pills — drop from the top, bounce, and settle into a pile (bottom-right). They arrive on
+      an accelerating schedule: one super-slow, then a few, then a bunch (see PILLS below). */}
+  <span class="ha-capsule ha-cap-1"></span>
+  <span class="ha-capsule ha-cap-2"></span>
+  <span class="ha-capsule ha-cap-3"></span>
+  <span class="ha-capsule ha-cap-4"></span>
+  <span class="ha-capsule ha-cap-5"></span>
+  <span class="ha-capsule ha-cap-6"></span>
+  <span class="ha-capsule ha-cap-7"></span>
+  <span class="ha-capsule ha-cap-8"></span>
+  <span class="ha-capsule ha-cap-9"></span>
+  <span class="ha-capsule ha-cap-10"></span>
+  <span class="ha-capsule ha-cap-11"></span>
+  <span class="ha-capsule ha-cap-12"></span>
+</div>
+
+<style>
+  /* Right-weighted canvas: fills the hero box, clips its own overflow (so pills fall in and
+     out of frame), and fades toward the left so the motif never competes with the headline. */
+  .hero-art {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(105deg, transparent 2%, transparent 26%, #000 60%);
+    mask-image: linear-gradient(105deg, transparent 2%, transparent 26%, #000 60%);
+  }
+
+  /* ---- pulse line ----------------------------------------------------------- */
+  .ha-pulse {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 72%;
+    height: 46%;
+    transform: translateY(-50%);
+    overflow: visible;
+  }
+  .ha-pulse-track,
+  .ha-pulse-sweep {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .ha-pulse-track {
+    stroke: var(--pl-purple-400);
+    opacity: 0.18;
+  }
+  .ha-pulse-sweep {
+    stroke: var(--pl-purple-500);
+    opacity: 0.75;
+    /* 130/1000 of the normalized path is lit; the rest is gap — a travelling "blip". */
+    stroke-dasharray: 130 1000;
+    stroke-dashoffset: 0;
+    will-change: stroke-dashoffset;
+  }
+
+  /* ---- capsules ------------------------------------------------------------- */
+  .ha-capsule {
+    position: absolute;
+    /* All pills are one small, uniform size. */
+    width: 60px;
+    height: 22px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid color-mix(in srgb, var(--pl-purple-400) 52%, transparent);
+    /* Two-tone pill: purple half | teal half — the brand pairing, kept faint. */
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--pl-purple-400) 16%, transparent) 0 50%,
+      color-mix(in srgb, var(--pl-teal-400) 16%, transparent) 50% 100%
+    );
+    will-change: transform, opacity;
+    /* Hidden until JS drops them in (prevents a flash of the resting pile on load). */
+    opacity: 0;
+  }
+  /* The capsule seam where the two halves meet. */
+  .ha-capsule::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 18%;
+    bottom: 18%;
+    width: 1px;
+    background: color-mix(in srgb, var(--pl-purple-400) 45%, transparent);
+  }
+  /* Resting positions form a loose pile in the bottom-right. Earlier-dropping pills sit lower
+     (the base); later ones stack on top. Rotation is owned by GSAP (drop tumble → settle). */
+  .ha-cap-1 { bottom: 4%; right: 12%; }
+  .ha-cap-2 { bottom: 5%; right: 22%; }
+  .ha-cap-3 { bottom: 4%; right: 30%; }
+  .ha-cap-4 { bottom: 6%; right: 7%; }
+  .ha-cap-5 { bottom: 10%; right: 26%; }
+  .ha-cap-6 { bottom: 9%; right: 16%; }
+  .ha-cap-7 { bottom: 12%; right: 21%; }
+  .ha-cap-8 { bottom: 8%; right: 31%; }
+  .ha-cap-9 { bottom: 14%; right: 12%; }
+  .ha-cap-10 { bottom: 15%; right: 24%; }
+  .ha-cap-11 { bottom: 19%; right: 18%; }
+  .ha-cap-12 { bottom: 21%; right: 22%; }
+</style>
+
+<script>
+  import gsap from 'gsap';
+
+  const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const art = document.querySelector('.hero-art');
+
+  // Per pill: when it starts dropping (at, seconds on the timeline) and how long the fall takes
+  // (dur). The schedule accelerates — one super-slow drop, then a few, then a bunch — so big
+  // early gaps shrink to tight late ones. restRot/spin = its settled angle + the tumble it turns
+  // through; peak = settled opacity. CSS owns the resting x/y (bottom/right); GSAP owns rotation.
+  const PILLS = [
+    { sel: '.ha-cap-1', at: 0.0, dur: 2.4, restRot: -10, spin: 130, peak: 0.95 },
+    { sel: '.ha-cap-2', at: 4.5, dur: 2.2, restRot: 12, spin: -100, peak: 0.9 },
+    { sel: '.ha-cap-3', at: 8.0, dur: 2.1, restRot: -24, spin: 150, peak: 0.8 },
+    { sel: '.ha-cap-4', at: 11.0, dur: 2.0, restRot: 8, spin: -120, peak: 1.0 },
+    { sel: '.ha-cap-5', at: 13.4, dur: 1.9, restRot: -16, spin: 110, peak: 0.85 },
+    { sel: '.ha-cap-6', at: 15.3, dur: 1.8, restRot: 20, spin: -140, peak: 0.9 },
+    { sel: '.ha-cap-7', at: 16.8, dur: 1.7, restRot: -6, spin: 120, peak: 0.85 },
+    { sel: '.ha-cap-8', at: 18.0, dur: 1.7, restRot: 28, spin: -90, peak: 0.75 },
+    { sel: '.ha-cap-9', at: 19.0, dur: 1.6, restRot: -20, spin: 140, peak: 0.85 },
+    { sel: '.ha-cap-10', at: 19.8, dur: 1.6, restRot: 16, spin: -110, peak: 0.8 },
+    { sel: '.ha-cap-11', at: 20.5, dur: 1.5, restRot: -12, spin: 130, peak: 0.8 },
+    { sel: '.ha-cap-12', at: 21.1, dur: 1.5, restRot: 24, spin: -100, peak: 0.7 },
+  ];
+
+  if (motionOk && art) {
+    const fall = (art as HTMLElement).clientHeight + 60; // start just above the top edge
+    const sweepX = (art as HTMLElement).clientWidth + 120; // clear the right edge entirely
+    const lastSettle = Math.max(...PILLS.map((p) => p.at + p.dur)); // ~22.6s
+    const BRUSH_AT = lastSettle + 2.5; // the pile sits a beat, then gets swept
+
+    // The whole gag loops: laborious pile-up → snappy brush-off → repeat. fromTo "from" values
+    // (incl. x:0) reset every iteration, so the loop is clean.
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.4 });
+
+    // 1) Pills drop from above the top edge, bounce on landing (bounce.out), and settle into the
+    //    pile on the accelerating schedule above.
+    PILLS.forEach((p) => {
+      const el = art.querySelector(p.sel);
+      if (!el) return;
+      tl.fromTo(el, { y: -fall, x: 0 }, { y: 0, duration: p.dur, ease: 'bounce.out' }, p.at)
+        .fromTo(el, { rotation: p.restRot - p.spin }, { rotation: p.restRot, duration: p.dur, ease: 'power2.out' }, p.at)
+        .fromTo(el, { opacity: 0 }, { opacity: p.peak, duration: 0.5, ease: 'none' }, p.at);
+    });
+
+    // 2) The brush-off — a fast swipe sends the whole pile tumbling off the right edge in a quick
+    //    left-to-right wave. The speed contrast with the slow pile-up is the joke.
+    PILLS.forEach((p, i) => {
+      const el = art.querySelector(p.sel);
+      if (!el) return;
+      const tumble = p.spin > 0 ? 460 : -460; // keep each pill's tumble direction
+      // Absolute targets (rest is x:0 / y:0 / rotation:restRot) so the loop resets cleanly.
+      tl.to(
+        el,
+        { x: sweepX, y: -22, rotation: p.restRot + tumble, duration: 0.75, ease: 'power3.in' },
+        BRUSH_AT + i * 0.035,
+      );
+    });
+
+    // Pulse — a lit blip travels the ECG path on its own loop, independent of the pill cycle.
+    gsap.fromTo(
+      '.ha-pulse-sweep',
+      { strokeDashoffset: 0 },
+      { strokeDashoffset: -1130, duration: 6, repeat: -1, ease: 'none' },
+    );
+  } else if (art) {
+    // Reduced motion: skip the drop — show the settled pile directly, and park the pulse blip
+    // on the ECG spike so the still composition reads as deliberate, not dead.
+    PILLS.forEach((p) => {
+      const el = art.querySelector(p.sel);
+      if (el) gsap.set(el, { rotation: p.restRot, opacity: p.peak * 0.85 });
+    });
+    const sweep = art.querySelector('.ha-pulse-sweep') as SVGPathElement | null;
+    if (sweep) sweep.style.strokeDashoffset = '-370';
+  }
+</script>
