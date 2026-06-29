@@ -309,5 +309,88 @@
 
 </x-import>
 </x-dc>
+
+<!-- Forward/back navigation — drives the deck-stage runtime API (click + touch). Lives outside
+     <x-dc> so support.js (which replaces x-dc with #dc-root) leaves it intact. -->
+<nav class="deck-nav" aria-label="Slide navigation">
+  <button id="deck-prev" class="deck-nav__btn deck-nav__btn--prev" type="button" aria-label="Previous slide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+  </button>
+  <button id="deck-next" class="deck-nav__btn deck-nav__btn--next" type="button" aria-label="Next slide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+  </button>
+</nav>
+<style>
+  .deck-nav__btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2147483000;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 9999px;
+    background: rgba(20, 12, 30, 0.45);
+    color: #fff;
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    opacity: 0.6;
+    transition: opacity 0.15s ease, background-color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .deck-nav__btn svg { width: 26px; height: 26px; }
+  .deck-nav__btn:hover { opacity: 1; background: rgba(20, 12, 30, 0.72); }
+  .deck-nav__btn:focus-visible { outline: 2px solid #a78bfa; outline-offset: 3px; opacity: 1; }
+  .deck-nav__btn--prev { left: max(16px, env(safe-area-inset-left)); }
+  .deck-nav__btn--next { right: max(16px, env(safe-area-inset-right)); }
+  .deck-nav__btn[disabled] { opacity: 0.16; pointer-events: none; }
+  /* Touch devices have no hover to reveal the controls — keep them visible. */
+  @media (hover: none) { .deck-nav__btn { opacity: 0.85; } }
+  @media (max-width: 640px) {
+    .deck-nav__btn { width: 46px; height: 46px; }
+    .deck-nav__btn svg { width: 22px; height: 22px; }
+  }
+  @media print { .deck-nav { display: none; } }
+</style>
+<script>
+  (function () {
+    var prevBtn = document.getElementById('deck-prev');
+    var nextBtn = document.getElementById('deck-next');
+    var deck = function () { return document.querySelector('deck-stage'); };
+    function sync() {
+      var d = deck();
+      if (!d) return;
+      var i = d.index || 0, n = d.length || 0;
+      prevBtn.disabled = i <= 0;
+      nextBtn.disabled = n > 0 && i >= n - 1;
+    }
+    function go(dir, e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var d = deck();
+      if (!d) return;
+      dir < 0 ? d.prev() : d.next();
+    }
+    prevBtn.addEventListener('click', function (e) { go(-1, e); });
+    nextBtn.addEventListener('click', function (e) { go(1, e); });
+    // deck-stage mounts after React loads from CDN — poll until it's ready, then track changes.
+    var tries = 0;
+    var iv = setInterval(function () {
+      var d = deck();
+      if (d) {
+        clearInterval(iv);
+        d.addEventListener('slidechange', sync);
+        sync();
+      } else if (++tries > 150) {
+        clearInterval(iv);
+      }
+    }, 200);
+  })();
+</script>
 </body>
 </html>
