@@ -129,22 +129,6 @@ const matrix = [
     </p>
   </Section>
 
-  {/* Security-parity banner — kills the "shared = less secure" trap */}
-  <Section size="sm" surface="sunken" bordered>
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
-      <Icon name="lucide:shield-check" class="icon size-6 shrink-0 text-success" />
-      <div>
-        <p class="font-display text-h4 text-ink-900">Same security floor, every tier.</p>
-        <p class="mt-2 max-w-prose text-body text-ink-500">
-          Enterprise isn't more secure — it's more sovereign. Every tenant gets HIPAA-compliant,
-          end-to-end-encrypted infrastructure with row-level isolation, behind the same cleared
-          HIPAA, pharmacy-board, and payment-processor audits. Enterprise adds dedicated
-          infrastructure, your own encryption keys, and your choice of data residency.
-        </p>
-      </div>
-    </div>
-  </Section>
-
   {/* Tier cards */}
   <Section>
     <div class="grid gap-6 lg:grid-cols-3">
@@ -188,6 +172,23 @@ const matrix = [
     <p class="mt-8 text-center text-sm text-ink-400">
       Pricing is tailored to your volume and requirements — talk to sales for a quote.
     </p>
+  </Section>
+
+  {/* Security-parity banner — kills the "shared = less secure" trap. Sits below the cards so it
+     reassures after the tier choice rather than interrupting the heading → cards flow. */}
+  <Section size="sm" surface="sunken" bordered>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <Icon name="lucide:shield-check" class="icon size-6 shrink-0 text-success" />
+      <div>
+        <p class="font-display text-h4 text-ink-900">Same security floor, every tier.</p>
+        <p class="mt-2 max-w-prose text-body text-ink-500">
+          Enterprise isn't more secure — it's more sovereign. Every tenant gets HIPAA-compliant,
+          end-to-end-encrypted infrastructure with row-level isolation, behind the same cleared
+          HIPAA, pharmacy-board, and payment-processor audits. Enterprise adds dedicated
+          infrastructure, your own encryption keys, and your choice of data residency.
+        </p>
+      </div>
+    </div>
   </Section>
 
   {/* Comparison matrix */}
