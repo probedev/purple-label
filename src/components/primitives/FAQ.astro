@@ -1,0 +1,45 @@
+---
+/**
+ * FAQ — accessible disclosure list built on native <details>/<summary> (no JS, works
+ * without hydration). Token-styled, hairline-divided. Pass items: {q, a}[]. Pair it with
+ * faqJsonLd(items) in the page's `jsonLd` prop so the same Q&A is emitted as FAQPage
+ * structured data for SEO. The chevron rotates via scoped CSS on the [open] state.
+ */
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  items: { q: string; a: string }[];
+  class?: string;
+}
+const { items, class: className = '' } = Astro.props;
+---
+
+<div class:list={['mx-auto max-w-prose divide-y divide-line border-y border-line', className]}>
+  {
+    items.map((item) => (
+      <details class="faq-item group">
+        <summary class="faq-summary flex cursor-pointer items-center justify-between gap-4 py-5 text-left font-display text-h4 text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">
+          <span>{item.q}</span>
+          <Icon name="lucide:chevron-down" class="faq-chevron icon size-5 shrink-0 text-ink-400" />
+        </summary>
+        <p class="pb-6 text-body text-ink-500">{item.a}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  /* Hide the native disclosure marker so our chevron is the only affordance. */
+  .faq-summary {
+    list-style: none;
+  }
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-chevron {
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .faq-item[open] .faq-chevron {
+    transform: rotate(180deg);
+  }
+</style>

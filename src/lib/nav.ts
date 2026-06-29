@@ -3,6 +3,7 @@
  * never drifts from the IA. Header order (2026-06-28): Platform · Programs · Solutions ·
  * Developers · Pricing — Programs promoted to balance the bar toward consumer/conversion.
  */
+import { PROGRAMS_DATA } from './programs';
 
 export interface NavItem {
   label: string;
@@ -71,52 +72,12 @@ export const PLATFORM: NavGroup = {
 export const PROGRAMS: NavGroup = {
   label: 'Programs',
   href: '/programs',
-  items: [
-    {
-      label: 'Weight loss',
-      href: '/programs',
-      icon: 'activity',
-      desc: 'GLP-1 & metabolic care — the flagship.',
-    },
-    {
-      label: "Men's health",
-      href: '/programs',
-      icon: 'user',
-      desc: 'ED, testosterone, hair, and wellness.',
-    },
-    {
-      label: "Women's health",
-      href: '/programs',
-      icon: 'heart-pulse',
-      desc: 'Hormones, wellness, and longevity.',
-    },
-    {
-      label: 'TRT',
-      href: '/programs',
-      icon: 'dumbbell',
-      desc: 'Testosterone therapy with labs built in.',
-    },
-    { label: 'HRT', href: '/programs', icon: 'droplets', desc: 'Hormone therapy with monitoring.' },
-    { label: 'ED', href: '/programs', icon: 'heart', desc: 'Discreet, recurring treatment.' },
-    {
-      label: 'Hair & skin',
-      href: '/programs',
-      icon: 'scissors',
-      desc: 'Hair-loss and dermatology.',
-    },
-    {
-      label: 'Peptides',
-      href: '/programs',
-      icon: 'flask-conical',
-      desc: 'Recovery and longevity protocols.',
-    },
-    {
-      label: 'Labs & diagnostics',
-      href: '/programs',
-      icon: 'microscope',
-      desc: 'Panels ordered and resulted in-journey.',
-    },
-  ],
+  items: PROGRAMS_DATA.map((p) => ({
+    label: p.title,
+    href: `/programs/${p.slug}`,
+    icon: p.icon,
+    desc: p.navDesc,
+  })),
 };
 
 export const DEVELOPERS: NavGroup = {

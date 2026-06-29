@@ -13,6 +13,8 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
+import FAQ from '../components/primitives/FAQ.astro';
+import { organizationJsonLd, softwareApplicationJsonLd, faqJsonLd } from '../lib/seo';
 
 const modules = [
   {
@@ -90,12 +92,63 @@ const programs = [
     body: 'Baseline and monitoring panels, ordered and resulted inside the journey.',
   },
 ];
+
+// Ownership / sovereignty — the brand, patients, and data are the customer's, not ours.
+const ownership = [
+  {
+    icon: 'tag',
+    title: 'Your brand',
+    body: 'Every patient touchpoint — intake, visits, billing, refills — runs under your name. Patients see your brand, never ours.',
+  },
+  {
+    icon: 'users',
+    title: 'Your patients',
+    body: 'The customer relationship is yours to keep. We run the back end; you own the front.',
+  },
+  {
+    icon: 'database',
+    title: 'Your data',
+    body: 'Clear data ownership and a documented chain of custody — exportable on demand. Your data stays yours.',
+  },
+];
+
+const homeFaqs = [
+  {
+    q: 'Do I own my brand, patients, and data?',
+    a: 'Yes — always. The brand, the patients, and the data are yours. Purple Label runs the back end; the customer relationship and the data stay with you.',
+  },
+  {
+    q: 'Am I the doctor?',
+    a: 'No. A licensed provider network, credentialed in all 50 states, handles clinical care and prescribing. You own the brand; licensed providers handle the medicine.',
+  },
+  {
+    q: 'What medical programs are supported?',
+    a: "Weight loss (GLP-1), men's and women's health, TRT, HRT, ED, hair & skin, peptides, and integrated labs — plus anything else legal and compliant your agents compose from the same modules.",
+  },
+  {
+    q: 'How does LegitScript certification work?',
+    a: 'As a LegitScript Enterprise Partner, your brand inherits pre-certified infrastructure and a fast-track process across pharmacies, providers, and websites — so you can advertise and process payments from day one.',
+  },
+  {
+    q: 'Who handles medication and fulfillment?',
+    a: 'A nationwide 503A/503B pharmacy network fills and ships to all 50 states — at pass-through pricing, zero markup. Your cost is our cost.',
+  },
+  {
+    q: 'Do I build it myself, or is it run for me?',
+    a: 'Either. Build on the platform with your own agents and developers, run a dedicated enterprise deployment, or have our team build and operate it for you on the Managed plan.',
+  },
+  {
+    q: 'What does it take to launch?',
+    a: 'The modules are already in production — intake, visits, e-prescribing, pharmacy, payments, analytics, and compliance. Your agents compose and operate a branded program on infrastructure that has already cleared HIPAA, pharmacy-board, and payment-processor audits.',
+  },
+];
 ---
 
 <PageLayout
   title="Purple Label MD — the telemedicine platform your agents can run"
   description="A modular, API-first telemedicine stack — intake, visits, e-prescribing, pharmacy, payments, analytics, security — delivered as code. API tokens, agent-ready docs, MCP servers, and a prompt library so your AI agents can build and run a branded virtual-care business on infrastructure that's already cleared HIPAA, pharmacy-board, and payment-processor audits."
   path="/"
+  jsonLd={[organizationJsonLd(), softwareApplicationJsonLd(), faqJsonLd(homeFaqs)]}
 >
   {/* 1 — Hero */}
   <Section size="lg">
@@ -328,6 +381,30 @@ const programs = [
     </div>
   </Section>
 
+  {/* 8.5 — Ownership / sovereignty */}
+  <Section>
+    <SectionHeader
+      eyebrow="Ownership"
+      title="You own it. We run the rails."
+      lead="Purple Label is infrastructure, not a middleman. The brand, the patients, and the data are yours — your agents operate them on a back end that already runs at national scale."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        ownership.map((o) => (
+          <Card icon={o.icon} title={o.title}>
+            {o.body}
+          </Card>
+        ))
+      }
+    </div>
+    <p class="mt-8 max-w-prose text-body-lg text-ink-500">
+      <span class="font-semibold text-ink-900"
+        >You own the brand; licensed providers handle the medicine.</span
+      > A board-certified network credentialed in all 50 states evaluates, prescribes, and manages clinical
+      care — so you carry the brand, not the clinical license.
+    </p>
+  </Section>
+
   {/* 9 — Security & Developers teasers */}
   <Section surface="sunken" bordered>
     <div class="grid gap-6 md:grid-cols-2">
@@ -345,6 +422,16 @@ const programs = [
   {/* 10 — Customer proof */}
   <Section size="sm">
     <p class="text-center text-body text-ink-400">Customer stories coming soon.</p>
+  </Section>
+
+  {/* 10.5 — FAQ */}
+  <Section>
+    <SectionHeader
+      align="center"
+      eyebrow="Questions, answered"
+      title="The essentials, before you build."
+    />
+    <FAQ class="mt-12" items={homeFaqs} />
   </Section>
 
   {/* 11 — Closing CTA */}
