@@ -15,6 +15,11 @@ import Unconfirmed from '../../components/marketing/Unconfirmed.astro';
 
 const features = [
   {
+    icon: 'building-2',
+    title: 'Your merchant, your margin',
+    body: 'Payments run through your own merchant account — no platform middleman taking a cut of every charge.',
+  },
+  {
     icon: 'credit-card',
     title: 'Telehealth-ready merchant accounts',
     body: 'Payment setup built for virtual care, on each client’s own merchant account — your payments, your margin.',
@@ -27,17 +32,12 @@ const features = [
   {
     icon: 'rotate-ccw',
     title: 'Refunds & adjustments',
-    body: 'Issue refunds programmatically — wired to the order saga’s compensation path, so a refund and a cancelled order can’t drift apart.',
+    body: 'Issue refunds programmatically — a refund and a cancelled order always stay in sync, so money and fulfillment match.',
   },
   {
     icon: 'shield-check',
     title: 'Card data never touches us',
     note: 'Client-side tokenization keeps cardholder data off our systems — SAQ-A scope, not full PCI-DSS.',
-  },
-  {
-    icon: 'building-2',
-    title: 'Your merchant, your margin',
-    body: 'Payments run through your own merchant account — no platform middleman taking a cut of every charge.',
   },
   {
     icon: 'code',
@@ -58,23 +58,24 @@ const paymentSample = `POST /v1/subscriptions
 ---
 
 <PageLayout
-  title="Payments — telehealth billing on your own merchant"
-  description="Telehealth-ready merchant accounts, subscriptions and rebills, programmatic refunds wired to the order saga, and client-side tokenization that keeps cardholder data off our systems — all driven by the API."
+  title="Payments — your merchant account, your margin"
+  description="Charge, subscribe, and refund on your own merchant account with no per-charge platform fee. Billing built for recurring therapy, refunds and cancellations always kept in sync, and client-side tokenization that keeps cardholder data off our systems — all callable by your agents and the API."
   path="/platform/payments"
 >
   {/* Hero */}
   <Section size="lg">
     <Eyebrow>Payments</Eyebrow>
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      Telehealth payments, on your own merchant.
+      Your merchant account, your margin.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Charge, subscribe, and refund through your own merchant account — with billing built for
-      recurring therapy and refunds tied to the order saga so money and fulfillment never drift
-      apart. Cardholder data is tokenized client-side and never touches our systems.
+      Charge, subscribe, and refund on your own merchant account — no per-charge platform fee
+      skimmed off the top. Billing is built for recurring therapy, with refunds and order
+      cancellations always kept in sync so money and fulfillment match. Cardholder data is tokenized
+      client-side and never touches our systems.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="primary" href="/contact">Book a consult</Button>
       <Button variant="link-arrow" href="/pricing">See pricing</Button>
     </div>
   </Section>
@@ -108,8 +109,8 @@ const paymentSample = `POST /v1/subscriptions
       <div>
         <SectionHeader
           eyebrow="How it fits"
-          title="A refund is just the saga, run backwards."
-          lead="Payments aren’t a standalone integration — charges and refunds are steps in the durable order workflow. When an order can’t be completed, the saga’s compensation path reverses the charge automatically. Idempotency keys mean a retried charge is a no-op: at-most-once billing."
+          title="Refunds and cancellations, always in sync."
+          lead="Payments aren’t a bolt-on integration — charges and refunds are steps in the same durable order workflow. When an order can’t be fulfilled, the charge is automatically reversed in the same transaction, so money and fulfillment always match. A charge that’s retried bills once, never twice."
         />
         <div class="mt-6">
           <Button variant="link-arrow" href="/architecture">See the architecture</Button>
@@ -133,7 +134,7 @@ const paymentSample = `POST /v1/subscriptions
       title="Bill for care on infrastructure that can't double-charge."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="primary" href="/contact">Book a consult</Button>
       <Button variant="secondary" href="/pricing">See pricing</Button>
     </div>
   </Section>

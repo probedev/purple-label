@@ -6,7 +6,7 @@
 export const SITE = {
   name: 'Purple Label MD',
   url: 'https://purplelabelmd.com',
-  tagline: 'Branded telehealth, delivered as an API.',
+  tagline: 'Launch and own a branded telehealth business.',
   twitter: '@purplelabelmd', // [CONFIRM handle]
   defaultOgImage: '/og/default.png',
 } as const;

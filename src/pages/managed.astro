@@ -1,0 +1,242 @@
+---
+/**
+ * Managed `/managed` — the done-for-you doorway for non-technical operators (the SMB on-ramp
+ * in the 8→5-6 rebalance). Folds the proven White Label MD concierge model into Purple Label's
+ * Managed tier: we build, staff, and run a branded telehealth business on the same audited
+ * platform, on revenue share. Outcome-first voice; lowest-cost / pass-through drug pricing is
+ * featured. Counsel-wording flags (controlled-substance / compounding) retained.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Card from '../components/primitives/Card.astro';
+import StatCard from '../components/primitives/StatCard.astro';
+import FAQ from '../components/primitives/FAQ.astro';
+import { Icon } from 'astro-icon/components';
+import { CTA } from '../lib/nav';
+import { faqJsonLd } from '../lib/seo';
+
+const handled = [
+  {
+    icon: 'stethoscope',
+    title: 'Providers',
+    body: 'A board-certified, 50-state provider network evaluates, prescribes, and manages care under your brand — no hiring, no credentialing on your side.',
+  },
+  {
+    icon: 'pill',
+    title: 'Pharmacy & fulfillment',
+    body: 'A nationwide 503A/503B network fills and ships to all 50 states at pass-through pricing — our cost is your cost, with zero markup.',
+  },
+  {
+    icon: 'layout-dashboard',
+    title: 'Your branded store',
+    body: 'Intake, telehealth visits, e-commerce, subscriptions, and patient support — all configured and running under your name.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Compliance & LegitScript',
+    body: 'LegitScript-certified, HIPAA-compliant infrastructure, set up so you can advertise and process payments from day one.',
+  },
+  {
+    icon: 'megaphone',
+    title: 'Marketing & growth',
+    body: 'Support to fill your programs, plus analytics that show you exactly what is converting.',
+  },
+  {
+    icon: 'headset',
+    title: 'A partner through launch',
+    body: 'A high-touch team that builds your brand around your vision and walks you through go-live — never a cookie-cutter template.',
+  },
+];
+
+const steps = [
+  {
+    step: '01',
+    title: 'Choose your programs and brand.',
+    body: 'Pick the care programs you want to offer and bring your brand. We map the economics and the launch plan with you.',
+  },
+  {
+    step: '02',
+    title: 'We build, staff, and configure everything.',
+    body: 'Platform, providers, pharmacy, payments, and compliance — all set up for you on the audited foundation.',
+  },
+  {
+    step: '03',
+    title: 'Launch and start enrolling patients.',
+    body: 'Your branded store goes live — typically in about 30 days — and you begin growing revenue with marketing support.',
+  },
+];
+
+const economics = [
+  'Pass-through drug pricing — our cost is your cost, zero markup',
+  'Recurring, subscription-based revenue with high retention',
+  'Strong margins that stay with you, not us',
+  'Revenue share — we only do well when you do',
+];
+
+const faqs = [
+  {
+    q: 'How much does it cost to launch?',
+    a: 'Startup cost is a fraction of building your own infrastructure, with flexible models — including revenue share, where we only do well when you do. We scope the specifics on your consult.',
+  },
+  {
+    q: 'How is the medication priced?',
+    a: 'Pass-through, zero markup — our cost is your cost. The margin on every medication stays with you, not us.',
+  },
+  {
+    q: 'How fast can I launch?',
+    a: 'Most managed launches go live in about 30 days from kickoff — providers, pharmacy, platform, and compliance handled for you.',
+  },
+  {
+    q: 'Who handles patient support?',
+    a: 'Your choice: full-service, where we handle clinical, fulfillment, and support, or hybrid, where you keep the customer relationship while we run clinical and fulfillment.',
+  },
+  {
+    q: 'Do I own my brand and patients?',
+    a: 'Always. The brand, the patients, and the data are yours. We run the back end; the customer relationship stays with you.',
+  },
+  {
+    q: 'Am I the doctor?',
+    a: 'No. Licensed providers credentialed across all 50 states handle clinical care and prescribing. You own the brand; they handle the medicine.',
+  },
+];
+---
+
+<PageLayout
+  title="Managed — we build and run your branded telehealth business"
+  description="Done-for-you telehealth: we build, staff, and operate your branded business on the same audited platform — licensed providers, pharmacy at pass-through pricing, marketing, and compliance handled for you, on revenue share. Typically live in about 30 days."
+  path="/managed"
+  jsonLd={[faqJsonLd(faqs)]}
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Fully managed · Done-for-you</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      We build and run your branded telehealth business.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      No code, no hiring, no compliance maze. Our team stands up your branded store on the same
+      infrastructure behind 100+ telehealth brands — providers, pharmacy, payments, and compliance
+      handled for you — and we work on revenue share, so we only win when you do.
+    </p>
+    <ul class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
+      <li class="inline-flex items-center gap-1.5">
+        <Icon name="lucide:check" class="icon size-4 text-success" />
+        LegitScript-certified
+      </li>
+      <li class="inline-flex items-center gap-1.5">
+        <Icon name="lucide:check" class="icon size-4 text-success" />
+        HIPAA-compliant
+      </li>
+      <li class="inline-flex items-center gap-1.5">
+        <Icon name="lucide:check" class="icon size-4 text-success" />
+        Live in ~30 days
+      </li>
+    </ul>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      <Button variant="link-arrow" href={CTA.pricing.href}>{CTA.pricing.label}</Button>
+    </div>
+  </Section>
+
+  {/* What we handle */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="What we handle"
+      title="Everything it takes — handled for you."
+      lead="You bring the brand and the vision. We bring the providers, the pharmacy, the platform, and the compliance underneath it."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        handled.map((h) => (
+          <Card icon={h.icon} title={h.title}>
+            {h.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* How it works */}
+  <Section>
+    <SectionHeader
+      eyebrow="How it works"
+      title="Live in three steps."
+      lead="A guided launch with our team — never a cookie-cutter template."
+    />
+    <ol class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        steps.map((s) => (
+          <li class="rounded-lg border border-line bg-surface p-6">
+            <span class="font-mono text-sm text-purple-500">{s.step}</span>
+            <p class="mt-3 font-display text-h4 text-ink-900">{s.title}</p>
+            <p class="mt-2 text-sm text-ink-500">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  {/* Economics — lowest-cost / pass-through drug pricing featured */}
+  <Section surface="sunken" bordered>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <SectionHeader
+          eyebrow="The economics"
+          title="The lowest cost on every medication — and the margin stays yours."
+          lead="We aggregate a nationwide 503A/503B pharmacy network and pass the price straight through: our cost is your cost, with zero markup. Combined with recurring subscriptions, that means the profit on every patient stays where it belongs — with you."
+        />
+        <ul class="mt-6 flex flex-col gap-3">
+          {
+            economics.map((e) => (
+              <li class="flex gap-3 text-body text-ink-700">
+                <span class="mt-1 size-2 shrink-0 rounded-full bg-purple-500" aria-hidden="true" />
+                <span>{e}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="grid gap-6 sm:grid-cols-2">
+        <StatCard value="$0" label="Markup on medication" caption="Pass-through pricing" />
+        <StatCard value="1M+" label="Rx filled monthly" caption="Across the network" />
+        <StatCard value="~30 days" label="To launch" caption="From kickoff to live" />
+        <StatCard value="50-State" label="Provider network" caption="Board-certified" />
+      </div>
+    </div>
+    <p class="mt-8 max-w-prose text-sm text-ink-400">
+      Program availability and prescribing follow clinical eligibility and applicable state and
+      federal rules — including controlled-substance and compounding regulations.
+    </p>
+  </Section>
+
+  {/* Social proof placeholder */}
+  <Section size="sm">
+    <p class="text-center text-body text-ink-400">Customer stories — added once permitted.</p>
+  </Section>
+
+  {/* FAQ */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Questions, answered"
+      title="The essentials, before you launch."
+    />
+    <FAQ class="mt-12" items={faqs} />
+  </Section>
+
+  {/* Closing CTA */}
+  <Section>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Bring your brand. We'll bring everything else."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      <Button variant="secondary" href={CTA.pricing.href}>{CTA.pricing.label}</Button>
+    </div>
+  </Section>
+</PageLayout>

@@ -159,7 +159,7 @@ export const SOLUTIONS: NavGroup = {
     },
     {
       label: 'Fully managed (done-for-you)',
-      href: '/pricing',
+      href: '/managed',
       icon: 'headset',
       desc: 'We build, run, and grow it for you — revenue share.',
     },
@@ -172,9 +172,15 @@ export const SOLUTIONS: NavGroup = {
   ],
 };
 
-export const HEADER_GROUPS: NavGroup[] = [PLATFORM, PROGRAMS, SOLUTIONS, DEVELOPERS];
+// Outcome-first bar: lead with Platform/Programs/Solutions and Pricing; Developers is
+// demoted to a plain trailing link (its depth lives on /developers + the footer), so the
+// top nav reads to an operator, not only a developer.
+export const HEADER_GROUPS: NavGroup[] = [PLATFORM, PROGRAMS, SOLUTIONS];
 
-export const HEADER_LINKS: NavItem[] = [{ label: 'Pricing', href: '/pricing' }];
+export const HEADER_LINKS: NavItem[] = [
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Developers', href: '/developers' },
+];
 
 export const FOOTER_COLUMNS: NavGroup[] = [
   PLATFORM,
@@ -228,5 +234,7 @@ export const TRUST_BADGES = [
 
 export const CTA = {
   consult: { label: 'Book a consult', href: '/contact' },
+  pricing: { label: 'See pricing', href: '/pricing' },
+  build: { label: 'Start building', href: '/developers' },
   dashboard: { label: 'Dashboard', href: '/login' },
 } as const;

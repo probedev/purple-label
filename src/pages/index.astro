@@ -145,8 +145,8 @@ const homeFaqs = [
 ---
 
 <PageLayout
-  title="Purple Label MD — the telemedicine platform your agents can run"
-  description="A modular, API-first telemedicine stack — intake, visits, e-prescribing, pharmacy, payments, analytics, security — delivered as code. API tokens, agent-ready docs, MCP servers, and a prompt library so your AI agents can build and run a branded virtual-care business on infrastructure that's already cleared HIPAA, pharmacy-board, and payment-processor audits."
+  title="Purple Label MD — launch and own a branded telehealth business"
+  description="Launch and own a branded telehealth business on proven, audit-cleared infrastructure — providers, pharmacy at pass-through pricing, payments, and compliance. Build it with your own agents and API, or have our team run it for you, done-for-you on revenue share."
   path="/"
   jsonLd={[organizationJsonLd(), softwareApplicationJsonLd(), faqJsonLd(homeFaqs)]}
 >
@@ -174,17 +174,18 @@ const homeFaqs = [
           >
         </p>
         <h1 class="mt-5 max-w-prose font-display text-display text-ink-900">
-          Everything it takes to launch a telehealth brand.
-          <span class="text-purple-600">Your agents run it.</span>
+          Launch and own a branded
+          <span class="text-purple-600">telehealth business.</span>
         </h1>
         <p class="mt-6 max-w-prose text-body-lg text-ink-500">
           Providers, pharmacy, payments, and compliance — the proven infrastructure behind 100+
-          telehealth brands, now delivered as code your agents call directly. Not a builder, not a
-          dashboard: the layer underneath.
+          telehealth brands, with the lowest medication cost passed straight through. Build it with
+          your agents, or have our team run it for you.
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-4">
-          <Button variant="primary" href="/developers">Start building</Button>
-          <Button variant="link-arrow" href="/contact">Talk to sales</Button>
+          <Button variant="primary" href="/contact">Book a consult</Button>
+          <Button variant="secondary" href="/pricing">See pricing</Button>
+          <Button variant="link-arrow" href="/developers">Start building</Button>
         </div>
         <p class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
           <span class="inline-flex items-center gap-1.5">
@@ -204,7 +205,7 @@ const homeFaqs = [
   <Section size="sm" surface="surface" bordered>
     <p class="mx-auto max-w-prose text-center text-body text-ink-500">
       The engine that's run a national telehealth operation in production at scale — battle-tested
-      infrastructure, now delivered as code your agents call directly.
+      infrastructure behind 100+ telehealth brands.
     </p>
     <p class="mt-6 text-center text-xs uppercase tracking-eyebrow text-ink-400">
       Customer logos — added once permitted
@@ -215,12 +216,12 @@ const homeFaqs = [
   <Section>
     <SectionHeader
       eyebrow="Why now"
-      title="Built for the way you build now: with agents."
-      lead="For a decade, launching telehealth meant buying a no-code builder, a separate EMR, a prescribing tool, a pharmacy, and a payment processor — then wiring them together and running it all through a dozen dashboards. In 2026, your team builds with AI agents. So we skip the builders and the dashboards and give you the layer underneath: a modular, code-first platform your agents call directly."
+      title="One platform, built around your business."
+      lead="For a decade, launching telehealth meant buying a no-code builder, a separate EMR, a prescribing tool, a pharmacy, and a payment processor — then wiring them together and running it all through a dozen dashboards. Purple Label gives you the proven layer underneath instead: a modular platform you can run two ways — build on it with your own team and agents, or have us build and operate it for you."
     />
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Best-of-breed modules, one API, full control — the same pipelines that already scaled to a
-      national operation, now shaped to your brand and driven by your agents.
+      Best-of-breed modules, one platform, full control — the same pipelines that already scaled to
+      a national operation, now shaped to your brand and run your way.
     </p>
   </Section>
 
@@ -257,36 +258,30 @@ const homeFaqs = [
     </div>
   </Section>
 
-  {/* 5 — What you actually get (the product form) */}
+  {/* 5 — Two ways to launch */}
   <Section>
     <SectionHeader
-      eyebrow="What you actually get"
-      title="Three things turn into a running telemedicine business."
-      lead="The product is code, not a console. Your agents do the assembly; you keep full control."
+      eyebrow="Two ways to launch"
+      title="Build it yourself, or have us run it."
+      lead="Same proven platform, same cleared audits, same pass-through drug pricing — you choose how hands-on you want to be."
     />
-    <div class="mt-12 grid gap-6 md:grid-cols-3">
-      <Card icon="key" title="API tokens & a programmable surface">
-        Every module — intake, visits, prescribing, pharmacy, payments, analytics — is callable.
-        Scoped tokens, sandbox and production.
+    <div class="mt-12 grid gap-6 md:grid-cols-2">
+      <Card icon="code" title="Build it with agents">
+        Point your team and your AI agents at API tokens, agent-ready docs, MCP servers, and a
+        prompt library, and assemble a branded telehealth business in code — full control, no glue,
+        no console to outgrow.
+        <span class="mt-6 block">
+          <Button variant="link-arrow" href="/developers">Start building</Button>
+        </span>
       </Card>
-      <Card icon="terminal" title="Agent-ready docs & MCP servers">
-        Documentation formatted for AI agents to read and act on, plus MCP servers that connect your
-        agents directly to the platform — no glue code.
+      <Card icon="headset" title="We run it for you">
+        Prefer done-for-you? Our team builds, staffs, and operates your branded store — providers,
+        pharmacy, compliance, and marketing handled — typically live in about 30 days, on revenue
+        share.
+        <span class="mt-6 block">
+          <Button variant="link-arrow" href="/managed">Explore Managed</Button>
+        </span>
       </Card>
-      <Card icon="sparkles" title="A customizable prompt library">
-        Vetted prompts to build, launch, and operate each module, tailored to your brand and your
-        agents.
-      </Card>
-    </div>
-    <p class="mt-8 max-w-prose text-body text-ink-500">
-      With these, your agents stand up the site, manage it, pull reporting, integrate any tool, and
-      customize any component. And where a human must act — a clinician reviewing a visit, an
-      operator handling an exception — there's a focused console. Everything else is yours to
-      assemble in code.
-    </p>
-    <div class="mt-8 flex flex-wrap items-center gap-6">
-      <Button variant="link-arrow" href="/developers">Read the docs</Button>
-      <Button variant="link-arrow" href="/developers">Explore the API</Button>
     </div>
   </Section>
 
@@ -318,8 +313,8 @@ const homeFaqs = [
   <Section>
     <SectionHeader
       eyebrow="Programs you can launch"
-      title="Any compliant program, assembled by your agents."
-      lead="The same modules compose into complete, branded care programs — and these are already running on the platform at scale. Launch one, or a full menu."
+      title="Any compliant program, launched under your brand."
+      lead="The same modules compose into complete, branded care programs — already running on the platform at scale. Build one with your agents, or have us run it. Launch one, or a full menu."
     />
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {
@@ -340,7 +335,7 @@ const homeFaqs = [
     <SectionHeader
       eyebrow="Why build on Purple Label"
       title="You inherit infrastructure that already scaled."
-      lead="The agent-first product is how you build. These are why teams choose us."
+      lead="How you build is up to you. These are why teams choose us either way."
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       <Card icon="server" title="Proven scale, top-tier security">
@@ -348,9 +343,9 @@ const homeFaqs = [
         prescriptions a month, 10,000+ orders a week — cleared through HIPAA, pharmacy-board, and
         payment-processor audits.
       </Card>
-      <Card icon="circle-dollar-sign" title="Lowest-in-class drug pricing">
-        We pass our huge-volume Rx discounts straight through to you with no markup — keep the
-        margin, or pass the savings to patients.
+      <Card icon="circle-dollar-sign" title="The lowest cost on every medication">
+        We pass our huge-volume Rx discounts straight through with zero markup — our cost is your
+        cost. Keep the margin, or pass the savings to patients.
       </Card>
       <Card icon="headset" title="World-class, US-based care">
         AI-first support resolves routine volume instantly; complex and clinical issues escalate to
@@ -386,7 +381,7 @@ const homeFaqs = [
     <SectionHeader
       eyebrow="Ownership"
       title="You own it. We run the rails."
-      lead="Purple Label is infrastructure, not a middleman. The brand, the patients, and the data are yours — your agents operate them on a back end that already runs at national scale."
+      lead="Purple Label is infrastructure, not a middleman. The brand, the patients, and the data are yours — run by your team, your agents, or ours, on a back end that already operates at national scale."
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       {
@@ -439,11 +434,11 @@ const homeFaqs = [
     <SectionHeader
       align="center"
       eyebrow="Get started"
-      title="Build telemedicine your agents can run — on infrastructure that's already proven."
+      title="Launch a branded telehealth business — on infrastructure that's already proven."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Request a demo</Button>
-      <Button variant="secondary" href="/developers">Read the docs</Button>
+      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="secondary" href="/pricing">See pricing</Button>
     </div>
   </Section>
 </PageLayout>

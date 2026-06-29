@@ -56,23 +56,23 @@ const analyticsSample = `POST /v1/metrics/query
 ---
 
 <PageLayout
-  title="Analytics & Growth — your data, as data"
-  description="Cohorts, retention, order economics, and conversion as queryable data and API endpoints — and served to your agents over MCP. Not a locked dashboard: reach every metric programmatically."
+  title="Analytics & Growth — cohort retention, unit economics, conversion"
+  description="See cohort retention, unit economics, and conversion in real time — queryable however you work: dashboards, warehouse tables, or API. Your data, as data — and served to your agents over MCP."
   path="/platform/analytics"
 >
   {/* Hero */}
   <Section size="lg">
     <Eyebrow>Analytics & Growth</Eyebrow>
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      Your data, as data — not a locked dashboard.
+      See cohort retention, unit economics, and conversion — in real time.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Cohorts, retention, order economics, and conversion — computed from the event stream and
-      reached however you work: as API endpoints, as warehouse tables, or as MCP queries your agents
-      run directly. The platform reports on itself; you decide what to ask.
+      The metrics that decide what to scale, queryable however you work: dashboards, warehouse
+      tables, or API. It's your data, as data — so you decide what to ask, and your agents can query
+      it directly over MCP.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="primary" href="/contact">Book a consult</Button>
       <Button variant="link-arrow" href="/developers">Read the docs</Button>
     </div>
   </Section>
@@ -100,9 +100,9 @@ const analyticsSample = `POST /v1/metrics/query
     <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
       <div>
         <SectionHeader
-          eyebrow="How it fits"
-          title="Read models, projected from every event."
-          lead="Analytics is the CQRS read side of the event backbone: domain events project into read models and a warehouse, and the same layer answers your agents’ MCP read queries. Because it’s built from the event log, the numbers reconcile with the system of record by construction."
+          eyebrow="Optional depth: how it fits"
+          title="Numbers that reconcile, by construction."
+          lead="You don't need the internals to use the metrics — but if you want them: analytics is the CQRS read side of the event backbone, with read models projected from every event. Domain events project into read models and a warehouse, and the same layer answers your agents’ MCP read queries. Because it’s built from the event log, the numbers reconcile with the system of record by construction."
         />
         <div class="mt-6 flex flex-wrap items-center gap-6">
           <Button variant="link-arrow" href="/architecture">See the architecture</Button>
@@ -123,7 +123,7 @@ const analyticsSample = `POST /v1/metrics/query
   <Section surface="surface" bordered>
     <SectionHeader align="center" eyebrow="Get started" title="Point your agents at the numbers." />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="primary" href="/contact">Book a consult</Button>
       <Button variant="secondary" href="/developers">Read the docs</Button>
     </div>
   </Section>

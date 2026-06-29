@@ -29,8 +29,8 @@ const features = [
   },
   {
     icon: 'history',
-    title: 'Audit log by construction',
-    body: 'Every state change is an event, so the full patient lifecycle is logged automatically — the evidence your compliance reviews need, on tap.',
+    title: 'Full audit trail by design',
+    body: 'Every change is logged automatically — no re-integrating data later — so the evidence your compliance reviews need is always on tap.',
   },
   {
     icon: 'shield-check',
@@ -56,23 +56,23 @@ const patientSample = `GET /v1/patients/pat_77a1...
 ---
 
 <PageLayout
-  title="Patient Management — one record across every module"
-  description="A single longitudinal patient record across intake, visits, prescribing, pharmacy, and payments — with secure messaging, care coordination, a built-in audit log, and an API your agents can drive."
+  title="Patient Management — see the whole patient, in one place"
+  description="A single longitudinal patient record so your team always sees the whole patient — across intake, visits, prescribing, pharmacy, and payments — with secure messaging, care coordination, a built-in audit trail, and an API your agents can drive."
   path="/platform/patients"
 >
   {/* Hero */}
   <Section size="lg">
     <Eyebrow>Patient Management</Eyebrow>
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      One patient record, across every module.
+      See the whole patient, not a dozen disconnected systems.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
       Intake, visits, prescriptions, orders, and messages all attach to a single longitudinal record
-      — so your team and your agents always see the whole patient, not a dozen disconnected systems.
-      It's the read side of the platform's event backbone, and it's callable from your stack.
+      — so your team always sees the whole patient, in one place, instead of stitching together a
+      dozen systems that never agree.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="primary" href="/contact">Book a consult</Button>
       <Button variant="link-arrow" href="/developers">Read the docs</Button>
     </div>
   </Section>
@@ -102,7 +102,7 @@ const patientSample = `GET /v1/patients/pat_77a1...
         <SectionHeader
           eyebrow="How it fits"
           title="The record is a projection of every event."
-          lead="Each module publishes domain events; Patient Management projects them into one view. Rebuildable by replay, logged by construction — that's how the audit trail comes for free."
+          lead="Under the hood, the record is the read side of the platform's event backbone: each module publishes domain events, and Patient Management projects every event into one view. Rebuildable by replay, logged by construction — that's how the audit trail comes for free. And it's callable from your stack."
         />
         <div class="mt-6">
           <Button variant="link-arrow" href="/architecture">See the architecture</Button>
@@ -126,7 +126,7 @@ const patientSample = `GET /v1/patients/pat_77a1...
       title="Give every module one source of truth."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Talk to sales</Button>
+      <Button variant="primary" href="/contact">Book a consult</Button>
       <Button variant="secondary" href="/developers">Read the docs</Button>
     </div>
   </Section>
