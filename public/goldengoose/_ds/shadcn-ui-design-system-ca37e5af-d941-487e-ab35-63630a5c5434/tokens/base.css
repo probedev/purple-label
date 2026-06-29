@@ -1,0 +1,42 @@
+/* ============================================================
+   BASE — minimal resets so specimens & kits render correctly
+   when consumers link styles.css. Mirrors shadcn's @layer base.
+   ============================================================ */
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Active press feedback — shadcn dims interactive elements on tap. */
+a:active,
+button:active {
+  opacity: 0.6;
+}
+@media (min-width: 768px) {
+  a:active,
+  button:active {
+    opacity: 1;
+  }
+}

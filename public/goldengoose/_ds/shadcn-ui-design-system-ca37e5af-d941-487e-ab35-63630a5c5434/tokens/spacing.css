@@ -1,0 +1,21 @@
+/* ============================================================
+   SPACING — Tailwind's 4px base grid. The --spacing unit is the
+   atom; named steps below cover the common rhythm shadcn uses
+   (gap-2, p-4, px-6 …).
+   ============================================================ */
+
+:root {
+  --spacing: 0.25rem;                       /* 4px atom */
+  --space-0-5: calc(var(--spacing) * 0.5);  /* 2px  */
+  --space-1: calc(var(--spacing) * 1);      /* 4px  */
+  --space-1-5: calc(var(--spacing) * 1.5);  /* 6px  */
+  --space-2: calc(var(--spacing) * 2);      /* 8px  */
+  --space-3: calc(var(--spacing) * 3);      /* 12px */
+  --space-4: calc(var(--spacing) * 4);      /* 16px */
+  --space-5: calc(var(--spacing) * 5);      /* 20px */
+  --space-6: calc(var(--spacing) * 6);      /* 24px */
+  --space-8: calc(var(--spacing) * 8);      /* 32px */
+  --space-10: calc(var(--spacing) * 10);    /* 40px */
+  --space-12: calc(var(--spacing) * 12);    /* 48px */
+  --space-16: calc(var(--spacing) * 16);    /* 64px */
+}

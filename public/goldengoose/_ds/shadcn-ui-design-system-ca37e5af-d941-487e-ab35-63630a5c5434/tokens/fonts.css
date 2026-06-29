@@ -1,0 +1,4 @@
+/* Geist + Geist Mono — the shadcn/ui default typefaces, served from Google Fonts.
+   NOTE: served via CDN @import. To self-host, download the Geist binaries from
+   https://vercel.com/font and replace these with local @font-face rules. */
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap");

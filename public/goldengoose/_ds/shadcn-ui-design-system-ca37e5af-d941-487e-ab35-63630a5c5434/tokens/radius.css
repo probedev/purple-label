@@ -1,0 +1,14 @@
+/* ============================================================
+   RADIUS — driven by a single --radius (0.625rem / 10px).
+   Tailwind utilities (rounded-sm…rounded-2xl) derive from it.
+   ============================================================ */
+
+:root {
+  --radius: 0.625rem;                       /* 10px — the base */
+  --radius-sm: calc(var(--radius) - 4px);   /* 6px  */
+  --radius-md: calc(var(--radius) - 2px);   /* 8px  */
+  --radius-lg: var(--radius);               /* 10px */
+  --radius-xl: calc(var(--radius) + 4px);   /* 14px */
+  --radius-2xl: calc(var(--radius) + 8px);  /* 18px */
+  --radius-full: 9999px;
+}
