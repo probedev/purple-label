@@ -1,6 +1,7 @@
 dist/
 .astro/
 node_modules/
+archive/
 public/fonts/
 package-lock.json
 spec/
