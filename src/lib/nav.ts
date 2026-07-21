@@ -70,7 +70,7 @@ export const PLATFORM: NavGroup = {
     },
     {
       label: 'LegitScript',
-      href: '/security#legitscript',
+      href: '/legitscript',
       icon: 'badge-check',
       desc: 'Enterprise Partner — the gate to ads, payments, and patient trust.',
     },

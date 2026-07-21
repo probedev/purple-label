@@ -1,0 +1,55 @@
+---
+/**
+ * MobileStickyCta — mobile-only sticky consult bar (folded from WLMD, where it kept the
+ * one CTA a thumb away on long scrolls). Hidden until the reader scrolls past the hero so
+ * it never doubles the hero's primary button. Slides in via transform (the global
+ * prefers-reduced-motion guard kills the transition; the bar still appears).
+ * Pages that ARE the conversion target (/contact, /thank-you) pass hideStickyCta to
+ * PageLayout instead of rendering this.
+ */
+import Button from '../primitives/Button.astro';
+
+interface Props {
+  label?: string;
+  href?: string;
+}
+
+const { label = 'Book a consult', href = '/contact' } = Astro.props;
+---
+
+<div
+  id="mobile-sticky-cta"
+  class="fixed inset-x-0 bottom-0 z-40 translate-y-full border-t border-line bg-surface p-3 shadow-md transition-transform duration-300 ease-out md:hidden"
+>
+  <Button variant="primary" href={href} class="w-full">{label}</Button>
+</div>
+
+<style>
+  /* Keep the bar clear of iOS home-indicator territory. */
+  #mobile-sticky-cta {
+    padding-bottom: calc(var(--space-3, 0.75rem) + env(safe-area-inset-bottom, 0px));
+  }
+</style>
+
+<script>
+  const bar = document.getElementById('mobile-sticky-cta');
+  if (bar) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const pastHero = window.scrollY > window.innerHeight * 0.8;
+      bar.classList.toggle('translate-y-full', !pastHero);
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
+</script>

@@ -18,6 +18,13 @@ export interface ProgramJourneyStep {
   body: string;
 }
 
+export interface ProgramWhyItWorks {
+  /** lucide icon name (no prefix). */
+  icon: string;
+  title: string;
+  body: string;
+}
+
 export interface Program {
   slug: string;
   /** Display + nav label. */
@@ -31,10 +38,15 @@ export interface Program {
   eyebrow: string;
   headline: string;
   intro: string;
+  /**
+   * The business case for the category (folded from the WLMD per-program pages):
+   * why this vertical works for an operator — retention, demand, unit economics.
+   */
+  whyItWorks?: ProgramWhyItWorks[];
   /** "What this program can offer" bullets. */
   offerings: string[];
   faqs: ProgramFaq[];
-  /** Optional end-to-end patient journey (flagship only). */
+  /** Per-program patient journey; pages fall back to DEFAULT_JOURNEY when unset. */
   journey?: ProgramJourneyStep[];
 }
 
@@ -43,6 +55,39 @@ export const PROGRAM_TRUST = [
   'LegitScript-certified',
   'HIPAA-compliant',
   'Licensed providers in all 50 states',
+];
+
+/**
+ * The standard Rx patient journey, rendered on every program page (WLMD showed this
+ * flow on each of its program pages — it earns its keep as proof the pipeline is real).
+ * Programs with a different shape (e.g. labs) override via `journey`.
+ */
+export const DEFAULT_JOURNEY: ProgramJourneyStep[] = [
+  {
+    step: '01',
+    title: 'Intake & eligibility',
+    body: 'The patient completes a branded intake and eligibility check.',
+  },
+  {
+    step: '02',
+    title: 'Provider consult',
+    body: 'A licensed provider reviews — async or sync — and confirms the plan.',
+  },
+  {
+    step: '03',
+    title: 'Prescription',
+    body: 'When clinically appropriate, the provider prescribes.',
+  },
+  {
+    step: '04',
+    title: 'Delivery',
+    body: "Medication ships discreetly to the patient's door.",
+  },
+  {
+    step: '05',
+    title: 'Ongoing care & refills',
+    body: 'Check-ins, titration, and automatic refills keep patients on track.',
+  },
 ];
 
 const OWNERSHIP_FAQ: ProgramFaq = {
@@ -68,39 +113,29 @@ export const PROGRAMS_DATA: Program[] = [
     headline: 'Launch a GLP-1 weight-loss program under your brand.',
     intro:
       'The fastest-growing category in telehealth — GLP-1 and metabolic care, recurring by design. Your agents stand up the full program on the same compliant pipeline that already fills prescriptions at national scale.',
+    whyItWorks: [
+      {
+        icon: 'trending-up',
+        title: 'The biggest opportunity in consumer health',
+        body: 'Demand for weight-loss treatment is surging, and patients want a trusted, branded experience.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Recurring by design',
+        body: 'Titration, check-ins, and refills make weight loss a subscription business with high retention.',
+      },
+      {
+        icon: 'activity',
+        title: 'The flagship demand driver',
+        body: 'The category pulling patients into telehealth — and into every adjacent program on your menu.',
+      },
+    ],
     offerings: [
       'Semaglutide, tirzepatide, and compounded equivalents, where clinically appropriate',
       'Eligibility checks, medical intake, and dosing / titration workflows',
       'Subscription billing, refills, and patient management under your brand',
       'Pass-through pricing on medication and fulfillment — zero markup',
       'Baseline and monitoring labs, ordered and resulted inside the journey',
-    ],
-    journey: [
-      {
-        step: '01',
-        title: 'Intake & eligibility',
-        body: 'The patient completes a branded intake and eligibility check.',
-      },
-      {
-        step: '02',
-        title: 'Provider consult',
-        body: 'A licensed provider reviews — async or sync — and confirms the plan.',
-      },
-      {
-        step: '03',
-        title: 'Prescription',
-        body: 'When clinically appropriate, the provider prescribes.',
-      },
-      {
-        step: '04',
-        title: 'Delivery',
-        body: "Medication ships discreetly to the patient's door.",
-      },
-      {
-        step: '05',
-        title: 'Ongoing care & refills',
-        body: 'Check-ins, titration, and automatic refills keep patients on track.',
-      },
     ],
     faqs: [
       {
@@ -129,6 +164,23 @@ export const PROGRAMS_DATA: Program[] = [
     headline: "Launch a men's health brand your agents run.",
     intro:
       'Sexual health, hormones, hair, and wellness under one branded program — licensed providers, pharmacy fulfillment, and compliance on the same pipeline your agents call directly.',
+    whyItWorks: [
+      {
+        icon: 'trending-up',
+        title: 'Surging demand',
+        body: 'Men are turning to discreet, convenient online care for ED, hormones, and wellness in record numbers.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Recurring by design',
+        body: 'Subscriptions and automatic refills create predictable, compounding revenue — not one-off sales.',
+      },
+      {
+        icon: 'circle-dollar-sign',
+        title: 'High lifetime value',
+        body: "Men's health patients often add services over time, raising retention and lifetime value.",
+      },
+    ],
     offerings: [
       'ED and sexual-health treatments',
       'Testosterone and hormone optimization',
@@ -158,6 +210,23 @@ export const PROGRAMS_DATA: Program[] = [
     headline: "Launch a women's health brand your agents run.",
     intro:
       'Hormones, wellness, and longevity care, fully branded — on the same compliant pipeline that already runs at national scale.',
+    whyItWorks: [
+      {
+        icon: 'users',
+        title: 'Broad, loyal market',
+        body: 'Women drive the majority of healthcare decisions and stay with brands they trust.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Multiple recurring lines',
+        body: 'Hormones, weight, and skincare each run as recurring subscriptions on one platform.',
+      },
+      {
+        icon: 'blocks',
+        title: 'Cross-sell built in',
+        body: 'Add labs and adjacent programs to deepen care and lift lifetime value.',
+      },
+    ],
     offerings: [
       'Hormone therapy and menopause support',
       'Weight management programs',
@@ -187,6 +256,23 @@ export const PROGRAMS_DATA: Program[] = [
     headline: 'Launch a TRT program your agents run.',
     intro:
       'Testosterone therapy with eligibility labs, dosing, and titration built in — on a compliant pipeline with licensed prescribers in all 50 states.',
+    whyItWorks: [
+      {
+        icon: 'refresh-cw',
+        title: 'High retention',
+        body: 'TRT is ongoing care — patients stay engaged and subscribed for the long term.',
+      },
+      {
+        icon: 'microscope',
+        title: 'Labs-driven trust',
+        body: 'Integrated baseline and monitoring labs build credibility and clinical safety.',
+      },
+      {
+        icon: 'circle-dollar-sign',
+        title: 'Recurring revenue',
+        body: 'Monthly dosing and refills make for predictable, compounding revenue.',
+      },
+    ],
     offerings: [
       'Provider-evaluated testosterone therapy',
       'Integrated baseline and monitoring labs',
@@ -216,6 +302,23 @@ export const PROGRAMS_DATA: Program[] = [
     headline: 'Launch an HRT program your agents run.',
     intro:
       'Hormone replacement therapy with monitoring panels and automatic refills — branded, recurring, and compliant from the first patient.',
+    whyItWorks: [
+      {
+        icon: 'megaphone',
+        title: 'Growing awareness',
+        body: 'Menopause and hormone optimization are mainstream conversations driving real demand.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Recurring by nature',
+        body: 'Ongoing dosing, labs, and refills make HRT a durable subscription business.',
+      },
+      {
+        icon: 'users',
+        title: 'Men and women',
+        body: 'One platform serves hormone therapy across both audiences, widening your market.',
+      },
+    ],
     offerings: [
       'Provider-guided hormone optimization',
       'Integrated lab testing and monitoring',
@@ -245,6 +348,23 @@ export const PROGRAMS_DATA: Program[] = [
     headline: 'Launch an ED program your agents run.',
     intro:
       'Discreet, recurring erectile-dysfunction treatment — licensed providers, direct-to-door fulfillment, and compliance on one pipeline.',
+    whyItWorks: [
+      {
+        icon: 'trending-up',
+        title: 'Proven, high-intent demand',
+        body: 'ED is a large, search-driven market with patients ready to start treatment.',
+      },
+      {
+        icon: 'lock',
+        title: 'Discreet and recurring',
+        body: 'Private, subscription-based care keeps patients engaged and refilling.',
+      },
+      {
+        icon: 'blocks',
+        title: 'Easy to cross-sell',
+        body: 'ED patients frequently add hair, TRT, and wellness — raising lifetime value.',
+      },
+    ],
     offerings: [
       'Provider-evaluated ED treatments',
       'Discreet pharmacy fulfillment and delivery',
@@ -274,6 +394,23 @@ export const PROGRAMS_DATA: Program[] = [
     headline: 'Launch a hair & skin brand your agents run.',
     intro:
       'Hair-loss and dermatology programs on compounded and commercial supply — branded and recurring on a compliant pipeline.',
+    whyItWorks: [
+      {
+        icon: 'users',
+        title: 'Everyday, mass-market demand',
+        body: 'Hair loss and skincare appeal to a broad audience across ages and genders.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Sticky subscriptions',
+        body: 'Topicals and orals are used continuously, driving long retention.',
+      },
+      {
+        icon: 'circle-dollar-sign',
+        title: 'Strong margins',
+        body: 'Pass-through pricing on medications keeps healthy margins with your brand.',
+      },
+    ],
     offerings: [
       'Hair-loss treatments, oral and topical',
       'Dermatology and skincare',
@@ -299,6 +436,23 @@ export const PROGRAMS_DATA: Program[] = [
     headline: 'Launch a peptides program your agents run.',
     intro:
       'Recovery and longevity protocols on compounded supply — branded and recurring, with the compliance qualifiers built in.',
+    whyItWorks: [
+      {
+        icon: 'rocket',
+        title: 'Fast-emerging category',
+        body: 'Recovery and longevity peptides are a rising, high-interest space with room to lead.',
+      },
+      {
+        icon: 'heart',
+        title: 'Engaged audience',
+        body: 'Performance- and longevity-minded patients are loyal and proactive about care.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Recurring protocols',
+        body: 'Ongoing protocols, monitoring, and refills support durable recurring revenue.',
+      },
+    ],
     offerings: [
       'Provider-evaluated peptide protocols',
       'Compounding-pharmacy sourcing',
@@ -324,11 +478,56 @@ export const PROGRAMS_DATA: Program[] = [
     headline: 'Add integrated labs and diagnostics.',
     intro:
       'Order, track, and act on lab work inside the same branded journey — from baseline panels to ongoing monitoring, resulted back into your platform.',
+    whyItWorks: [
+      {
+        icon: 'blocks',
+        title: 'Attaches to everything',
+        body: 'Labs pair with TRT, HRT, weight, and wellness — multiplying revenue across programs.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Recurring monitoring',
+        body: 'Baseline plus ongoing panels create repeat, recurring diagnostics revenue.',
+      },
+      {
+        icon: 'badge-check',
+        title: 'Builds trust',
+        body: 'Data-driven care signals credibility and improves patient outcomes and retention.',
+      },
+    ],
     offerings: [
       'Nationwide lab network integration',
+      'At-home collection kits and in-person draw sites',
       'Baseline and monitoring panels',
       'Results inside your branded platform',
       'Provider review and follow-up',
+    ],
+    journey: [
+      {
+        step: '01',
+        title: 'Order',
+        body: 'A panel is ordered inside the branded journey — standalone or as part of a program.',
+      },
+      {
+        step: '02',
+        title: 'Collect',
+        body: 'The patient uses an at-home kit or visits a nearby draw site.',
+      },
+      {
+        step: '03',
+        title: 'Result',
+        body: 'Results flow back into your platform, structured and chart-ready.',
+      },
+      {
+        step: '04',
+        title: 'Provider review',
+        body: 'A licensed provider reviews and signs off on every result.',
+      },
+      {
+        step: '05',
+        title: 'Act',
+        body: 'Results trigger titration, follow-up, or a new care plan — labs drive the journey.',
+      },
     ],
     faqs: [
       {

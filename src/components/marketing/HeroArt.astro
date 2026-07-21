@@ -17,12 +17,20 @@
 <div class="hero-art" aria-hidden="true">
   {/* faint pulse line (drawn behind the capsules) */}
   <svg class="ha-pulse" viewBox="0 0 800 220" preserveAspectRatio="none" fill="none">
-    <path class="ha-pulse-track" pathLength="1000" d="M0,120 H300 l22,-66 l20,128 l18,-92 l14,30 H800" />
-    <path class="ha-pulse-sweep" pathLength="1000" d="M0,120 H300 l22,-66 l20,128 l18,-92 l14,30 H800" />
+    <path
+      class="ha-pulse-track"
+      pathLength="1000"
+      d="M0,120 H300 l22,-66 l20,128 l18,-92 l14,30 H800"></path>
+    <path
+      class="ha-pulse-sweep"
+      pathLength="1000"
+      d="M0,120 H300 l22,-66 l20,128 l18,-92 l14,30 H800"></path>
   </svg>
 
-  {/* pills — drop from the top, bounce, and settle into a pile (bottom-right). They arrive on
-      an accelerating schedule: one super-slow, then a few, then a bunch (see PILLS below). */}
+  {
+    /* pills — drop from the top, bounce, and settle into a pile (bottom-right). They arrive on
+      an accelerating schedule: one super-slow, then a few, then a bunch (see PILLS below). */
+  }
   <span class="ha-capsule ha-cap-1"></span>
   <span class="ha-capsule ha-cap-2"></span>
   <span class="ha-capsule ha-cap-3"></span>
@@ -110,18 +118,54 @@
   }
   /* Resting positions form a loose pile in the bottom-right. Earlier-dropping pills sit lower
      (the base); later ones stack on top. Rotation is owned by GSAP (drop tumble → settle). */
-  .ha-cap-1 { bottom: 4%; right: 12%; }
-  .ha-cap-2 { bottom: 5%; right: 22%; }
-  .ha-cap-3 { bottom: 4%; right: 30%; }
-  .ha-cap-4 { bottom: 6%; right: 7%; }
-  .ha-cap-5 { bottom: 10%; right: 26%; }
-  .ha-cap-6 { bottom: 9%; right: 16%; }
-  .ha-cap-7 { bottom: 12%; right: 21%; }
-  .ha-cap-8 { bottom: 8%; right: 31%; }
-  .ha-cap-9 { bottom: 14%; right: 12%; }
-  .ha-cap-10 { bottom: 15%; right: 24%; }
-  .ha-cap-11 { bottom: 19%; right: 18%; }
-  .ha-cap-12 { bottom: 21%; right: 22%; }
+  .ha-cap-1 {
+    bottom: 4%;
+    right: 12%;
+  }
+  .ha-cap-2 {
+    bottom: 5%;
+    right: 22%;
+  }
+  .ha-cap-3 {
+    bottom: 4%;
+    right: 30%;
+  }
+  .ha-cap-4 {
+    bottom: 6%;
+    right: 7%;
+  }
+  .ha-cap-5 {
+    bottom: 10%;
+    right: 26%;
+  }
+  .ha-cap-6 {
+    bottom: 9%;
+    right: 16%;
+  }
+  .ha-cap-7 {
+    bottom: 12%;
+    right: 21%;
+  }
+  .ha-cap-8 {
+    bottom: 8%;
+    right: 31%;
+  }
+  .ha-cap-9 {
+    bottom: 14%;
+    right: 12%;
+  }
+  .ha-cap-10 {
+    bottom: 15%;
+    right: 24%;
+  }
+  .ha-cap-11 {
+    bottom: 19%;
+    right: 18%;
+  }
+  .ha-cap-12 {
+    bottom: 21%;
+    right: 22%;
+  }
 </style>
 
 <script>
@@ -165,7 +209,12 @@
       const el = art.querySelector(p.sel);
       if (!el) return;
       tl.fromTo(el, { y: -fall, x: 0 }, { y: 0, duration: p.dur, ease: 'bounce.out' }, p.at)
-        .fromTo(el, { rotation: p.restRot - p.spin }, { rotation: p.restRot, duration: p.dur, ease: 'power2.out' }, p.at)
+        .fromTo(
+          el,
+          { rotation: p.restRot - p.spin },
+          { rotation: p.restRot, duration: p.dur, ease: 'power2.out' },
+          p.at,
+        )
         .fromTo(el, { opacity: 0 }, { opacity: p.peak, duration: 0.5, ease: 'none' }, p.at);
     });
 

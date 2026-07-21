@@ -1,0 +1,66 @@
+---
+/**
+ * /thank-you — landing page after a lead-form submit (and a fine target for any
+ * future confirmation redirects). noindex per seo.ts convention.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import Button from '../components/primitives/Button.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import { Icon } from 'astro-icon/components';
+
+const nextSteps = [
+  {
+    icon: 'mail-check',
+    title: 'We read what you sent',
+    body: 'A person, not a queue — your note goes straight to the team that scopes builds.',
+  },
+  {
+    icon: 'calendar-clock',
+    title: 'We reply by email to set up a time',
+    body: 'A working session with an engineer: what you’d call, what you’d inherit, how fast you can go live.',
+  },
+  {
+    icon: 'rocket',
+    title: 'You leave with a launch path',
+    body: 'Build on the platform with your agents, or have us run it for you — either way, a concrete next step.',
+  },
+];
+---
+
+<PageLayout
+  title="Thanks — we'll be in touch"
+  description="Got it. We'll reply by email to set up a working session with an engineer."
+  path="/thank-you"
+  noindex={true}
+  hideStickyCta
+>
+  <Section size="lg">
+    <div class="mx-auto max-w-2xl text-center">
+      <Icon name="lucide:check-circle-2" class="icon mx-auto size-12 text-success" />
+      <Eyebrow class="mt-6">Message received</Eyebrow>
+      <h1 class="mt-4 font-display text-display text-ink-900">Got it. Talk soon.</h1>
+      <p class="mx-auto mt-6 max-w-prose text-body-lg text-ink-500">
+        Thanks for telling us what you're building — here's what happens next.
+      </p>
+    </div>
+
+    <ul class="mx-auto mt-16 grid max-w-4xl gap-8 md:grid-cols-3">
+      {
+        nextSteps.map((s) => (
+          <li class="rounded-lg border border-line bg-surface p-6 text-left">
+            <Icon name={`lucide:${s.icon}`} class="icon size-6 text-purple-600" />
+            <p class="mt-4 font-display text-h4 text-ink-900">{s.title}</p>
+            <p class="mt-2 text-body text-ink-500">{s.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-16 flex flex-wrap items-center justify-center gap-4">
+      <Button href="/platform" variant="primary">Explore the platform</Button>
+      <Button href="/pricing" variant="secondary">See pricing</Button>
+      <Button href="/" variant="ghost">Back to home</Button>
+    </div>
+  </Section>
+</PageLayout>

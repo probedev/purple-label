@@ -1,0 +1,243 @@
+---
+/**
+ * LegitScript `/legitscript` — certification as a fast-tracked service, promoted from the
+ * /security#legitscript section to its own page (folded from the WLMD site, where the
+ * standalone page earned top-level nav placement as an SEO/sales asset). /security keeps a
+ * teaser with the same #legitscript anchor for old links; the deep content lives here.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Card from '../components/primitives/Card.astro';
+import StatCard from '../components/primitives/StatCard.astro';
+import Unconfirmed from '../components/marketing/Unconfirmed.astro';
+import FAQ from '../components/primitives/FAQ.astro';
+import { faqJsonLd, breadcrumbJsonLd } from '../lib/seo';
+
+const legitWhy = [
+  {
+    icon: 'megaphone',
+    title: 'Advertise on Google & Meta',
+    body: 'The major ad networks require LegitScript certification to run healthcare and pharmacy ads. No certification, no paid traffic.',
+  },
+  {
+    icon: 'credit-card',
+    title: 'Get approved by processors',
+    body: "Most payment processors won't onboard a healthcare merchant without it — certification keeps your revenue flowing.",
+  },
+  {
+    icon: 'badge-check',
+    title: 'Earn patient trust',
+    body: 'The LegitScript seal signals to patients and partners that the brand operates legally, safely, and transparently.',
+  },
+  {
+    icon: 'refresh-cw',
+    title: 'Stay compliant as you scale',
+    body: 'Ongoing monitoring keeps every brand certified as regulations, catalogs, and networks change over time.',
+  },
+];
+
+const legitStack = [
+  {
+    icon: 'pill',
+    title: 'Pharmacies',
+    body: '503A and 503B pharmacies across the fulfillment network — certified and audit-ready.',
+  },
+  {
+    icon: 'stethoscope',
+    title: 'Providers',
+    body: 'Licensed prescribers credentialed and certified to operate compliantly in every state.',
+  },
+  {
+    icon: 'globe',
+    title: 'Websites & brands',
+    body: 'Each branded storefront certified so it can legally advertise from day one.',
+  },
+];
+
+const legitSteps = [
+  {
+    step: '01',
+    title: 'Assessment',
+    body: "We review the brand, model, and catalog against LegitScript's standards and flag anything to fix.",
+  },
+  {
+    step: '02',
+    title: 'Documentation',
+    body: 'We prepare and package the application, policies, and evidence LegitScript requires.',
+  },
+  {
+    step: '03',
+    title: 'Submission & review',
+    body: 'We submit through the enterprise partnership and manage the review and any remediation.',
+  },
+  {
+    step: '04',
+    title: 'Certified & monitored',
+    body: 'You go live certified — and stay compliant with ongoing monitoring.',
+  },
+];
+
+const legitFaqs = [
+  {
+    q: 'What is LegitScript certification?',
+    a: 'LegitScript certification verifies that healthcare and telehealth merchants operate legally and transparently. It is required to advertise on Google, Meta, and most major ad networks, and to work with most payment processors.',
+  },
+  {
+    q: 'Do I need it to launch a telehealth brand?',
+    a: "In practice, yes. Without LegitScript certification you can't run paid advertising on the major platforms or reliably process payments for a healthcare brand — so it is built in from day one.",
+  },
+  {
+    q: 'How long does certification take?',
+    a: 'On your own it can take months. As a LegitScript Enterprise Partner, your brand inherits pre-certified infrastructure and a fast-track process that significantly reduces the normal timeline.',
+  },
+  {
+    q: 'What is handled for me?',
+    a: 'Over 250 certifications have been completed across pharmacies, providers, and websites. The application, documentation, and any remediation are managed end to end so your brand launches on a compliant foundation.',
+  },
+  {
+    q: 'Can you certify a brand I already run?',
+    a: "Yes. Whether you're launching new or already operating, your pharmacy, providers, and website can be brought into compliance and certification.",
+  },
+  {
+    q: 'Does it cover all 50 states?',
+    a: 'The provider and pharmacy network is credentialed and certified for nationwide, 50-state operation.',
+  },
+  {
+    q: "What happens after I'm certified?",
+    a: 'Certification is not one-and-done. Ongoing monitoring keeps you compliant as regulations, your catalog, and your network evolve over time.',
+  },
+];
+---
+
+<PageLayout
+  title="LegitScript certification, fast-tracked"
+  description="LegitScript certification as an Enterprise Partner — 250+ certifications across pharmacies, providers, and websites, handled end to end so your brand can advertise, process payments, and earn patient trust."
+  path="/legitscript"
+  jsonLd={[
+    faqJsonLd(legitFaqs),
+    breadcrumbJsonLd([
+      ['Security & Compliance', '/security'],
+      ['LegitScript', '/legitscript'],
+    ]),
+  ]}
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>LegitScript · Enterprise Partner</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      LegitScript certification, fast-tracked.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Compliance isn't a checkbox — it's the gate to traffic, payments, and patient trust. As a
+      LegitScript Enterprise Partner, we certify the entire stack, so your brand inherits a
+      compliant, pre-certified foundation from day one.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="link-arrow" href="/security">See the full security story</Button>
+    </div>
+  </Section>
+
+  {/* The numbers */}
+  <Section size="sm" surface="surface" bordered>
+    <div class="grid gap-8 sm:grid-cols-3">
+      <StatCard
+        value="250+"
+        label="Certifications completed"
+        caption="Pharmacies, providers, sites"
+      />
+      <StatCard
+        value="Enterprise"
+        label="LegitScript partner tier"
+        caption="Fast-tracked approval"
+      />
+      <StatCard value="50" label="States covered" caption="Nationwide operation" />
+    </div>
+    <p class="mt-10 text-center text-body text-ink-500">
+      <Unconfirmed
+        reason="WLMD's fast-track timeline claim (typical 3–4 months compressed to 4–6 weeks) — verify with the compliance team before shipping as fact"
+      >
+        A process that typically takes 3–4 months runs in about 4–6 weeks through the enterprise
+        partnership.
+      </Unconfirmed>
+    </p>
+  </Section>
+
+  {/* Why it matters */}
+  <Section>
+    <SectionHeader
+      eyebrow="Why it matters"
+      title="Certified to advertise, get paid, and be trusted."
+      lead="The seal is the difference between a brand that can grow and one that can't buy traffic or take payments."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        legitWhy.map((w) => (
+          <Card icon={w.icon} title={w.title}>
+            {w.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* The whole stack */}
+  <Section surface="sunken" bordered>
+    <SectionHeader
+      eyebrow="The whole stack"
+      title="Pharmacies, providers, and websites — all certified."
+      lead="Certification isn't one seal on one page. Every layer a regulator or ad network looks at is covered."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        legitStack.map((s) => (
+          <Card icon={s.icon} title={s.title}>
+            {s.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* The process */}
+  <Section>
+    <SectionHeader eyebrow="The process" title="How we get you certified." />
+    <ol class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        legitSteps.map((s) => (
+          <li class="rounded-lg border border-line bg-surface p-6">
+            <span class="font-mono text-sm text-purple-500">{s.step}</span>
+            <p class="mt-3 font-display text-h4 text-ink-900">{s.title}</p>
+            <p class="mt-2 text-sm text-ink-500">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  {/* FAQ */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="LegitScript questions"
+      title="Certification, answered."
+    />
+    <FAQ class="mt-12" items={legitFaqs} />
+  </Section>
+
+  {/* Closing CTA */}
+  <Section>
+    <SectionHeader
+      align="center"
+      eyebrow="Get certified"
+      title="Launch certified — not six months later."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="secondary" href="/security">Security & Compliance</Button>
+    </div>
+  </Section>
+</PageLayout>

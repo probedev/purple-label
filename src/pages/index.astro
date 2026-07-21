@@ -15,6 +15,7 @@ import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
 import FAQ from '../components/primitives/FAQ.astro';
 import HeroArt from '../components/marketing/HeroArt.astro';
+import Unconfirmed from '../components/marketing/Unconfirmed.astro';
 import { organizationJsonLd, softwareApplicationJsonLd, faqJsonLd } from '../lib/seo';
 
 const modules = [
@@ -57,6 +58,19 @@ const modules = [
 ];
 
 const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
+
+// Wearable & device ecosystem (folded from WLMD) — names as text chips; actual brand
+// logos land once brand-use permission is confirmed, like customer logos.
+const devices = [
+  'Apple Health',
+  'Fitbit',
+  'Garmin',
+  'Dexcom',
+  'Withings',
+  'Google Fit',
+  'Polar',
+  'Samsung Health',
+];
 
 // Initial server-rendered value for the live Rx ticker (kept in sync with the hero <script>).
 const RX_ANCHOR = 728487;
@@ -142,6 +156,22 @@ const homeFaqs = [
     q: 'What does it take to launch?',
     a: 'The modules are already in production — intake, visits, e-prescribing, pharmacy, payments, analytics, and compliance. Your agents compose and operate a branded program on infrastructure that has already cleared HIPAA, pharmacy-board, and payment-processor audits.',
   },
+  {
+    q: 'How much does it cost to launch?',
+    a: 'A fraction of building your own infrastructure, with flexible models across the tiers — including Managed, where we work on revenue share and only do well when you do. We scope the specifics on your consult.',
+  },
+  {
+    q: 'Is a doctor still involved if AI is doing the work?',
+    a: 'Yes. Agents and AI handle the repeatable work, but a licensed, board-certified clinician reviews every clinical decision, prescription, and lab result.',
+  },
+  {
+    q: 'Can my brand offer lab testing and wearable programs?',
+    a: 'Yes — diagnostics with at-home and in-person collection, plus 300+ wearable and device integrations, all running inside your branded platform.',
+  },
+  {
+    q: 'Can you make a custom product or a custom-dosed formulation?',
+    a: 'Yes — custom compounded formulations and branded packaging with our 503A/503B partners. Anything legal and compliant, built around your vision.',
+  },
 ];
 ---
 
@@ -154,7 +184,9 @@ const homeFaqs = [
   {/* 1 — Hero */}
   <Section size="lg">
     <div class="relative isolate">
-      {/* Hero canvas — morphing brand gradient + drifting capsules + pulse line (no stock imagery). */}
+      {
+        /* Hero canvas — morphing brand gradient + drifting capsules + pulse line (no stock imagery). */
+      }
       <HeroArt />
 
       <div class="relative">
@@ -248,6 +280,9 @@ const homeFaqs = [
       engineered so it won't double-charge, double-prescribe, or strand a patient mid-flow. Your
       agents drive it with a few API and MCP calls.
     </p>
+    <p class="mt-8 max-w-prose font-display text-h3 text-ink-900">
+      What took telehealth unicorns years and acquisitions, you get on day one.
+    </p>
     <div class="mt-6">
       <Button variant="link-arrow" href="/architecture">See the architecture</Button>
     </div>
@@ -296,12 +331,31 @@ const homeFaqs = [
         ))
       }
     </div>
-    <div class="mt-6">
+    <div class="mt-6 grid gap-6 md:grid-cols-2">
+      <Card icon="watch" title="Wearables & Monitoring">
+        300+ wearable and device integrations — rings, watches, CGMs, scales, and more — stream
+        patient data into the same longitudinal record your programs act on.
+      </Card>
       <Card icon="shield-check" title="Security & Compliance">
         A HIPAA-compliant data layer with end-to-end encryption and access governance under every
         module — behind three cleared audits.
       </Card>
     </div>
+    <ul class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2" aria-label="Device integrations">
+      <li class="text-xs uppercase tracking-eyebrow text-ink-400">Syncs with</li>
+      {
+        devices.map((d) => (
+          <li class="rounded-md border border-line bg-paper px-3 py-1.5 text-sm font-medium text-ink-500">
+            {d}
+          </li>
+        ))
+      }
+      <li class="text-sm text-ink-400">+ 300 more</li>
+    </ul>
+    <p class="mt-4 text-xs text-ink-300">
+      All trademarks are the property of their respective owners. Listing indicates data
+      compatibility, not endorsement.
+    </p>
   </Section>
 
   {/* 6.5 — Rx catalog */}
@@ -351,7 +405,7 @@ const homeFaqs = [
 
   {/* 8 — Scale strip */}
   <Section surface="surface" bordered>
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
       <StatCard
         value="1M+"
         label="Prescriptions filled monthly"
@@ -361,6 +415,11 @@ const homeFaqs = [
         value="50-State"
         label="Provider network"
         caption="Board-certified, licensed nationwide"
+      />
+      <StatCard
+        value="300+"
+        label="Device integrations"
+        caption="Rings, watches, CGMs, scales & more"
       />
       <StatCard
         value="250+"
@@ -409,9 +468,25 @@ const homeFaqs = [
     </div>
   </Section>
 
-  {/* 10 — Customer proof */}
+  {/* 10 — Customer proof (folded from WLMD; gated until usage permission is confirmed) */}
   <Section size="sm">
-    <p class="text-center text-body text-ink-400">Customer stories coming soon.</p>
+    <figure class="mx-auto max-w-2xl text-center">
+      <Unconfirmed
+        display="block"
+        reason="Testimonial folded from the WLMD site — confirm Garret Steenblik's permission to use it here before launch"
+      >
+        <blockquote class="font-display text-h3 text-ink-900">
+          “WLMD helped us make our dreams a reality... they had the lowest costs on all medications
+          and the most advanced technology platform.”
+        </blockquote>
+        <figcaption class="mt-6 text-sm text-ink-500">
+          <span class="font-semibold text-ink-700">Garret Steenblik</span> — CEO, Trucker's Body Shop
+        </figcaption>
+      </Unconfirmed>
+    </figure>
+    <p class="mt-8 text-center text-xs uppercase tracking-eyebrow text-ink-400">
+      More customer stories — added once permitted
+    </p>
   </Section>
 
   {/* 10.5 — FAQ */}

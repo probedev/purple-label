@@ -1,24 +1,45 @@
 ---
 /**
- * Contact `/contact` — a BOOK-A-MEETING calendar flow, not a form (memory: purplelabel-positioning
- * locked decision #4). Every site CTA ("Request a demo", "Talk to sales") lands here.
+ * Contact `/contact` — a BOOK-A-MEETING calendar flow first. Every site CTA
+ * ("Request a demo", "Talk to sales") lands here.
  *
- * GO LIVE: set CAL_LINK to your Cal.com link ("username/event-slug", e.g. "purplelabel/intro") —
- * the inline embed wires itself up. Provider chosen: Cal.com, inline embed, calendar-only (no form,
- * no email fallback) per Gregg 2026-06-26. The embed height comes from --size-scheduler (tokens.css)
- * via .cal-embed (global.css). Until CAL_LINK is set, the card shows a gated interim state so nothing
- * ships as a working calendar that isn't.
+ * Calendar-only was locked 2026-06-26; amended per Gregg 2026-07-21 (WLMD fold-in): the
+ * calendar stays primary, but a lead form now backs it up so the page always has a
+ * conversion path. Successful submits land on /thank-you.
+ *
+ * GO LIVE (either or both):
+ *   - CAL_LINK: your Cal.com "username/event-slug" (e.g. "purplelabel/intro") — the inline
+ *     embed wires itself up. Height comes from --size-scheduler (tokens.css) via .cal-embed.
+ *   - FORM_ENDPOINT: a form-intake URL (Formspree/Basin-style POST endpoint, or your own
+ *     Worker route). The form posts there and redirects to /thank-you.
+ * Until each is set, its card shows a gated interim state so nothing ships as working
+ * that isn't.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
 import SectionHeader from '../components/primitives/SectionHeader.astro';
 import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Unconfirmed from '../components/marketing/Unconfirmed.astro';
+import Button from '../components/primitives/Button.astro';
 import { Icon } from 'astro-icon/components';
 
 // ── Set your Cal.com link here to go live (your "username/event-slug") ─────
 const CAL_LINK = '';
+// ── Set your form-intake endpoint here to enable the lead form ─────────────
+const FORM_ENDPOINT = '';
 // ──────────────────────────────────────────────────────────────────────────
+
+const REFERRAL_OPTIONS = [
+  'Search',
+  'Referral from a founder or operator',
+  'Social (X / LinkedIn / TikTok)',
+  'Podcast or newsletter',
+  'Event or conference',
+  'Other',
+];
+
+const inputClasses =
+  'mt-1.5 h-11 w-full rounded-md border border-line bg-surface px-3 text-sm text-ink-900 placeholder:text-ink-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500';
 
 const expectations = [
   {
@@ -43,6 +64,7 @@ const expectations = [
   title="Book a meeting — see Purple Label MD"
   description="Book a time to see the platform live and scope your build with an engineer — intake, visits, e-prescribing, pharmacy, payments, and the developer surface. Enterprise: dedicated silo, BYOK, data residency, and the BAA."
   path="/contact"
+  hideStickyCta
 >
   {/* Hero */}
   <Section size="lg">
@@ -101,4 +123,163 @@ const expectations = [
       </div>
     </div>
   </Section>
+
+  {/* Lead form — the fallback conversion path when a call isn't the first step */}
+  <Section id="lead-form" bordered>
+    <div class="mx-auto max-w-2xl">
+      <SectionHeader
+        align="center"
+        eyebrow="Prefer to write first?"
+        title="Tell us what you're building."
+        lead="Skip the calendar — send the essentials and we'll reply by email to set up a time."
+      />
+
+      <div class="mt-10 rounded-lg border border-line bg-surface p-8">
+        {
+          FORM_ENDPOINT ? (
+            <form
+              id="lead-form-el"
+              method="POST"
+              action={FORM_ENDPOINT}
+              data-endpoint={FORM_ENDPOINT}
+              class="flex flex-col gap-5"
+            >
+              <input type="hidden" name="_next" value="/thank-you" />
+              <input
+                type="text"
+                name="_gotcha"
+                tabindex="-1"
+                autocomplete="off"
+                class="hidden"
+                aria-hidden="true"
+              />
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label for="lead-name" class="block text-sm font-medium text-ink-700">
+                    Full name
+                  </label>
+                  <input
+                    id="lead-name"
+                    name="name"
+                    type="text"
+                    required
+                    autocomplete="name"
+                    placeholder="Alex Rivera"
+                    class={inputClasses}
+                  />
+                </div>
+                <div>
+                  <label for="lead-email" class="block text-sm font-medium text-ink-700">
+                    Work email
+                  </label>
+                  <input
+                    id="lead-email"
+                    name="email"
+                    type="email"
+                    required
+                    autocomplete="email"
+                    placeholder="you@company.com"
+                    class={inputClasses}
+                  />
+                </div>
+              </div>
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label for="lead-phone" class="block text-sm font-medium text-ink-700">
+                    Phone <span class="font-normal text-ink-400">(optional)</span>
+                  </label>
+                  <input
+                    id="lead-phone"
+                    name="phone"
+                    type="tel"
+                    autocomplete="tel"
+                    placeholder="+1 (555) 000-0000"
+                    class={inputClasses}
+                  />
+                </div>
+                <div>
+                  <label for="lead-referral" class="block text-sm font-medium text-ink-700">
+                    How did you hear about us?{' '}
+                    <span class="font-normal text-ink-400">(optional)</span>
+                  </label>
+                  <select id="lead-referral" name="referral" class={inputClasses}>
+                    <option value="">Choose one</option>
+                    {REFERRAL_OPTIONS.map((o) => (
+                      <option value={o}>{o}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="lead-message" class="block text-sm font-medium text-ink-700">
+                  What are you building? <span class="font-normal text-ink-400">(optional)</span>
+                </label>
+                <textarea
+                  id="lead-message"
+                  name="message"
+                  rows="4"
+                  placeholder="The brand, the programs you want to offer, and where you are today."
+                  class={`${inputClasses} h-auto py-2.5`}
+                />
+              </div>
+              <label class="flex items-start gap-3 text-sm text-ink-500">
+                <input
+                  type="checkbox"
+                  name="consent"
+                  required
+                  class="mt-0.5 size-4 shrink-0 rounded-sm border-line accent-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                />
+                <span>
+                  I agree to be contacted about my inquiry. No newsletters, no drip campaigns — just
+                  a reply.
+                </span>
+              </label>
+              <p id="lead-form-error" hidden class="text-sm font-medium text-danger">
+                Something went wrong sending the form — please try again, or book a time above
+                instead.
+              </p>
+              <Button type="submit" variant="primary" class="sm:self-start">
+                Send it over
+              </Button>
+            </form>
+          ) : (
+            <Unconfirmed
+              display="block"
+              reason="Form intake endpoint pending from Gregg — set FORM_ENDPOINT (a Formspree/Basin-style POST URL or your own Worker route) in contact.astro to enable the lead form"
+            >
+              The lead form is being connected. In the meantime, book a time above.
+            </Unconfirmed>
+          )
+        }
+      </div>
+    </div>
+  </Section>
+
+  <script>
+    // Progressive enhancement: intercept the lead-form submit, POST as JSON-friendly
+    // FormData, and land on /thank-you. Without JS the form still POSTs natively and
+    // the endpoint's `_next` redirect takes over.
+    const form = document.getElementById('lead-form-el') as HTMLFormElement | null;
+    if (form) {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const error = document.getElementById('lead-form-error');
+        const button = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+        error?.setAttribute('hidden', '');
+        if (button) button.disabled = true;
+        try {
+          const response = await fetch(form.dataset.endpoint ?? form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' },
+          });
+          if (!response.ok) throw new Error(`Form endpoint responded ${response.status}`);
+          window.location.assign('/thank-you');
+        } catch {
+          error?.removeAttribute('hidden');
+          if (button) button.disabled = false;
+        }
+      });
+    }
+  </script>
 </PageLayout>

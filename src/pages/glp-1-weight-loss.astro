@@ -1,0 +1,186 @@
+---
+/**
+ * GLP-1 weight loss `/glp-1-weight-loss` — keyword-targeted SEO landing page (folded from
+ * the WLMD site, where it was a standalone page distinct from the program catalog). Leads
+ * with the market opportunity and the done-for-you promise; the catalog deep page at
+ * /programs/weight-loss stays the canonical program entry inside the Rx menu.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Card from '../components/primitives/Card.astro';
+import StatCard from '../components/primitives/StatCard.astro';
+import FAQ from '../components/primitives/FAQ.astro';
+import { Icon } from 'astro-icon/components';
+import { PROGRAM_TRUST, DEFAULT_JOURNEY } from '../lib/programs';
+import { faqJsonLd } from '../lib/seo';
+
+const services = [
+  {
+    icon: 'stethoscope',
+    title: 'Licensed prescribers',
+    body: "Providers credentialed in the patient's state evaluate eligibility and prescribe weight-loss treatment where clinically appropriate.",
+  },
+  {
+    icon: 'pill',
+    title: 'Pharmacy & fulfillment',
+    body: 'Medication filled and shipped direct to your patient at pass-through pricing, with no markup.',
+  },
+  {
+    icon: 'clipboard-list',
+    title: 'Intake & titration',
+    body: 'Eligibility checks, medical intake, dosing, and titration workflows handled end to end.',
+  },
+  {
+    icon: 'megaphone',
+    title: 'Marketing & analytics',
+    body: "Support to fill your program, plus a dashboard that shows exactly what's converting.",
+  },
+  {
+    icon: 'credit-card',
+    title: 'Subscription billing',
+    body: 'Recurring billing, refills, and patient management running under your brand.',
+  },
+  {
+    icon: 'shield-check',
+    title: 'Compliance built in',
+    body: 'LegitScript-certified infrastructure, licensed providers, and state-by-state coverage from day one.',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Which medications are prescribed?',
+    a: 'Where clinically appropriate, licensed providers prescribe weight-loss treatments such as semaglutide, tirzepatide, or compounded equivalents.',
+  },
+  {
+    q: 'Who prescribes them?',
+    a: "Licensed providers in the network, credentialed in the patient's state. You own the brand; they handle the medicine.",
+  },
+  {
+    q: 'Do you mark up the medication?',
+    a: 'No — pass-through pricing. Your cost is our cost, so the margin stays with you.',
+  },
+  {
+    q: 'How fast can I launch?',
+    a: 'Your branded store can be up and running in days, with a full compliant launch in about 30 — built by your agents on the platform, or done for you on the Managed plan.',
+  },
+];
+---
+
+<PageLayout
+  title="Launch a GLP-1 weight-loss program under your brand"
+  description="Launch a branded GLP-1 weight-loss program — licensed prescribers, pharmacy fulfillment at pass-through pricing, titration workflows, and LegitScript-certified compliance, handled."
+  path="/glp-1-weight-loss"
+  jsonLd={[faqJsonLd(faqs)]}
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Weight loss · Flagship program</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Launch a GLP-1 weight-loss program under your own brand.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      The fastest-growing category in telehealth — licensed prescribers, pharmacy fulfillment,
+      titration workflows, and compliance on infrastructure that already fills prescriptions at
+      national scale. Build it with your agents, or have our team run it for you.
+    </p>
+    <ul class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
+      {
+        PROGRAM_TRUST.map((t) => (
+          <li class="inline-flex items-center gap-1.5">
+            <Icon name="lucide:check" class="icon size-4 text-success" />
+            {t}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="link-arrow" href="/programs/weight-loss"
+        >See the program in the catalog</Button
+      >
+    </div>
+  </Section>
+
+  {/* Market opportunity */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="The opportunity"
+      title="Weight loss is the biggest opportunity in consumer health."
+      lead="Demand for weight-loss treatment is surging, and patients want a trusted, branded experience — not another anonymous pill site."
+    />
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Purple Label lets you meet that demand without building clinical and pharmacy infrastructure
+      yourself. GLP-1 care is recurring by design — titration, check-ins, and refills — so the
+      program compounds month over month, and the medication margin stays with you at pass-through
+      pricing.
+    </p>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <StatCard value="~30 days" label="To full compliant launch" caption="Store live in days" />
+      <StatCard value="$0" label="Markup on medication" caption="Pass-through pricing" />
+      <StatCard value="1M+" label="Rx filled monthly" caption="Across the network" />
+      <StatCard value="50-State" label="Provider network" caption="Board-certified" />
+    </div>
+  </Section>
+
+  {/* Six core services */}
+  <Section>
+    <SectionHeader
+      eyebrow="What's handled"
+      title="Everything your weight-loss program needs — handled."
+      lead="One pipeline for prescribers, pharmacy, intake, billing, growth, and compliance — under your brand from the first click."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        services.map((s) => (
+          <Card icon={s.icon} title={s.title}>
+            {s.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Patient journey */}
+  <Section surface="sunken" bordered>
+    <SectionHeader
+      eyebrow="The patient journey"
+      title="End to end, under your brand."
+      lead="One durable pipeline carries the patient from intake to refills — engineered so it won't double-charge, double-prescribe, or strand a patient mid-flow."
+    />
+    <ol class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+      {
+        DEFAULT_JOURNEY.map((s) => (
+          <li class="rounded-lg border border-line bg-surface p-6">
+            <span class="font-mono text-sm text-purple-500">{s.step}</span>
+            <p class="mt-3 font-display text-h4 text-ink-900">{s.title}</p>
+            <p class="mt-2 text-sm text-ink-500">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  {/* FAQ */}
+  <Section>
+    <SectionHeader align="center" eyebrow="Questions, answered" title="Weight loss, in brief." />
+    <FAQ class="mt-12" items={faqs} />
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Launch your GLP-1 program."
+      lead="Book a consult and we'll map your launch plan — build it with your agents, or have us run it."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="secondary" href="/managed">Explore Managed</Button>
+    </div>
+  </Section>
+</PageLayout>

@@ -13,9 +13,7 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
-import FAQ from '../components/primitives/FAQ.astro';
 import { TRUST_BADGES } from '../lib/nav';
-import { faqJsonLd } from '../lib/seo';
 
 const pillars = [
   {
@@ -49,108 +47,12 @@ const pillars = [
     body: 'Clear data ownership and information governance — your data stays yours, with a documented chain of custody.',
   },
 ];
-
-const legitWhy = [
-  {
-    icon: 'megaphone',
-    title: 'Advertise on Google & Meta',
-    body: 'The major ad networks require LegitScript certification to run healthcare and pharmacy ads. No certification, no paid traffic.',
-  },
-  {
-    icon: 'credit-card',
-    title: 'Get approved by processors',
-    body: "Most payment processors won't onboard a healthcare merchant without it — certification keeps your revenue flowing.",
-  },
-  {
-    icon: 'badge-check',
-    title: 'Earn patient trust',
-    body: 'The LegitScript seal signals to patients and partners that the brand operates legally, safely, and transparently.',
-  },
-  {
-    icon: 'refresh-cw',
-    title: 'Stay compliant as you scale',
-    body: 'Ongoing monitoring keeps every brand certified as regulations, catalogs, and networks change over time.',
-  },
-];
-
-const legitStack = [
-  {
-    icon: 'pill',
-    title: 'Pharmacies',
-    body: '503A and 503B pharmacies across the fulfillment network — certified and audit-ready.',
-  },
-  {
-    icon: 'stethoscope',
-    title: 'Providers',
-    body: 'Licensed prescribers credentialed and certified to operate compliantly in every state.',
-  },
-  {
-    icon: 'globe',
-    title: 'Websites & brands',
-    body: 'Each branded storefront certified so it can legally advertise from day one.',
-  },
-];
-
-const legitSteps = [
-  {
-    step: '01',
-    title: 'Assessment',
-    body: "We review the brand, model, and catalog against LegitScript's standards and flag anything to fix.",
-  },
-  {
-    step: '02',
-    title: 'Documentation',
-    body: 'We prepare and package the application, policies, and evidence LegitScript requires.',
-  },
-  {
-    step: '03',
-    title: 'Submission & review',
-    body: 'We submit through the enterprise partnership and manage the review and any remediation.',
-  },
-  {
-    step: '04',
-    title: 'Certified & monitored',
-    body: 'You go live certified — and stay compliant with ongoing monitoring.',
-  },
-];
-
-const legitFaqs = [
-  {
-    q: 'What is LegitScript certification?',
-    a: 'LegitScript certification verifies that healthcare and telehealth merchants operate legally and transparently. It is required to advertise on Google, Meta, and most major ad networks, and to work with most payment processors.',
-  },
-  {
-    q: 'Do I need it to launch a telehealth brand?',
-    a: "In practice, yes. Without LegitScript certification you can't run paid advertising on the major platforms or reliably process payments for a healthcare brand — so it is built in from day one.",
-  },
-  {
-    q: 'How long does certification take?',
-    a: 'On your own it can take months. As a LegitScript Enterprise Partner, your brand inherits pre-certified infrastructure and a fast-track process that significantly reduces the normal timeline.',
-  },
-  {
-    q: 'What is handled for me?',
-    a: 'Over 250 certifications have been completed across pharmacies, providers, and websites. The application, documentation, and any remediation are managed end to end so your brand launches on a compliant foundation.',
-  },
-  {
-    q: 'Can you certify a brand I already run?',
-    a: "Yes. Whether you're launching new or already operating, your pharmacy, providers, and website can be brought into compliance and certification.",
-  },
-  {
-    q: 'Does it cover all 50 states?',
-    a: 'The provider and pharmacy network is credentialed and certified for nationwide, 50-state operation.',
-  },
-  {
-    q: "What happens after I'm certified?",
-    a: 'Certification is not one-and-done. Ongoing monitoring keeps you compliant as regulations, your catalog, and your network evolve over time.',
-  },
-];
 ---
 
 <PageLayout
   title="Security & Compliance — enterprise-grade protection for PHI"
   description="HIPAA-compliant infrastructure with end-to-end encryption, MFA, and access governance — behind cleared HIPAA, pharmacy-board, and payment-processor audits. LegitScript certified, Surescripts connected, SOC 2 in progress. We sign BAAs."
   path="/security"
-  jsonLd={[faqJsonLd(legitFaqs)]}
 >
   {/* Hero */}
   <Section size="lg">
@@ -222,7 +124,7 @@ const legitFaqs = [
     </div>
   </Section>
 
-  {/* LegitScript — the advertising / payments / trust gate */}
+  {/* LegitScript teaser — the deep page lives at /legitscript; the anchor stays for old links */}
   <Section id="legitscript" surface="sunken" bordered>
     <SectionHeader
       eyebrow="LegitScript"
@@ -242,55 +144,11 @@ const legitFaqs = [
       />
       <StatCard value="50" label="States covered" caption="Nationwide operation" />
     </div>
-    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        legitWhy.map((w) => (
-          <Card icon={w.icon} title={w.title}>
-            {w.body}
-          </Card>
-        ))
-      }
+    <div class="mt-8">
+      <Button variant="link-arrow" href="/legitscript">
+        The full LegitScript story — why it matters, what we certify, and how
+      </Button>
     </div>
-    <div class="mt-12">
-      <SectionHeader
-        eyebrow="The whole stack"
-        title="Pharmacies, providers, and websites — all certified."
-      />
-      <div class="mt-8 grid gap-6 md:grid-cols-3">
-        {
-          legitStack.map((s) => (
-            <Card icon={s.icon} title={s.title}>
-              {s.body}
-            </Card>
-          ))
-        }
-      </div>
-    </div>
-
-    <div class="mt-12">
-      <SectionHeader eyebrow="The process" title="How we get you certified." />
-      <ol class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {
-          legitSteps.map((s) => (
-            <li class="rounded-lg border border-line bg-surface p-6">
-              <span class="font-mono text-sm text-purple-500">{s.step}</span>
-              <p class="mt-3 font-display text-h4 text-ink-900">{s.title}</p>
-              <p class="mt-2 text-sm text-ink-500">{s.body}</p>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
-  </Section>
-
-  {/* LegitScript FAQ */}
-  <Section>
-    <SectionHeader
-      align="center"
-      eyebrow="LegitScript questions"
-      title="Certification, answered."
-    />
-    <FAQ class="mt-12" items={legitFaqs} />
   </Section>
 
   {/* Closing CTA */}

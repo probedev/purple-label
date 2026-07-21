@@ -14,6 +14,7 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
 import FAQ from '../components/primitives/FAQ.astro';
+import Unconfirmed from '../components/marketing/Unconfirmed.astro';
 import { Icon } from 'astro-icon/components';
 import { CTA } from '../lib/nav';
 import { faqJsonLd } from '../lib/seo';
@@ -30,6 +31,11 @@ const handled = [
     body: 'A nationwide 503A/503B network fills and ships to all 50 states at pass-through pricing — our cost is your cost, with zero markup.',
   },
   {
+    icon: 'package',
+    title: 'Custom branded packaging',
+    body: 'Your labels, your boxes, your inserts — every shipment that lands on a doorstep looks and feels like your brand, not a generic pharmacy bag.',
+  },
+  {
     icon: 'layout-dashboard',
     title: 'Your branded store',
     body: 'Intake, telehealth visits, e-commerce, subscriptions, and patient support — all configured and running under your name.',
@@ -38,6 +44,11 @@ const handled = [
     icon: 'shield-check',
     title: 'Compliance & LegitScript',
     body: 'LegitScript-certified, HIPAA-compliant infrastructure, set up so you can advertise and process payments from day one.',
+  },
+  {
+    icon: 'flask-conical',
+    title: 'Labs & wearables',
+    body: 'At-home collection kits, in-person draw sites, and 300+ wearable and device integrations — labs and monitoring data flow into the same patient journey.',
   },
   {
     icon: 'megaphone',
@@ -66,6 +77,58 @@ const steps = [
     step: '03',
     title: 'Launch and start enrolling patients.',
     body: 'Your branded store goes live — typically in about 30 days — and you begin growing revenue with marketing support.',
+  },
+];
+
+// DIY vs done-for-you (folded from WLMD's comparison): rows pair up in order.
+const comparison = [
+  {
+    diy: '6–12 months to build and launch',
+    managed: 'Live in about 30 days, under your brand and pricing',
+  },
+  {
+    diy: '$500K+ investment in technology and compliance',
+    managed: 'A fraction of the cost, with no technology investment',
+  },
+  {
+    diy: 'Hire and credential your own doctors in 50 states',
+    managed: 'A board-certified, 50-state provider network, ready to go',
+  },
+  {
+    diy: 'Build HIPAA-compliant systems from scratch',
+    managed: 'A HIPAA-compliant platform that has already cleared the audits',
+  },
+  {
+    diy: 'Negotiate pharmacy contracts on your own',
+    managed: 'A nationwide 503A/503B network at pass-through pricing',
+  },
+  {
+    diy: '3–6 month wait for LegitScript approval',
+    managed: 'Fast-track LegitScript approval as an Enterprise Partner',
+  },
+];
+
+// Week-by-week launch roadmap (folded from WLMD's 30-day timeline).
+const roadmap = [
+  {
+    week: 'Week 1',
+    title: 'Onboarding & strategy',
+    body: 'We set up your account, define your brand strategy, and kick off the compliance process.',
+  },
+  {
+    week: 'Week 2',
+    title: 'Brand implementation',
+    body: 'Your platform is configured with your brand, pricing, and treatment protocols.',
+  },
+  {
+    week: 'Week 3',
+    title: 'Provider training & QA',
+    body: 'Providers are trained on your protocols and we run full quality-assurance testing.',
+  },
+  {
+    week: 'Week 4',
+    title: 'Launch & first patients',
+    body: 'Your branded store goes live and starts treating patients, with full marketing support.',
   },
 ];
 
@@ -179,6 +242,67 @@ const faqs = [
     </ol>
   </Section>
 
+  {/* DIY vs done-for-you */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="Build vs. launch"
+      title="Do it yourself, or be done already."
+      lead="Everything on the left is real work someone has to do before the first patient. On Managed, it's already done."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-2">
+      <div class="rounded-lg border border-line bg-paper p-8">
+        <p class="font-display text-h4 text-ink-900">Building it yourself</p>
+        <ul class="mt-6 flex flex-col gap-4">
+          {
+            comparison.map((row) => (
+              <li class="flex gap-3 text-body text-ink-500">
+                <Icon name="lucide:x" class="icon mt-1 size-4 shrink-0 text-ink-400" />
+                <span>{row.diy}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="rounded-lg border border-purple-500 bg-paper p-8">
+        <p class="font-display text-h4 text-purple-600">With Purple Label Managed</p>
+        <ul class="mt-6 flex flex-col gap-4">
+          {
+            comparison.map((row) => (
+              <li class="flex gap-3 text-body text-ink-700">
+                <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-success" />
+                <span>{row.managed}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  {/* The 30-day roadmap */}
+  <Section>
+    <SectionHeader
+      eyebrow="The launch timeline"
+      title="From first call to first patients, week by week."
+      lead="A concrete path, not a vague promise — here's how a managed launch actually runs."
+    />
+    <ol class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        roadmap.map((r) => (
+          <li class="rounded-lg border border-line bg-surface p-6">
+            <span class="font-mono text-sm text-purple-500">{r.week}</span>
+            <p class="mt-3 font-display text-h4 text-ink-900">{r.title}</p>
+            <p class="mt-2 text-sm text-ink-500">{r.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="mt-8 max-w-prose text-sm text-ink-400">
+      Timelines assume standard programs and timely brand assets; complex catalogs or custom
+      formulations can extend the schedule.
+    </p>
+  </Section>
+
   {/* Economics — lowest-cost / pass-through drug pricing featured */}
   <Section surface="sunken" bordered>
     <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
@@ -212,9 +336,25 @@ const faqs = [
     </p>
   </Section>
 
-  {/* Social proof placeholder */}
+  {/* Social proof (folded from WLMD; gated until usage permission is confirmed) */}
   <Section size="sm">
-    <p class="text-center text-body text-ink-400">Customer stories — added once permitted.</p>
+    <figure class="mx-auto max-w-2xl text-center">
+      <Unconfirmed
+        display="block"
+        reason="Testimonial folded from the WLMD site — confirm Rachel L.'s permission (and full attribution) before launch"
+      >
+        <blockquote class="font-display text-h3 text-ink-900">
+          “They handled everything — compliance, tech, provider sourcing. We were live in 6 weeks
+          and saw ROI by month two.”
+        </blockquote>
+        <figcaption class="mt-6 text-sm text-ink-500">
+          <span class="font-semibold text-ink-700">Rachel L.</span> — Founder, Women's Wellness Brand
+        </figcaption>
+      </Unconfirmed>
+    </figure>
+    <p class="mt-8 text-center text-xs uppercase tracking-eyebrow text-ink-400">
+      More customer stories — added once permitted
+    </p>
   </Section>
 
   {/* FAQ */}
@@ -238,5 +378,12 @@ const faqs = [
       <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
       <Button variant="secondary" href={CTA.pricing.href}>{CTA.pricing.label}</Button>
     </div>
+    <p class="mt-8 text-center text-sm text-ink-400">
+      <Unconfirmed
+        reason="WLMD's onboarding-capacity claim — verify the managed team really caps intake at five partners per month before shipping this"
+      >
+        Managed launches are capped at five new partners per month.
+      </Unconfirmed>
+    </p>
   </Section>
 </PageLayout>
