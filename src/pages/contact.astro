@@ -135,12 +135,13 @@ const expectations = [
       />
 
       <div class="mt-10 rounded-lg border border-line bg-surface p-8">
+        {/* The form always renders so the page reads right; only sending is gated. */}
         {
-          FORM_ENDPOINT ? (
+          (
             <form
               id="lead-form-el"
               method="POST"
-              action={FORM_ENDPOINT}
+              action={FORM_ENDPOINT || undefined}
               data-endpoint={FORM_ENDPOINT}
               class="flex flex-col gap-5"
             >
@@ -238,17 +239,25 @@ const expectations = [
                 Something went wrong sending the form — please try again, or book a time above
                 instead.
               </p>
-              <Button type="submit" variant="primary" class="sm:self-start">
-                Send it over
-              </Button>
+              {FORM_ENDPOINT ? (
+                <Button type="submit" variant="primary" class="sm:self-start">
+                  Send it over
+                </Button>
+              ) : (
+                <div class="flex flex-col gap-3">
+                  <Button type="submit" variant="primary" class="sm:self-start" disabled>
+                    Send it over
+                  </Button>
+                  <Unconfirmed
+                    display="block"
+                    reason="Form intake endpoint pending from Gregg — set FORM_ENDPOINT (a Formspree/Basin-style POST URL or your own Worker route) in contact.astro to activate sending"
+                  >
+                    Sending isn't connected yet — book a time above, and this form switches on the
+                    moment the intake endpoint is set.
+                  </Unconfirmed>
+                </div>
+              )}
             </form>
-          ) : (
-            <Unconfirmed
-              display="block"
-              reason="Form intake endpoint pending from Gregg — set FORM_ENDPOINT (a Formspree/Basin-style POST URL or your own Worker route) in contact.astro to enable the lead form"
-            >
-              The lead form is being connected. In the meantime, book a time above.
-            </Unconfirmed>
           )
         }
       </div>
