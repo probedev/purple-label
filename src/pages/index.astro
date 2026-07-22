@@ -13,9 +13,19 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
 import FAQ from '../components/primitives/FAQ.astro';
 import HeroArt from '../components/marketing/HeroArt.astro';
+import Heritage from '../components/marketing/Heritage.astro';
 import { organizationJsonLd, softwareApplicationJsonLd, faqJsonLd } from '../lib/seo';
+import { STATS, RX_ODOMETER, PROOF_LINE } from '../lib/stats';
+
+/** StatCard props from a registry entry — no literal stats in this file (G1). */
+const stat = (key: keyof typeof STATS) => ({
+  value: STATS[key].value,
+  label: STATS[key].label,
+  caption: STATS[key].caption,
+});
 
 const modules = [
   {
@@ -39,7 +49,7 @@ const modules = [
   {
     icon: 'pill',
     title: 'Pharmacy & Fulfillment',
-    body: 'A nationwide 503A/503B network with lowest-in-class pricing passed straight through to you, shipping to all 50 states.',
+    body: 'A nationwide 503A/503B network with volume pricing passed straight through to you — zero markup — shipping to all 50 states.',
     href: '/platform/pharmacy-fulfillment',
   },
   {
@@ -71,8 +81,9 @@ const devices = [
   'Samsung Health',
 ];
 
-// Initial server-rendered value for the live Rx ticker (kept in sync with the hero <script>).
-const RX_ANCHOR = 728487;
+// Initial server-rendered value for the live Rx ticker; the hero <script> imports the
+// same registry anchor, so the two can never drift.
+const RX_ANCHOR = RX_ODOMETER.anchorCount;
 
 const programs = [
   {
@@ -136,6 +147,10 @@ const homeFaqs = [
     a: 'No. A licensed provider network, credentialed in all 50 states, handles clinical care and prescribing. You own the brand; licensed providers handle the medicine.',
   },
   {
+    q: 'Is a doctor still involved if AI is doing the work?',
+    a: 'Yes. Agents and AI handle the repeatable work, but a licensed, board-certified clinician reviews every clinical decision, prescription, and lab result.',
+  },
+  {
     q: 'What medical programs are supported?',
     a: "Weight loss (GLP-1), men's and women's health, TRT, HRT, ED, hair & skin, peptides, and integrated labs — plus anything else legal and compliant your agents compose from the same modules.",
   },
@@ -160,12 +175,8 @@ const homeFaqs = [
     a: 'A fraction of building your own infrastructure, with flexible models across the tiers — including Managed, where we work on revenue share and only do well when you do. We scope the specifics on your consult.',
   },
   {
-    q: 'Is a doctor still involved if AI is doing the work?',
-    a: 'Yes. Agents and AI handle the repeatable work, but a licensed, board-certified clinician reviews every clinical decision, prescription, and lab result.',
-  },
-  {
     q: 'Can my brand offer lab testing and wearable programs?',
-    a: 'Yes — diagnostics with at-home and in-person collection, plus 300+ wearable and device integrations, all running inside your branded platform.',
+    a: `Yes — diagnostics with at-home and in-person collection, plus ${STATS.deviceIntegrations.value} wearable and device integrations, all running inside your branded platform.`,
   },
   {
     q: 'Can you make a custom product or a custom-dosed formulation?',
@@ -192,7 +203,7 @@ const homeFaqs = [
         <p
           class="flex flex-wrap items-baseline gap-x-2 text-xs uppercase tracking-eyebrow text-ink-400"
         >
-          <span>Rx filled on platform</span>
+          <span>Rx filled by our operators' platforms to date</span>
           <span
             id="rx-counter"
             class="font-mono text-sm tabular-nums tracking-normal text-purple-600 normal-case"
@@ -204,9 +215,10 @@ const homeFaqs = [
           <span class="text-purple-600">telehealth business.</span>
         </h1>
         <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-          Providers, pharmacy, payments, and compliance — the proven infrastructure behind 100+
-          telehealth brands, with the lowest medication cost passed straight through. Build it with
-          your agents, or have our team run it for you.
+          Providers, pharmacy, payments, and compliance — from the team behind{' '}
+          {STATS.brandsLaunched.value} branded telehealth launches, rebuilt API-first for the agent era.
+          Medication at pass-through pricing, zero markup. Build it with your agents, or have our team
+          run it for you.
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-4">
           <Button variant="primary" href="/contact">Book a consult</Button>
@@ -230,8 +242,8 @@ const homeFaqs = [
   {/* 2 — Proof bar */}
   <Section size="sm" surface="surface" bordered>
     <p class="mx-auto max-w-prose text-center text-body text-ink-500">
-      The engine that's run a national telehealth operation in production at scale — battle-tested
-      infrastructure behind 100+ telehealth brands.
+      From the operators of a national-scale telehealth machine — {STATS.brandsLaunched.value}
+      branded launches — rebuilt API-first as Purple Label.
     </p>
     <p class="mt-6 text-center text-xs uppercase tracking-eyebrow text-ink-400">
       Trusted by founders like Trucker's Body Shop — more logos as permissions land
@@ -245,10 +257,11 @@ const homeFaqs = [
       title="One platform, built around your business."
       lead="For a decade, launching telehealth meant buying a no-code builder, a separate EMR, a prescribing tool, a pharmacy, and a payment processor — then wiring them together and running it all through a dozen dashboards. Purple Label gives you the proven layer underneath instead: a modular platform you can run two ways — build on it with your own team and agents, or have us build and operate it for you."
     />
-    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Best-of-breed modules, one platform, full control — the same pipelines that already scaled to
-      a national operation, now shaped to your brand and run your way.
-    </p>
+  </Section>
+
+  {/* 3.5 — Heritage × next-gen (the frame that separates proof from product) */}
+  <Section surface="surface" bordered>
+    <Heritage />
   </Section>
 
   {/* 4 — The moat */}
@@ -261,9 +274,8 @@ const homeFaqs = [
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
       Competitors spinning up no-code or AI-generated sites hit a wall the moment they try to ship a
       prescription across state lines, refund a patient, or pass a state pharmacy-board inspection.
-      We've already paid those costs — you launch on infrastructure that's already cleared HIPAA,
-      pharmacy-board, and payment-processor audits, on a HIPAA-compliant data layer with end-to-end
-      encryption.
+      We've already paid those costs — you launch on infrastructure that has already {PROOF_LINE},
+      on a HIPAA-compliant data layer with end-to-end encryption.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-3">
       {
@@ -296,9 +308,9 @@ const homeFaqs = [
     />
     <div class="mt-12 grid gap-6 md:grid-cols-2">
       <Card icon="code" title="Build it with agents">
-        Point your team and your AI agents at API tokens, agent-ready docs, MCP servers, and a
-        prompt library, and assemble a branded telehealth business in code — full control, no glue,
-        no console to outgrow.
+        Point your team and your AI agents at API tokens, agent-ready docs, branded entry links, and
+        webhooks with signed deliveries — and assemble a branded telehealth business in code. Full
+        control, no glue, no console to outgrow.
         <span class="mt-6 block">
           <Button variant="link-arrow" href="/developers">Start building</Button>
         </span>
@@ -332,8 +344,8 @@ const homeFaqs = [
     </div>
     <div class="mt-6 grid gap-6 md:grid-cols-2">
       <Card icon="watch" title="Wearables & Monitoring">
-        300+ wearable and device integrations — rings, watches, CGMs, scales, and more — stream
-        patient data into the same longitudinal record your programs act on.
+        {STATS.deviceIntegrations.value} wearable and device integrations — rings, watches, CGMs, scales,
+        and more — stream patient data into the same longitudinal record your programs act on.
       </Card>
       <Card icon="shield-check" title="Security & Compliance">
         A HIPAA-compliant data layer with end-to-end encryption and access governance under every
@@ -349,7 +361,7 @@ const homeFaqs = [
           </li>
         ))
       }
-      <li class="text-sm text-ink-400">+ 300 more</li>
+      <li class="text-sm text-ink-400">…and {STATS.deviceIntegrations.value} in all</li>
     </ul>
     <p class="mt-4 text-xs text-ink-300">
       All trademarks are the property of their respective owners. Listing indicates data
@@ -387,9 +399,9 @@ const homeFaqs = [
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       <Card icon="server" title="Proven scale, top-tier security">
-        The same engine behind a national telehealth operation — 100+ brands launched, 1M+
-        prescriptions a month, 10,000+ orders a week — cleared through HIPAA, pharmacy-board, and
-        payment-processor audits.
+        Built by the operators of a national telehealth machine — {STATS.brandsLaunched.value}
+        branded launches, {STATS.rxMonthly.value} prescriptions a month across the partner pharmacy network,
+        {STATS.ordersWeekly.value} orders a week — and {PROOF_LINE}.
       </Card>
       <Card icon="circle-dollar-sign" title="The lowest cost on every medication">
         We pass our huge-volume Rx discounts straight through with zero markup — our cost is your
@@ -405,27 +417,11 @@ const homeFaqs = [
   {/* 8 — Scale strip */}
   <Section surface="surface" bordered>
     <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
-      <StatCard
-        value="1M+"
-        label="Prescriptions filled monthly"
-        caption="Across our pharmacy network"
-      />
-      <StatCard
-        value="50-State"
-        label="Provider network"
-        caption="Board-certified, licensed nationwide"
-      />
-      <StatCard
-        value="300+"
-        label="Device integrations"
-        caption="Rings, watches, CGMs, scales & more"
-      />
-      <StatCard
-        value="250+"
-        label="LegitScript certifications"
-        caption="As an enterprise partner"
-      />
-      <StatCard value="10,000+" label="Orders shipped weekly" caption="End to end" />
+      <StatCard {...stat('rxMonthly')} />
+      <StatCard {...stat('providerNetwork')} />
+      <StatCard {...stat('deviceIntegrations')} />
+      <StatCard {...stat('legitscriptCerts')} />
+      <StatCard {...stat('ordersWeekly')} />
     </div>
   </Section>
 
@@ -468,22 +464,24 @@ const homeFaqs = [
   </Section>
 
   {
-    /* 10 — Customer proof (the Steenblik quote, verbatim from WLMD's live site per Gregg 2026-07-21) */
+    /* 10 — Customer proof: the Steenblik quote, verbatim from WLMD's live site (per Gregg
+       2026-07-21), framed as heritage per G9 so "WLMD" reads as the operators' first
+       platform, not an unexplained brand. Permission status: [GREGG-CONFIRM]. More
+       customer stories land here as permissions are confirmed. */
   }
   <Section size="sm">
     <figure class="mx-auto max-w-2xl text-center">
-      <blockquote class="font-display text-h3 text-ink-900">
+      <Eyebrow>From the operators' first platform</Eyebrow>
+      <blockquote class="mt-6 font-display text-h3 text-ink-900">
         “WLMD helped us make our dreams a reality. We did extensive research before selecting a
         platform partner and WLMD had the best offering by far. They had the lowest costs on all
         medications and the most advanced technology platform.”
       </blockquote>
       <figcaption class="mt-6 text-sm text-ink-500">
-        <span class="font-semibold text-ink-700">Garret Steenblik</span> — CEO, Trucker's Body Shop
+        <span class="font-semibold text-ink-700">Garret Steenblik</span> — CEO, Trucker's Body Shop, on
+        White Label MD — the platform our team ran before building Purple Label
       </figcaption>
     </figure>
-    <p class="mt-8 text-center text-xs uppercase tracking-eyebrow text-ink-400">
-      More customer stories — added once permitted
-    </p>
   </Section>
 
   {/* 10.5 — FAQ */}

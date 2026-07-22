@@ -16,6 +16,7 @@ import FAQ from '../components/primitives/FAQ.astro';
 import { Icon } from 'astro-icon/components';
 import { PROGRAM_TRUST, DEFAULT_JOURNEY } from '../lib/programs';
 import { faqJsonLd } from '../lib/seo';
+import { STATS } from '../lib/stats';
 
 const services = [
   {
@@ -119,10 +120,26 @@ const faqs = [
       pricing.
     </p>
     <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      <StatCard value="~30 days" label="To full compliant launch" caption="Store live in days" />
-      <StatCard value="$0" label="Markup on medication" caption="Pass-through pricing" />
-      <StatCard value="1M+" label="Rx filled monthly" caption="Across the network" />
-      <StatCard value="50-State" label="Provider network" caption="Board-certified" />
+      <StatCard
+        value={STATS.launchDays.value}
+        label="To full compliant launch"
+        caption="Store live in days"
+      />
+      <StatCard
+        value={STATS.zeroMarkup.value}
+        label={STATS.zeroMarkup.label}
+        caption={STATS.zeroMarkup.caption}
+      />
+      <StatCard
+        value={STATS.rxMonthly.value}
+        label="Rx filled monthly"
+        caption={STATS.rxMonthly.caption}
+      />
+      <StatCard
+        value={STATS.providerNetwork.value}
+        label={STATS.providerNetwork.label}
+        caption={STATS.providerNetwork.caption}
+      />
     </div>
   </Section>
 

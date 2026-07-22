@@ -14,17 +14,20 @@ import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
 import { TRUST_BADGES } from '../lib/nav';
+import { STATS, PROOF_LINE } from '../lib/stats';
 
+// E26: each pillar carries one architecture-backed specific — /security and
+// /architecture should read as one story at two altitudes.
 const pillars = [
   {
     icon: 'lock',
     title: 'Encryption everywhere',
-    body: 'A HIPAA-compliant data layer with end-to-end encryption — protected health information is encrypted in transit and at rest as a foundational control.',
+    body: 'A HIPAA-compliant data layer with end-to-end encryption — protected health information is encrypted in transit and at rest, with field-level encryption on the most sensitive values.',
   },
   {
     icon: 'key-round',
     title: 'Access control & MFA',
-    body: 'Multi-factor authentication and granular, role-based access — every action happens in a controlled, least-privilege environment.',
+    body: 'Multi-factor authentication and granular, role-based access — every action happens in a controlled, least-privilege environment, with tenant isolation enforced as row-level security in the database itself.',
   },
   {
     icon: 'shield-check',
@@ -34,12 +37,12 @@ const pillars = [
   {
     icon: 'refresh-cw',
     title: 'Continuous compliance',
-    body: 'Controls are monitored and kept in force continuously — not just at audit time.',
+    body: 'Controls are monitored and kept in force continuously — and the append-only audit log makes compliance evidence a property of the system, not a binder assembled at audit time.',
   },
   {
     icon: 'fingerprint',
     title: 'Identity & device management',
-    body: 'Identity verification and device controls govern who and what can reach the platform.',
+    body: 'Identity verification and device controls govern who and what can reach the platform — including per-agent machine identities, so your AI agents act under credentials of their own.',
   },
   {
     icon: 'database',
@@ -51,7 +54,7 @@ const pillars = [
 
 <PageLayout
   title="Security & Compliance — enterprise-grade protection for PHI"
-  description="HIPAA-compliant infrastructure with end-to-end encryption, MFA, and access governance — behind cleared HIPAA, pharmacy-board, and payment-processor audits. LegitScript certified, Surescripts connected, SOC 2 in progress. We sign BAAs."
+  description="HIPAA-compliant infrastructure with end-to-end encryption, MFA, and access governance — behind cleared HIPAA, state pharmacy-board, and payment-processor reviews. LegitScript certified, Surescripts connected, SOC 2 in progress. We sign BAAs."
   path="/security"
 >
   {/* Hero */}
@@ -101,12 +104,15 @@ const pillars = [
     </div>
   </Section>
 
-  {/* The audits */}
+  {
+    /* The reviews — E27: the standardized proof line, plus the actual next step a
+      compliance buyer wants. */
+  }
   <Section>
     <SectionHeader
       eyebrow="The proof"
-      title="We've already passed the audits."
-      lead="New partners launch on infrastructure that's already cleared the inspections most telehealth projects never survive."
+      title="We've already passed the reviews."
+      lead={`New partners launch on infrastructure that has already ${PROOF_LINE} — the inspections most telehealth projects never survive.`}
     />
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
       Competitors spinning up no-code or AI-generated sites hit a wall the moment they try to ship a
@@ -114,14 +120,25 @@ const pillars = [
       We've already paid those costs.
     </p>
     <div class="mt-8 grid gap-6 md:grid-cols-3">
-      <Card icon="badge-check" title="HIPAA audit"> HIPAA-compliant infrastructure, cleared. </Card>
-      <Card icon="badge-check" title="Pharmacy-board audit">
+      <Card icon="badge-check" title="HIPAA review">
+        HIPAA-compliant infrastructure, cleared.
+      </Card>
+      <Card icon="badge-check" title="State pharmacy-board review">
         State board of pharmacy licensure and inspection, cleared.
       </Card>
-      <Card icon="badge-check" title="Payment-processor audit">
+      <Card icon="badge-check" title="Payment-processor review">
         Healthcare-commerce payment processing, cleared.
       </Card>
     </div>
+    <p class="mt-8 max-w-prose text-body text-ink-500">
+      Documentation is available under NDA on your consult — bring your compliance team. For the
+      engineering-level story behind these controls, see{' '}
+      <a
+        href="/architecture"
+        class="font-semibold text-purple-600 transition-colors duration-150 hover:text-purple-700"
+        >the architecture</a
+      >.
+    </p>
   </Section>
 
   {/* LegitScript teaser — the deep page lives at /legitscript; the anchor stays for old links */}
@@ -133,16 +150,20 @@ const pillars = [
     />
     <div class="mt-12 grid gap-8 sm:grid-cols-3">
       <StatCard
-        value="250+"
+        value={STATS.legitscriptCerts.value}
         label="Certifications completed"
         caption="Pharmacies, providers, sites"
       />
       <StatCard
-        value="Enterprise"
-        label="LegitScript partner tier"
-        caption="Fast-tracked approval"
+        value={STATS.legitscriptTier.value}
+        label={STATS.legitscriptTier.label}
+        caption={STATS.legitscriptTier.caption}
       />
-      <StatCard value="50" label="States covered" caption="Nationwide operation" />
+      <StatCard
+        value={STATS.statesCovered.value}
+        label={STATS.statesCovered.label}
+        caption={STATS.statesCovered.caption}
+      />
     </div>
     <div class="mt-8">
       <Button variant="link-arrow" href="/legitscript">

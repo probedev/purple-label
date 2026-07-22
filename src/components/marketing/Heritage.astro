@@ -1,0 +1,27 @@
+---
+/**
+ * Heritage — the heritage×next-gen frame (CONTENT-REVIEW-2026-07-21 §G2), the one
+ * reusable block that separates the two true stories: the operators ran the old
+ * machine at national scale (proof), and Purple Label MD is the ground-up rebuild
+ * (product). Used on Home, /platform, and /about — never blur the two again.
+ */
+import SectionHeader from '../primitives/SectionHeader.astro';
+import { STATS, HERITAGE, PROOF_LINE } from '../../lib/stats';
+
+interface Props {
+  /** The /about page renders the fuller story around this block. */
+  eyebrow?: string;
+}
+const { eyebrow = 'The operators' } = Astro.props;
+---
+
+<div>
+  <SectionHeader {eyebrow} title="Built by the operators, rebuilt for agents." />
+  <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+    For {HERITAGE.years} years our team ran one of the largest white-label telehealth operations in the
+    country — {STATS.brandsLaunched.value} branded launches, hundreds of thousands of prescriptions, and
+    {PROOF_LINE}. Purple Label MD is what we built next: the same regulated machine, redesigned from
+    the first line of code to be driven by APIs and AI agents — so your team inherits the proof
+    without inheriting the legacy.
+  </p>
+</div>

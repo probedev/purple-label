@@ -14,10 +14,17 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
 import FAQ from '../components/primitives/FAQ.astro';
-import Unconfirmed from '../components/marketing/Unconfirmed.astro';
 import { Icon } from 'astro-icon/components';
 import { CTA } from '../lib/nav';
 import { faqJsonLd } from '../lib/seo';
+import { STATS } from '../lib/stats';
+
+/** StatCard props from a registry entry — no literal stats in this file (G1). */
+const stat = (key: keyof typeof STATS) => ({
+  value: STATS[key].value,
+  label: STATS[key].label,
+  caption: STATS[key].caption,
+});
 
 const handled = [
   {
@@ -48,7 +55,7 @@ const handled = [
   {
     icon: 'flask-conical',
     title: 'Labs & wearables',
-    body: 'At-home collection kits, in-person draw sites, and 300+ wearable and device integrations — labs and monitoring data flow into the same patient journey.',
+    body: `At-home collection kits, in-person draw sites, and ${STATS.deviceIntegrations.value} wearable and device integrations — labs and monitoring data flow into the same patient journey.`,
   },
   {
     icon: 'megaphone',
@@ -81,13 +88,14 @@ const steps = [
 ];
 
 // DIY vs done-for-you (folded from WLMD's comparison): rows pair up in order.
+// DIY-side figures are typical industry estimates from the registry, labeled as such.
 const comparison = [
   {
-    diy: '6–12 months to build and launch',
+    diy: `${STATS.diyTimeline.value} to build and launch`,
     managed: 'Live in about 30 days, under your brand and pricing',
   },
   {
-    diy: '$500K+ investment in technology and compliance',
+    diy: `${STATS.diyCost.value} investment in technology and compliance`,
     managed: 'A fraction of the cost, with no technology investment',
   },
   {
@@ -180,9 +188,10 @@ const faqs = [
       We build and run your branded telehealth business.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      No code, no hiring, no compliance maze. Our team stands up your branded store on the same
-      infrastructure behind 100+ telehealth brands — providers, pharmacy, payments, and compliance
-      handled for you — and we work on revenue share, so we only win when you do.
+      No code, no hiring, no compliance maze. Our team stands up your branded store on the platform
+      built by the operators behind {STATS.brandsLaunched.value} branded telehealth launches — providers,
+      pharmacy, payments, and compliance handled for you — and we work on revenue share, so we only win
+      when you do.
     </p>
     <ul class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
       <li class="inline-flex items-center gap-1.5">
@@ -277,6 +286,10 @@ const faqs = [
         </ul>
       </div>
     </div>
+    <p class="mt-6 max-w-prose text-sm text-ink-400">
+      Build-it-yourself figures are typical industry estimates for standing up clinical, pharmacy,
+      and compliance infrastructure from scratch — not measurements of any specific company.
+    </p>
   </Section>
 
   {/* The 30-day roadmap */}
@@ -309,7 +322,7 @@ const faqs = [
       <div>
         <SectionHeader
           eyebrow="The economics"
-          title="The lowest cost on every medication — and the margin stays yours."
+          title="Pass-through pricing on every medication — the margin stays yours."
           lead="We aggregate a nationwide 503A/503B pharmacy network and pass the price straight through: our cost is your cost, with zero markup. Combined with recurring subscriptions, that means the profit on every patient stays where it belongs — with you."
         />
         <ul class="mt-6 flex flex-col gap-3">
@@ -324,10 +337,10 @@ const faqs = [
         </ul>
       </div>
       <div class="grid gap-6 sm:grid-cols-2">
-        <StatCard value="$0" label="Markup on medication" caption="Pass-through pricing" />
-        <StatCard value="1M+" label="Rx filled monthly" caption="Across the network" />
-        <StatCard value="~30 days" label="To launch" caption="From kickoff to live" />
-        <StatCard value="50-State" label="Provider network" caption="Board-certified" />
+        <StatCard {...stat('zeroMarkup')} />
+        <StatCard {...stat('rxMonthly')} />
+        <StatCard {...stat('launchDays')} />
+        <StatCard {...stat('providerNetwork')} />
       </div>
     </div>
     <p class="mt-8 max-w-prose text-sm text-ink-400">
@@ -336,26 +349,11 @@ const faqs = [
     </p>
   </Section>
 
-  {/* Social proof (folded from WLMD; gated until usage permission is confirmed) */}
-  <Section size="sm">
-    <figure class="mx-auto max-w-2xl text-center">
-      <Unconfirmed
-        display="block"
-        reason="Testimonial folded from the WLMD site — confirm Rachel L.'s permission (and full attribution) before launch"
-      >
-        <blockquote class="font-display text-h3 text-ink-900">
-          “They handled everything — compliance, tech, provider sourcing. We were live in 6 weeks
-          and saw ROI by month two.”
-        </blockquote>
-        <figcaption class="mt-6 text-sm text-ink-500">
-          <span class="font-semibold text-ink-700">Rachel L.</span> — Founder, Women's Wellness Brand
-        </figcaption>
-      </Unconfirmed>
-    </figure>
-    <p class="mt-8 text-center text-xs uppercase tracking-eyebrow text-ink-400">
-      More customer stories — added once permitted
-    </p>
-  </Section>
+  {
+    /* Social proof: cut per CONTENT-REVIEW-2026-07-21 C16 — the Rachel L. quote
+      (anonymous attribution, unconfirmed permission) doesn't clear the bar. Restore a
+      named, permissioned managed-customer story here when one is confirmed. */
+  }
 
   {/* FAQ */}
   <Section surface="surface" bordered>
@@ -378,12 +376,9 @@ const faqs = [
       <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
       <Button variant="secondary" href={CTA.pricing.href}>{CTA.pricing.label}</Button>
     </div>
-    <p class="mt-8 text-center text-sm text-ink-400">
-      <Unconfirmed
-        reason="WLMD's onboarding-capacity claim — verify the managed team really caps intake at five partners per month before shipping this"
-      >
-        Managed launches are capped at five new partners per month.
-      </Unconfirmed>
-    </p>
+    {
+      /* Capacity-cap line cut per CONTENT-REVIEW-2026-07-21 C19 (unverified WLMD claim).
+        Restore only if Gregg confirms the managed team really caps monthly intake. */
+    }
   </Section>
 </PageLayout>

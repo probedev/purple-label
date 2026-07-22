@@ -12,6 +12,7 @@
  */
 import Button from '../primitives/Button.astro';
 import { Icon } from 'astro-icon/components';
+import { STATS } from '../../lib/stats';
 
 // ── Lead intake: the Worker route backed by the LEADS KV namespace ─────────
 const FORM_ENDPOINT = '/api/lead';
@@ -189,7 +190,7 @@ const inputClasses =
     </span>
     <span class="inline-flex items-center gap-2">
       <Icon name="lucide:sparkles" class="icon size-4 text-purple-600" />
-      100+ brands launched
+      {STATS.brandsLaunched.value} brands launched
     </span>
   </div>
 </div>

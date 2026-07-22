@@ -12,9 +12,9 @@ import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
-import Unconfirmed from '../components/marketing/Unconfirmed.astro';
 import FAQ from '../components/primitives/FAQ.astro';
 import { faqJsonLd, breadcrumbJsonLd } from '../lib/seo';
+import { STATS } from '../lib/stats';
 
 const legitWhy = [
   {
@@ -95,7 +95,7 @@ const legitFaqs = [
   },
   {
     q: 'What is handled for me?',
-    a: 'Over 250 certifications have been completed across pharmacies, providers, and websites. The application, documentation, and any remediation are managed end to end so your brand launches on a compliant foundation.',
+    a: `Over ${STATS.legitscriptCerts.value.replace('+', '')} certifications have been completed across pharmacies, providers, and websites. The application, documentation, and any remediation are managed end to end so your brand launches on a compliant foundation.`,
   },
   {
     q: 'Can you certify a brand I already run?',
@@ -114,7 +114,7 @@ const legitFaqs = [
 
 <PageLayout
   title="LegitScript certification, fast-tracked"
-  description="LegitScript certification as an Enterprise Partner — 250+ certifications across pharmacies, providers, and websites, handled end to end so your brand can advertise, process payments, and earn patient trust."
+  description={`LegitScript certification as an Enterprise Partner — ${STATS.legitscriptCerts.value} certifications across pharmacies, providers, and websites, handled end to end so your brand can advertise, process payments, and earn patient trust.`}
   path="/legitscript"
   jsonLd={[
     faqJsonLd(legitFaqs),
@@ -132,8 +132,8 @@ const legitFaqs = [
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
       Compliance isn't a checkbox — it's the gate to traffic, payments, and patient trust. As a
-      LegitScript Enterprise Partner, we certify the entire stack, so your brand inherits a
-      compliant, pre-certified foundation from day one.
+      LegitScript Enterprise Partner, we take the entire stack through certification, so your brand
+      inherits a compliant, pre-certified foundation from day one.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
@@ -145,24 +145,29 @@ const legitFaqs = [
   <Section size="sm" surface="surface" bordered>
     <div class="grid gap-8 sm:grid-cols-3">
       <StatCard
-        value="250+"
+        value={STATS.legitscriptCerts.value}
         label="Certifications completed"
         caption="Pharmacies, providers, sites"
       />
       <StatCard
-        value="Enterprise"
-        label="LegitScript partner tier"
-        caption="Fast-tracked approval"
+        value={STATS.legitscriptTier.value}
+        label={STATS.legitscriptTier.label}
+        caption={STATS.legitscriptTier.caption}
       />
-      <StatCard value="50" label="States covered" caption="Nationwide operation" />
+      <StatCard
+        value={STATS.statesCovered.value}
+        label={STATS.statesCovered.label}
+        caption={STATS.statesCovered.caption}
+      />
     </div>
+    {
+      /* Timeline reframed qualitatively per review §3.8 — the specific "3–4 months →
+        4–6 weeks" compression stays off the page until the compliance team confirms it. */
+    }
     <p class="mt-10 text-center text-body text-ink-500">
-      <Unconfirmed
-        reason="WLMD's fast-track timeline claim (typical 3–4 months compressed to 4–6 weeks) — verify with the compliance team before shipping as fact"
-      >
-        A process that typically takes 3–4 months runs in about 4–6 weeks through the enterprise
-        partnership.
-      </Unconfirmed>
+      A process that usually costs founders months runs in a fraction of the time through the
+      enterprise partnership — certification starts on pre-certified rails, not from a blank
+      application.
     </p>
   </Section>
 
