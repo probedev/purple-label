@@ -1,0 +1,18 @@
+---
+/**
+ * /legal/do-not-sell — counsel-gated holding page (CONTENT-REVIEW-2026-07-21 N2). Replace the
+ * LegalHolding body with the counsel-approved document only; placeholder legalese is
+ * forbidden. noindex until the published version lands.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalHolding from '../../components/marketing/LegalHolding.astro';
+---
+
+<PageLayout
+  title="Do Not Sell or Share My Personal Information"
+  description="Do Not Sell or Share My Personal Information for Purple Label MD — the published version is being finalized with counsel; current agreements are provided during your consult."
+  path="/legal/do-not-sell"
+  noindex={true}
+>
+  <LegalHolding title="Do Not Sell or Share My Personal Information" />
+</PageLayout>

@@ -60,13 +60,10 @@ const year = 2026; // build-time constant; bump in CI if desired
           ))
         }
       </ul>
-      <a
-        href="/status"
-        class="inline-flex items-center gap-2 rounded-full border border-dark-line px-3 py-1.5 text-xs font-semibold text-dark-fg transition-colors duration-150 hover:border-teal-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-400"
-      >
-        <span class="size-1.5 rounded-full bg-teal-500" aria-hidden="true"></span>
-        All systems operational
-      </a>
+      {
+        /* Status pill removed per review G3/C18 — an evergreen-static "operational"
+          claim is a fake signal. Restore only wired to a real status provider. */
+      }
     </div>
 
     <!-- Bottom bar -->

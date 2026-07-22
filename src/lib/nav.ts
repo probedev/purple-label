@@ -138,7 +138,7 @@ export const DEVELOPERS: NavGroup = {
     },
     {
       label: 'Integrations',
-      href: '/integrations',
+      href: '/developers#integrations',
       icon: 'blocks',
       desc: 'Connect pharmacies, providers, labs, and CRMs.',
     },
@@ -157,6 +157,8 @@ export const HEADER_LINKS: NavItem[] = [
 
 export const FOOTER_COLUMNS: NavGroup[] = [
   PLATFORM,
+  // Dead links pruned per CONTENT-REVIEW-2026-07-21 G3: Customers, Blog, Careers,
+  // Changelog, and System Status return when their destinations are real.
   {
     label: 'Developers',
     items: [
@@ -166,19 +168,15 @@ export const FOOTER_COLUMNS: NavGroup[] = [
       { label: 'MCP servers', href: '/developers#mcp-servers' },
       { label: 'Prompt library', href: '/developers#prompt-library' },
       { label: 'Webhooks', href: '/developers#webhooks' },
-      { label: 'Integrations', href: '/integrations' },
-      { label: 'Changelog', href: '/changelog' },
-      { label: 'System Status', href: '/status' },
+      { label: 'Integrations', href: '/developers#integrations' },
     ],
   },
   {
     label: 'Company',
     items: [
       { label: 'About', href: '/about' },
-      { label: 'Customers', href: '/customers' },
-      { label: 'Blog', href: '/blog' },
-      { label: 'Careers', href: '/about' },
       { label: 'Contact', href: '/contact' },
+      { label: 'Legal', href: '/legal/terms' },
     ],
   },
   {
@@ -204,9 +202,10 @@ export const TRUST_BADGES = [
   { label: 'SOC 2', status: 'in-progress' },
 ] as const;
 
+// Dashboard CTA removed per CONTENT-REVIEW-2026-07-21 G10 — /login is a non-functional
+// mock; the header button returns when the real portal ships.
 export const CTA = {
   consult: { label: 'Book a consult', href: '/contact' },
   pricing: { label: 'See pricing', href: '/pricing' },
   build: { label: 'Start building', href: '/developers' },
-  dashboard: { label: 'Dashboard', href: '/login' },
 } as const;

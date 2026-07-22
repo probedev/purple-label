@@ -1,0 +1,34 @@
+---
+/**
+ * LegalHolding — the honest holding state for /legal/* routes until counsel delivers
+ * the published documents (CONTENT-REVIEW-2026-07-21 N2). A labeled holding page beats
+ * a 404; placeholder legalese is forbidden. Replace each page's body with the
+ * counsel-approved document — nothing else.
+ */
+import Section from '../layout/Section.astro';
+import Eyebrow from '../primitives/Eyebrow.astro';
+import Button from '../primitives/Button.astro';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<Section size="lg">
+  <Eyebrow>Legal</Eyebrow>
+  <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">{title}</h1>
+  <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+    Our standard agreements are provided during your consult; published versions of this document
+    are being finalized with counsel and will appear here.
+  </p>
+  <p class="mt-4 max-w-prose text-body text-ink-500">
+    If you need this document for a review in the meantime, ask on your consult — we'll provide
+    current agreements and compliance documentation directly (under NDA where appropriate).
+  </p>
+  <slot />
+  <div class="mt-8 flex flex-wrap items-center gap-4">
+    <Button variant="primary" href="/contact">Book a consult</Button>
+    <Button variant="ghost" href="/">Back to home</Button>
+  </div>
+</Section>

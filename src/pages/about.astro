@@ -1,0 +1,104 @@
+---
+/**
+ * About `/about` — small, real, closes the diligence loop (CONTENT-REVIEW-2026-07-21 N1).
+ * Mission → the full heritage story → the care model (who practices medicine, who runs
+ * rails, who owns the brand) → entity note → contact CTA.
+ * Leadership section intentionally absent until Gregg confirms who is named publicly.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import Section from '../components/layout/Section.astro';
+import SectionHeader from '../components/primitives/SectionHeader.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import Card from '../components/primitives/Card.astro';
+import Heritage from '../components/marketing/Heritage.astro';
+import { breadcrumbJsonLd } from '../lib/seo';
+
+const careModel = [
+  {
+    icon: 'stethoscope',
+    title: 'Licensed providers practice medicine',
+    body: 'A board-certified provider network, credentialed nationwide, exclusively directs clinical care — evaluation, prescribing, and ongoing treatment decisions.',
+  },
+  {
+    icon: 'server',
+    title: 'We run the rails',
+    body: 'Purple Label operates the business infrastructure underneath: the platform, pharmacy and lab coordination, payments, and compliance machinery.',
+  },
+  {
+    icon: 'tag',
+    title: 'You own the brand',
+    body: 'The brand, the patients, and the data belong to our clients. We are infrastructure, not a middleman — and never the name on the storefront.',
+  },
+];
+---
+
+<PageLayout
+  title="About — the operators behind Purple Label MD"
+  description="Purple Label MD is the API-and-agent-first rebuild of a national-scale white-label telehealth operation — built by the operators who ran the original machine."
+  path="/about"
+  jsonLd={[breadcrumbJsonLd([['About', '/about']])]}
+>
+  {/* Mission */}
+  <Section size="lg">
+    <Eyebrow>About</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      Telemedicine infrastructure, built by the people who ran it.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Our mission is simple: make launching a compliant, branded telehealth business as fast as
+      pointing your team — or your agents — at an API, without lowering a single clinical or
+      regulatory bar. Founders should compete on brand and care experience, not on rebuilding the
+      same regulated machinery everyone needs.
+    </p>
+  </Section>
+
+  {/* The heritage story */}
+  <Section surface="surface" bordered>
+    <Heritage eyebrow="Where we come from" />
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      Running the first platform taught us where telehealth infrastructure breaks: brittle
+      integrations between intake, prescribing, pharmacy, and billing; compliance handled as
+      paperwork instead of architecture; and operators locked into tools they could never own.
+      Purple Label MD is the rebuild those lessons demanded — a durable order pipeline, an event
+      backbone, and clinical authority sealed away from marketing logic, exposed to your team as one
+      programmable surface.
+    </p>
+  </Section>
+
+  {/* The care model */}
+  <Section>
+    <SectionHeader
+      eyebrow="The care model"
+      title="Who does what — stated plainly."
+      lead="The structure regulators, processors, and diligence teams will ask about, answered before they ask."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        careModel.map((c) => (
+          <Card icon={c.icon} title={c.title}>
+            {c.body}
+          </Card>
+        ))
+      }
+    </div>
+    <p class="mt-8 max-w-prose text-sm text-ink-400">
+      Certifications and clearances — including the LegitScript enterprise partnership and the
+      cleared HIPAA, state pharmacy-board, and payment-processor reviews — are held by our operating
+      entity. Formal legal-entity captions appear in our agreements, provided during your consult.
+    </p>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Talk to us"
+      title="Meet the team on a working session."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="secondary" href="/platform">Explore the platform</Button>
+    </div>
+  </Section>
+</PageLayout>
