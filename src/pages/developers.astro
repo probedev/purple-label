@@ -25,9 +25,11 @@ const docBullets = [
   'Addressable: each resource, field, and error has a stable URL your agents can cite.',
   'Written to be consumed by an agent first, skimmed by a human second.',
 ];
+// G7 tense discipline: MCP is an at-launch capability — future-framed, no
+// present-tense mechanics.
 const mcpBullets = [
-  'Connect your agents to the platform over the Model Context Protocol.',
-  'No scraping docs, no bespoke glue code — the tools are typed and discoverable.',
+  'Your agents will connect to the platform over the Model Context Protocol at launch.',
+  'No scraping docs, no bespoke glue code — the tools will be typed and discoverable.',
   'Scoped to the same tokens and environments as the REST API.',
 ];
 const promptBullets = [
@@ -36,17 +38,29 @@ const promptBullets = [
   'Covers intake assembly, visit triage, fulfillment ops, reporting, and more.',
 ];
 
-const apiSample = `# Stand up an intake flow — your agent, via the API
-POST /v1/intake/flows
-{
-  "condition": "weight-management",
-  "components": ["eligibility", "medical-history", "id-verification"]
-}
+// E16 — the contract guarantees, not generic API marketing.
+const apiGuarantees = [
+  'Published rate limits — no guessing what the platform will tolerate.',
+  'Idempotency keys on mutating calls, with documented 409 conflict semantics.',
+  'Cursor pagination and one consistent error envelope across every module.',
+  'Versioned endpoints and events — semver, with a published changelog.',
+];
 
-201 Created
-{ "flow_id": "flw_8k2c...", "status": "live" }`;
+// E17 — the entry-link story (a real contract), not an invented endpoint shape.
+const apiSample = `# A branded entry link — offering, prefill,
+# and promo context carried into hosted intake
+https://start.yourbrand.com/glp-1
+  ?offering=weight-management
+  &promo=SPRING24
+  &prefill=<signed token>
+
+# The journey comes back to you as events
+GET /v1/orders/ord_9f3a.../status
+200 OK
+{ "status": "VISIT_SCHEDULED", "version": 3 }`;
 
 const webhookSample = `POST https://yourbrand.com/webhooks
+X-PL-Signature: t=1789041600,v1=5f8a1c9e...
 {
   "event": "visit.completed",
   "data": {
@@ -68,15 +82,18 @@ const webhookSample = `POST https://yourbrand.com/webhooks
       Build and run telemedicine with your own agents.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Everything in Purple Label MD is programmable. Point your AI agents at our API, MCP servers,
-      agent-ready docs, and prompt library, and they can stand up intake, visits, prescribing,
-      pharmacy, payments, and analytics — then operate and extend it. This is the spine of the
-      platform, not a side door.
+      Everything in Purple Label MD is programmable. Point your AI agents at our API, agent-ready
+      docs, and agent pack, and they can stand up intake, visits, prescribing, pharmacy, payments,
+      and analytics — then operate and extend it. This is the spine of the platform, not a side door
+      — the same API our own storefronts and internal agents run on.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Request access</Button>
+      <Button variant="primary" href="/contact">Request API access</Button>
       <Button variant="link-arrow" href="#api-reference">Jump to the API</Button>
     </div>
+    <p class="mt-4 text-sm text-ink-400">
+      We provision sandbox tenants and API keys with your consult.
+    </p>
     <div class="mt-8 flex flex-wrap gap-3">
       {
         pillars.map((p) => (
@@ -99,28 +116,25 @@ const webhookSample = `POST https://yourbrand.com/webhooks
         <SectionHeader
           eyebrow="API reference"
           title="One programmable surface for every module."
-          lead="REST endpoints for intake, visits, prescribing, pharmacy, payments, and analytics — scoped tokens, sandbox and production, predictable resources."
+          lead="REST endpoints for intake, visits, prescribing, pharmacy, payments, and analytics — with the contract guarantees that make a regulated platform safe to automate against."
         />
         <ul class="mt-6 space-y-3 text-body text-ink-500">
-          <li class="flex gap-3">
-            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-            Scoped API tokens, separate sandbox and production environments.
-          </li>
-          <li class="flex gap-3">
-            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-            A versioned API you can build against with confidence.
-          </li>
-          <li class="flex gap-3">
-            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-            Consistent resources and errors across every module.
-          </li>
+          {
+            apiGuarantees.map((g) => (
+              <li class="flex gap-3">
+                <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
+                {g}
+              </li>
+            ))
+          }
         </ul>
       </div>
       <div>
         <pre
           class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{apiSample}</code></pre>
         <p class="mt-3 text-sm text-ink-400">
-          Illustrative — the live API surface is published in the docs.
+          Shapes shown are illustrative until the public reference is live — request API access and
+          we'll provision a sandbox with your consult.
         </p>
       </div>
     </div>
@@ -186,7 +200,7 @@ const webhookSample = `POST https://yourbrand.com/webhooks
         <SectionHeader
           eyebrow="Prompt library"
           title="A starting playbook for every module."
-          lead="Curated, customizable prompts that get your agents productive on day one — then bend to your brand and your workflows."
+          lead="Curated, customizable prompts that get your agents productive on day one, with MCP connectors following at launch — a playbook first, then a socket."
         />
         <div class="mt-6">
           <Badge tone="success" icon="badge-check">Available at launch</Badge>
@@ -214,12 +228,28 @@ const webhookSample = `POST https://yourbrand.com/webhooks
         <SectionHeader
           eyebrow="Webhooks & events"
           title="Automate everything else."
-          lead="Subscribe to platform events and let your agents and systems react in real time."
+          lead="Subscribe to platform events and let your agents and systems react in real time — with the delivery guarantees that let you stop worrying about missed events."
         />
+        <ul class="mt-6 space-y-3 text-body text-ink-500">
+          <li class="flex gap-3">
+            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
+            HMAC-signed deliveries, with key rotation.
+          </li>
+          <li class="flex gap-3">
+            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
+            Retries with backoff, a dead-letter queue, and replay.
+          </li>
+          <li class="flex gap-3">
+            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
+            Per-client subscriptions, in thin or full payload modes.
+          </li>
+        </ul>
         <p class="mt-6 text-body text-ink-500">
-          Events include <code class="font-mono text-sm text-ink-700">order.created</code>,
-          <code class="font-mono text-sm text-ink-700">visit.completed</code>, and
-          <code class="font-mono text-sm text-ink-700">prescription.sent</code>.
+          Events include <code class="font-mono text-sm text-ink-700">patient.qualified</code>,
+          <code class="font-mono text-sm text-ink-700">order.created</code>,
+          <code class="font-mono text-sm text-ink-700">visit.completed</code>,
+          <code class="font-mono text-sm text-ink-700">rx.prescribed</code>, and
+          <code class="font-mono text-sm text-ink-700">shipment.updated</code>.
         </p>
       </div>
       <div>
@@ -239,7 +269,8 @@ const webhookSample = `POST https://yourbrand.com/webhooks
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       <Card icon="layers" title="Sandbox & production">
-        Develop and test against a full sandbox, then promote to production with the same calls.
+        Develop and test against a full sandbox tenant — provisioned with your consult — then
+        promote to production with the same calls.
       </Card>
       <Card icon="key" title="Scoped tokens">
         Issue least-privilege tokens per environment, per agent, per integration.
@@ -253,12 +284,17 @@ const webhookSample = `POST https://yourbrand.com/webhooks
   {/* Integrations teaser */}
   <Section id="integrations" surface="sunken" bordered>
     <div class="grid gap-6 md:grid-cols-3">
-      <Card icon="plug" title="Connect the rest of your stack" href="/integrations">
+      <Card icon="plug" title="Connect the rest of your stack" href="#webhooks">
         Pharmacies, providers, labs, analytics, and CRMs — wired through the same API and webhooks
         your agents already use.
       </Card>
-      <Card icon="badge-check" title="On infrastructure that's cleared audits" href="/security">
-        Build on a HIPAA-compliant data layer with end-to-end encryption, behind cleared audits.
+      <Card
+        icon="badge-check"
+        title="On infrastructure that's cleared the reviews"
+        href="/security"
+      >
+        Build on a HIPAA-compliant data layer with end-to-end encryption, behind cleared HIPAA,
+        state pharmacy-board, and payment-processor reviews.
       </Card>
       <Card icon="git-merge" title="See under the hood" href="/architecture">
         The patient journey and the durable order saga your agents drive — the architecture behind
@@ -275,7 +311,7 @@ const webhookSample = `POST https://yourbrand.com/webhooks
       title="Point your agents at the platform and build."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Request access</Button>
+      <Button variant="primary" href="/contact">Request API access</Button>
       <Button variant="secondary" href="/contact">Talk to sales</Button>
     </div>
   </Section>

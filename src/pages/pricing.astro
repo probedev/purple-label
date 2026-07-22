@@ -22,12 +22,13 @@ const tiers = [
     audience: 'For developers and teams building agent-run telemedicine.',
     points: [
       'Every module — intake, visits, e-prescribing, pharmacy, payments, analytics',
-      'Developer docs, API, MCP servers, and the prompt library',
+      'Developer docs, API, and the agent pack (MCP connectors at launch)',
       'The durable order pipeline, built and operated for you',
       'HIPAA-compliant, encrypted infrastructure — behind the same cleared audits',
       'Pass-through Rx pricing — our cost is your cost, no markup',
     ],
-    start: 'Self-serve a sandbox and API keys today; sign a BAA and onboard to go live.',
+    start:
+      'Sandbox access and API keys start with your consult; sign a BAA and onboard to go live.',
     primary: { label: 'Start building', href: '/developers' },
     secondary: { label: 'Book a consult', href: '/contact' },
     featured: true,
@@ -71,7 +72,7 @@ const tiers = [
 const matrix = [
   { label: 'Every platform module', platform: true, managed: true, enterprise: true },
   {
-    label: 'Developer docs, API, MCP, prompt library',
+    label: 'Developer docs, API, agent pack (MCP at launch)',
     platform: true,
     managed: true,
     enterprise: true,
@@ -112,7 +113,7 @@ const matrix = [
 
 <PageLayout
   title="Pricing — Platform, Enterprise, and Managed plans"
-  description="Three ways to build on Purple Label MD. Platform: the full multi-tenant stack with developer docs, API, MCP, and pass-through Rx pricing. Enterprise: a dedicated data silo, per-tenant encryption keys, residency, and data portability. Managed: we build and operate your branded telehealth business for you — on the same audited foundation."
+  description="Three ways to build on Purple Label MD. Platform: the full multi-tenant stack with developer docs, API, and pass-through Rx pricing. Enterprise: a dedicated data silo, per-tenant encryption keys, residency, and data portability. Managed: we build and operate your branded telehealth business for you — on the same audited foundation."
   path="/pricing"
 >
   {/* Hero */}
@@ -186,7 +187,7 @@ const matrix = [
         <p class="mt-2 max-w-prose text-body text-ink-500">
           Enterprise isn't more secure — it's more sovereign. Every tenant gets HIPAA-compliant,
           end-to-end-encrypted infrastructure with row-level isolation, behind the same cleared
-          HIPAA, pharmacy-board, and payment-processor audits. Enterprise adds dedicated
+          HIPAA, state pharmacy-board, and payment-processor reviews. Enterprise adds dedicated
           infrastructure, your own encryption keys, and your choice of data residency.
         </p>
       </div>
