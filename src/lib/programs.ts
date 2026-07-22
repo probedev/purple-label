@@ -131,7 +131,7 @@ export const PROGRAMS_DATA: Program[] = [
       },
     ],
     offerings: [
-      'Semaglutide, tirzepatide, and compounded equivalents, where clinically appropriate',
+      'GLP-1 therapies such as semaglutide and tirzepatide — and, where permitted by law and clinically appropriate, compounded formulations prepared by licensed 503A/503B pharmacies',
       'Eligibility checks, medical intake, and dosing / titration workflows',
       'Subscription billing, refills, and patient management under your brand',
       'Pass-through pricing on medication and fulfillment — zero markup',
@@ -140,7 +140,7 @@ export const PROGRAMS_DATA: Program[] = [
     faqs: [
       {
         q: 'Which medications are prescribed?',
-        a: 'Where clinically appropriate, licensed providers prescribe weight-loss treatments such as semaglutide, tirzepatide, or compounded equivalents.',
+        a: 'Licensed providers prescribe GLP-1 therapies such as semaglutide and tirzepatide — and, where permitted by law and clinically appropriate, compounded formulations prepared by licensed 503A/503B pharmacies.',
       },
       DOCTOR_FAQ,
       {

@@ -54,7 +54,7 @@ const services = [
 const faqs = [
   {
     q: 'Which medications are prescribed?',
-    a: 'Where clinically appropriate, licensed providers prescribe weight-loss treatments such as semaglutide, tirzepatide, or compounded equivalents.',
+    a: 'Licensed providers prescribe GLP-1 therapies such as semaglutide and tirzepatide — and, where permitted by law and clinically appropriate, compounded formulations prepared by licensed 503A/503B pharmacies.',
   },
   {
     q: 'Who prescribes them?',
@@ -185,6 +185,11 @@ const faqs = [
   <Section>
     <SectionHeader align="center" eyebrow="Questions, answered" title="Weight loss, in brief." />
     <FAQ class="mt-12" items={faqs} />
+    <p class="mx-auto mt-8 max-w-prose text-center text-sm text-ink-400">
+      Program availability and prescribing follow clinical eligibility and applicable state and
+      federal rules. Compounded medications are not FDA-approved; availability follows FDA, state,
+      and clinical rules.
+    </p>
   </Section>
 
   {/* Closing CTA */}

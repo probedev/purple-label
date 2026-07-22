@@ -2,7 +2,7 @@
  * Information architecture. Single source for Header, MegaMenu, and Footer so navigation
  * never drifts from the IA. Header order (2026-06-28): Platform · Rx · Pricing · Developers.
  * "Rx" is the consumer-facing label for the programs menu (route + data stay /programs); it
- * leads with the lowest-cost medication catalog. Solutions was dropped — its pages never
+ * leads with pass-through medication pricing. Solutions was dropped — its pages never
  * existed, and its use-cases live under Platform and the Managed plan.
  */
 import { PROGRAMS_DATA } from './programs';
@@ -48,7 +48,7 @@ export const PLATFORM: NavGroup = {
       label: 'Pharmacy & Fulfillment',
       href: '/platform/pharmacy-fulfillment',
       icon: 'pill',
-      desc: 'Nationwide 503A/503B network, lowest-in-class pricing, 50 states.',
+      desc: 'Nationwide 503A/503B network, pass-through pricing, 50 states.',
     },
     {
       label: 'Payments',
@@ -66,7 +66,7 @@ export const PLATFORM: NavGroup = {
       label: 'Security & Compliance',
       href: '/security',
       icon: 'shield-check',
-      desc: 'HIPAA-compliant data layer, encryption, three cleared audits.',
+      desc: 'HIPAA-compliant data layer, encryption, cleared compliance reviews.',
     },
     {
       label: 'LegitScript',
@@ -84,7 +84,7 @@ export const PLATFORM: NavGroup = {
 };
 
 // Labeled "Rx" in the UI; the route and underlying data stay /programs. The menu leads the
-// consumer story with the lowest-cost medication catalog.
+// consumer story with pass-through medication pricing.
 export const PROGRAMS: NavGroup = {
   label: 'Rx',
   href: '/programs',
@@ -176,7 +176,6 @@ export const FOOTER_COLUMNS: NavGroup[] = [
     items: [
       { label: 'About', href: '/about' },
       { label: 'Contact', href: '/contact' },
-      { label: 'Legal', href: '/legal/terms' },
     ],
   },
   {
