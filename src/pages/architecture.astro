@@ -137,7 +137,7 @@ const consumers = [
   {
     icon: 'chart-bar',
     title: 'Analytics & CQRS',
-    body: 'Projects events into read models and a warehouse — serves reporting and your agents’ MCP read queries.',
+    body: 'Projects events into read models and a warehouse — serving reporting today, with MCP read queries for your agents at launch.',
   },
   {
     icon: 'bell',
@@ -189,6 +189,12 @@ const stack = [
     area: 'Messaging',
     choice: 'Managed event bus',
     why: 'Schema registry and archive/replay built in; one queue and dead-letter queue per consumer; idempotent consumers keyed on a processed-event table.',
+  },
+  {
+    // E12 — catalog-as-data, the anti-clone story.
+    area: 'Catalog',
+    choice: 'One catalog, many brands',
+    why: 'Offerings, pricing, and programs are data bound to your brand — not thousands of SKUs cloned per storefront. Change a program once; every surface that consumes it updates.',
   },
   {
     area: 'Multi-tenancy',
@@ -367,6 +373,34 @@ const stack = [
         start the journey with one call, and the platform guarantees the rest.
       </p>
     </div>
+
+    {/* E10 — the titration-authority paragraph: the sharpest architectural differentiator. */}
+    <div class="mt-6 rounded-lg border border-line bg-surface-sunken p-6">
+      <Eyebrow>Clinical authority, sealed</Eyebrow>
+      <p class="mt-2 max-w-prose text-body-lg text-ink-700">
+        <span class="font-semibold text-ink-900"
+          >Dose changes are clinical decisions, not funnel logic.</span
+        > On Purple Label, titration is authorized by the treating clinician and recorded as a clinical
+        event on the patient's timeline — marketing can shape the journey, but it can never write the
+        dose. Elsewhere in this market, funnel builders can route a patient into a titration schedule
+        from a quiz answer. We consider that a compliance defect, not a feature.
+      </p>
+    </div>
+
+    {
+      /* E11 — journey status as a consumable surface. Exemplar states only; final enum
+        naming is [GREGG-CONFIRM]. */
+    }
+    <div class="mt-6 rounded-lg border border-line bg-surface-sunken p-6">
+      <Eyebrow>The journey, as a read model</Eyebrow>
+      <p class="mt-2 max-w-prose text-body-lg text-ink-700">
+        Every order exposes a versioned status —
+        <span class="font-mono text-sm text-purple-700"
+          >RECEIVED → VISIT_SCHEDULED → RX_WRITTEN → SHIPPED → REFILL_DUE</span
+        > — as API reads and webhook events, so your storefront and your agents always know exactly where
+        a patient is.
+      </p>
+    </div>
   </Section>
 
   {/* Event backbone */}
@@ -471,7 +505,7 @@ const stack = [
     <SectionHeader
       align="center"
       eyebrow="And you get all of it"
-      title="The whole pipeline — as API and MCP."
+      title="The whole pipeline — as an API today, MCP connectors at launch."
       lead="We built, operate, and audit the hard part. Your agents drive it with a few calls."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
