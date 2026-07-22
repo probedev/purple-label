@@ -4,8 +4,10 @@
  * ("Request a demo", "Talk to sales") lands here.
  *
  * Calendar-only was locked 2026-06-26; amended per Gregg 2026-07-21 (WLMD fold-in): the
- * calendar stays primary, but a lead form now backs it up so the page always has a
- * conversion path. Successful submits land on /thank-you.
+ * calendar stays primary, backed by a TWO-STEP lead form (step 1 identity → fires a
+ * stage=partial lead to the Worker on Continue; step 2 company → completes it under the
+ * same lead_id). Abandoned second steps still leave a usable partial lead. Successful
+ * submits land on /thank-you.
  *
  * GO LIVE (either or both):
  *   - CAL_LINK: your Cal.com "username/event-slug" (e.g. "purplelabel/intro") — the inline
@@ -29,15 +31,6 @@ const CAL_LINK = '';
 // ── Lead intake: the Worker route backed by the LEADS KV namespace ─────────
 const FORM_ENDPOINT = '/api/lead';
 // ──────────────────────────────────────────────────────────────────────────
-
-const REFERRAL_OPTIONS = [
-  'Search',
-  'Referral from a founder or operator',
-  'Social (X / LinkedIn / TikTok)',
-  'Podcast or newsletter',
-  'Event or conference',
-  'Other',
-];
 
 const inputClasses =
   'mt-1.5 h-11 w-full rounded-md border border-line bg-surface px-3 text-sm text-ink-900 placeholder:text-ink-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500';
@@ -125,160 +118,284 @@ const expectations = [
     </div>
   </Section>
 
-  {/* Lead form — the fallback conversion path when a call isn't the first step */}
+  {
+    /* Two-step lead capture. Step 1 (identity) fires to the Worker on Continue, so an
+      abandoned step 2 still leaves a partial lead; step 2 (company) completes it under
+      the same lead_id. Without JS both steps render as one form with a single submit. */
+  }
   <Section id="lead-form" bordered>
     <div class="mx-auto max-w-2xl">
       <SectionHeader
         align="center"
         eyebrow="Prefer to write first?"
         title="Tell us what you're building."
-        lead="Skip the calendar — send the essentials and we'll reply by email to set up a time."
+        lead="Skip the calendar — two quick steps and we'll reply by email to set up a time."
       />
+    </div>
 
-      <div class="mt-10 rounded-lg border border-line bg-surface p-8">
-        {/* The form always renders so the page reads right; only sending is gated. */}
-        {
-          (
-            <form
-              id="lead-form-el"
-              method="POST"
-              action={FORM_ENDPOINT || undefined}
-              data-endpoint={FORM_ENDPOINT}
-              class="flex flex-col gap-5"
-            >
-              <input type="hidden" name="_next" value="/thank-you" />
-              <input
-                type="text"
-                name="_gotcha"
-                tabindex="-1"
-                autocomplete="off"
-                class="hidden"
-                aria-hidden="true"
-              />
-              <div class="grid gap-5 sm:grid-cols-2">
-                <div>
-                  <label for="lead-name" class="block text-sm font-medium text-ink-700">
-                    Full name
-                  </label>
-                  <input
-                    id="lead-name"
-                    name="name"
-                    type="text"
-                    required
-                    autocomplete="name"
-                    placeholder="Alex Rivera"
-                    class={inputClasses}
-                  />
-                </div>
-                <div>
-                  <label for="lead-email" class="block text-sm font-medium text-ink-700">
-                    Work email
-                  </label>
-                  <input
-                    id="lead-email"
-                    name="email"
-                    type="email"
-                    required
-                    autocomplete="email"
-                    placeholder="you@company.com"
-                    class={inputClasses}
-                  />
-                </div>
-              </div>
-              <div class="grid gap-5 sm:grid-cols-2">
-                <div>
-                  <label for="lead-phone" class="block text-sm font-medium text-ink-700">
-                    Phone <span class="font-normal text-ink-400">(optional)</span>
-                  </label>
-                  <input
-                    id="lead-phone"
-                    name="phone"
-                    type="tel"
-                    autocomplete="tel"
-                    placeholder="+1 (555) 000-0000"
-                    class={inputClasses}
-                  />
-                </div>
-                <div>
-                  <label for="lead-referral" class="block text-sm font-medium text-ink-700">
-                    How did you hear about us?{' '}
-                    <span class="font-normal text-ink-400">(optional)</span>
-                  </label>
-                  <select id="lead-referral" name="referral" class={inputClasses}>
-                    <option value="">Choose one</option>
-                    {REFERRAL_OPTIONS.map((o) => (
-                      <option value={o}>{o}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label for="lead-message" class="block text-sm font-medium text-ink-700">
-                  What are you building? <span class="font-normal text-ink-400">(optional)</span>
-                </label>
-                <textarea
-                  id="lead-message"
-                  name="message"
-                  rows="4"
-                  placeholder="The brand, the programs you want to offer, and where you are today."
-                  class={`${inputClasses} h-auto py-2.5`}
-                />
-              </div>
-              <label class="flex items-start gap-3 text-sm text-ink-500">
-                <input
-                  type="checkbox"
-                  name="consent"
-                  required
-                  class="mt-0.5 size-4 shrink-0 rounded-sm border-line accent-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
-                />
-                <span>
-                  I agree to be contacted about my inquiry. No newsletters, no drip campaigns — just
-                  a reply.
-                </span>
-              </label>
-              <p id="lead-form-error" hidden class="text-sm font-medium text-danger">
-                Something went wrong sending the form — please try again, or book a time above
-                instead.
-              </p>
-              {FORM_ENDPOINT ? (
-                <Button type="submit" variant="primary" class="sm:self-start">
-                  Send it over
-                </Button>
-              ) : (
-                <div class="flex flex-col gap-3">
-                  <Button type="submit" variant="primary" class="sm:self-start" disabled>
-                    Send it over
-                  </Button>
-                  <Unconfirmed
-                    display="block"
-                    reason="Form intake endpoint pending from Gregg — set FORM_ENDPOINT (a Formspree/Basin-style POST URL or your own Worker route) in contact.astro to activate sending"
-                  >
-                    Sending isn't connected yet — book a time above, and this form switches on the
-                    moment the intake endpoint is set.
-                  </Unconfirmed>
-                </div>
-              )}
-            </form>
-          )
-        }
+    <div class="mx-auto mt-10 max-w-xl rounded-xl border border-line bg-surface shadow-md">
+      {/* Card header: per-step title + progress */}
+      <div class="border-b border-line p-8">
+        <div data-step-head="1">
+          <h3 class="font-display text-h3 text-ink-900">Get started with Purple Label</h3>
+          <p class="mt-2 text-body text-ink-500">
+            Tell us a bit about yourself and we'll be in touch.
+          </p>
+        </div>
+        <div data-step-head="2" hidden>
+          <h3 class="font-display text-h3 text-ink-900">About your company</h3>
+          <p class="mt-2 text-body text-ink-500">Help us prepare for your consult.</p>
+        </div>
+        <div id="lead-progress" class="mt-6 flex items-center gap-3" hidden>
+          <span class="h-1.5 flex-1 rounded-full bg-purple-600" aria-hidden="true"></span>
+          <span
+            id="lead-progress-bar-2"
+            class="h-1.5 flex-1 rounded-full bg-line"
+            aria-hidden="true"></span>
+          <span id="lead-progress-count" class="font-mono text-sm text-ink-400">1/2</span>
+        </div>
+      </div>
+
+      {/* Card body: the form */}
+      <form
+        id="lead-form-el"
+        method="POST"
+        action={FORM_ENDPOINT}
+        data-endpoint={FORM_ENDPOINT}
+        class="flex flex-col gap-5 p-8"
+      >
+        <input type="hidden" name="_next" value="/thank-you" />
+        <input type="hidden" name="lead_id" id="lead-id" value="" />
+        <input type="hidden" name="stage" id="lead-stage" value="complete" />
+        <input
+          type="text"
+          name="_gotcha"
+          tabindex="-1"
+          autocomplete="off"
+          class="hidden"
+          aria-hidden="true"
+        />
+
+        <fieldset data-step="1" class="flex flex-col gap-5">
+          <legend class="sr-only">About you</legend>
+          <div>
+            <label for="lead-name" class="block text-sm font-medium text-ink-700">Full name</label>
+            <input
+              id="lead-name"
+              name="name"
+              type="text"
+              required
+              autocomplete="name"
+              placeholder="Alex Rivera"
+              class={inputClasses}
+            />
+          </div>
+          <div>
+            <label for="lead-email" class="block text-sm font-medium text-ink-700">
+              Work email
+            </label>
+            <input
+              id="lead-email"
+              name="email"
+              type="email"
+              required
+              autocomplete="email"
+              placeholder="you@company.com"
+              class={inputClasses}
+            />
+          </div>
+          <div>
+            <label for="lead-phone" class="block text-sm font-medium text-ink-700">
+              Phone <span class="font-normal text-ink-400">(optional)</span>
+            </label>
+            <input
+              id="lead-phone"
+              name="phone"
+              type="tel"
+              autocomplete="tel"
+              placeholder="+1 (555) 000-0000"
+              class={inputClasses}
+            />
+          </div>
+        </fieldset>
+
+        <fieldset data-step="2" class="flex flex-col gap-5">
+          <legend class="sr-only">About your company</legend>
+          <div>
+            <label for="lead-company" class="block text-sm font-medium text-ink-700">
+              Company name
+            </label>
+            <input
+              id="lead-company"
+              name="company"
+              type="text"
+              required
+              autocomplete="organization"
+              placeholder="Acme Health"
+              class={inputClasses}
+            />
+          </div>
+          <div>
+            <label for="lead-website" class="block text-sm font-medium text-ink-700">
+              Website <span class="font-normal text-ink-400">(optional)</span>
+            </label>
+            <input
+              id="lead-website"
+              name="website"
+              type="text"
+              inputmode="url"
+              autocomplete="url"
+              placeholder="https://company.com"
+              class={inputClasses}
+            />
+          </div>
+          <div>
+            <label for="lead-message" class="block text-sm font-medium text-ink-700">
+              What are you building? <span class="font-normal text-ink-400">(optional)</span>
+            </label>
+            <textarea
+              id="lead-message"
+              name="message"
+              rows="3"
+              placeholder="The programs you want to offer and where you are today."
+              class={`${inputClasses} h-auto py-2.5`}></textarea>
+          </div>
+          <label class="flex items-start gap-3 text-sm text-ink-500">
+            <input
+              type="checkbox"
+              name="consent"
+              required
+              class="mt-0.5 size-4 shrink-0 rounded-sm border-line accent-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+            />
+            <span>
+              I agree to be contacted about my inquiry. No newsletters, no drip campaigns — just a
+              reply.
+            </span>
+          </label>
+        </fieldset>
+
+        <p id="lead-form-error" hidden class="text-sm font-medium text-danger">
+          Something went wrong sending the form — please try again, or book a time above instead.
+        </p>
+
+        <div class="flex flex-col gap-3">
+          <Button id="lead-continue" type="button" variant="primary" class="w-full" hidden>
+            Continue
+            <Icon name="lucide:arrow-right" class="icon size-4" />
+          </Button>
+          <Button id="lead-submit" type="submit" variant="primary" class="w-full">
+            Get started
+            <Icon name="lucide:arrow-right" class="icon size-4" />
+          </Button>
+          <Button id="lead-back" type="button" variant="ghost" class="w-full" hidden>Back</Button>
+        </div>
+      </form>
+
+      {/* Card footer: trust row */}
+      <div
+        class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-line px-8 py-6 text-sm text-ink-500"
+      >
+        <span class="inline-flex items-center gap-2">
+          <Icon name="lucide:users" class="icon size-4 text-purple-600" />
+          50-state provider network
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <Icon name="lucide:zap" class="icon size-4 text-purple-600" />
+          Live in ~30 days
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <Icon name="lucide:sparkles" class="icon size-4 text-purple-600" />
+          100+ brands launched
+        </span>
       </div>
     </div>
   </Section>
 
   <script>
-    // Progressive enhancement: intercept the lead-form submit, POST as JSON-friendly
-    // FormData, and land on /thank-you. Without JS the form still POSTs natively and
-    // the endpoint's `_next` redirect takes over.
+    /*
+     * Two-step lead capture, progressively enhanced:
+     *  - No JS: both fieldsets render stacked, one native POST to the Worker.
+     *  - JS: step 2 hides, Continue validates step 1 and fires it to the Worker as a
+     *    stage=partial lead (keepalive, fire-and-forget), then swaps to step 2. The final
+     *    submit sends everything as stage=complete under the same lead_id, and the Worker
+     *    upserts — so an abandoned step 2 still leaves a usable partial lead.
+     */
     const form = document.getElementById('lead-form-el') as HTMLFormElement | null;
-    if (form) {
+    const step1 = form?.querySelector<HTMLFieldSetElement>('[data-step="1"]') ?? null;
+    const step2 = form?.querySelector<HTMLFieldSetElement>('[data-step="2"]') ?? null;
+    const continueBtn = document.getElementById('lead-continue') as HTMLButtonElement | null;
+    const backBtn = document.getElementById('lead-back') as HTMLButtonElement | null;
+    const submitBtn = document.getElementById('lead-submit') as HTMLButtonElement | null;
+    const leadId = document.getElementById('lead-id') as HTMLInputElement | null;
+    const progress = document.getElementById('lead-progress');
+    const progressBar2 = document.getElementById('lead-progress-bar-2');
+    const progressCount = document.getElementById('lead-progress-count');
+
+    if (form && step1 && step2 && continueBtn && backBtn && submitBtn && leadId) {
+      const endpoint = form.dataset.endpoint || form.action;
+      leadId.value = crypto.randomUUID();
+      let partialSent = false;
+
+      const setStep = (step: 1 | 2, focus = true) => {
+        step1.hidden = step !== 1;
+        step2.hidden = step !== 2;
+        continueBtn.hidden = step !== 1;
+        submitBtn.hidden = step !== 2;
+        backBtn.hidden = step !== 2;
+        document.querySelectorAll<HTMLElement>('[data-step-head]').forEach((head) => {
+          head.hidden = head.dataset.stepHead !== String(step);
+        });
+        progressBar2?.classList.toggle('bg-purple-600', step === 2);
+        progressBar2?.classList.toggle('bg-line', step !== 2);
+        if (progressCount) progressCount.textContent = `${step}/2`;
+        if (focus) {
+          const active = step === 1 ? step1 : step2;
+          active.querySelector<HTMLInputElement>('input, textarea')?.focus();
+        }
+      };
+
+      // Enhance: collapse to step 1 (without stealing focus on page load).
+      progress?.removeAttribute('hidden');
+      setStep(1, false);
+
+      continueBtn.addEventListener('click', () => {
+        for (const input of step1.querySelectorAll('input')) {
+          if (!input.reportValidity()) return;
+        }
+        if (!partialSent) {
+          partialSent = true;
+          const partial = new FormData();
+          partial.set('lead_id', leadId.value);
+          partial.set('stage', 'partial');
+          for (const name of ['name', 'email', 'phone'] as const) {
+            partial.set(
+              name,
+              form.elements.namedItem(name) instanceof HTMLInputElement
+                ? (form.elements.namedItem(name) as HTMLInputElement).value
+                : '',
+            );
+          }
+          fetch(endpoint, {
+            method: 'POST',
+            body: partial,
+            headers: { Accept: 'application/json' },
+            keepalive: true,
+          }).catch(() => {
+            partialSent = false; // let a retry happen if they bounce back through step 1
+          });
+        }
+        setStep(2);
+      });
+
+      backBtn.addEventListener('click', () => setStep(1));
+
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
         const error = document.getElementById('lead-form-error');
-        const button = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
         error?.setAttribute('hidden', '');
-        if (button) button.disabled = true;
+        submitBtn.disabled = true;
         try {
-          const response = await fetch(form.dataset.endpoint ?? form.action, {
+          const response = await fetch(endpoint, {
             method: 'POST',
             body: new FormData(form),
             headers: { Accept: 'application/json' },
@@ -287,7 +404,7 @@ const expectations = [
           window.location.assign('/thank-you');
         } catch {
           error?.removeAttribute('hidden');
-          if (button) button.disabled = false;
+          submitBtn.disabled = false;
         }
       });
     }
