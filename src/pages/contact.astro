@@ -1,28 +1,17 @@
 ---
 /**
- * Contact `/contact` — the site's single conversion path: a TWO-STEP lead form (modeled
- * on the two-step get-started pattern, per Gregg 2026-07-21). Every site CTA
- * ("Book a consult", "Talk to sales") lands here.
- *
- * Step 1 (identity) fires to the Worker as a stage=partial lead on Continue, so an
- * abandoned step 2 still captures the visitor; step 2 (company) completes the record
- * under the same client-generated lead_id (worker/index.js upserts by lead_id).
- * Successful submits land on /thank-you. Calendar booking was removed 2026-07-21 —
- * the consult gets scheduled in the reply email instead.
+ * Contact `/contact` — the no-JS / direct-link fallback for the site-wide lead-capture
+ * MODAL (LeadModal in PageLayout intercepts every link here and opens the popup
+ * instead). Anyone who does land on this page — JS off, modified click, shared URL —
+ * gets the same two-step card inline. PageLayout skips the modal on this path so the
+ * card's element ids stay unique.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
 import SectionHeader from '../components/primitives/SectionHeader.astro';
 import Eyebrow from '../components/primitives/Eyebrow.astro';
-import Button from '../components/primitives/Button.astro';
+import LeadCapture from '../components/marketing/LeadCapture.astro';
 import { Icon } from 'astro-icon/components';
-
-// ── Lead intake: the Worker route backed by the LEADS KV namespace ─────────
-const FORM_ENDPOINT = '/api/lead';
-// ──────────────────────────────────────────────────────────────────────────
-
-const inputClasses =
-  'mt-1.5 h-11 w-full rounded-md border border-line bg-surface px-3 text-sm text-ink-900 placeholder:text-ink-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500';
 
 const expectations = [
   {
@@ -62,14 +51,9 @@ const expectations = [
     </p>
   </Section>
 
-  {
-    /* What to expect + the two-step lead capture. Step 1 fires to the Worker on Continue,
-      so an abandoned step 2 still leaves a partial lead; step 2 completes it under the
-      same lead_id. Without JS both steps render as one form with a single submit. */
-  }
+  {/* What to expect + the two-step card (same one the site-wide modal shows) */}
   <Section surface="surface" bordered>
     <div class="grid gap-10 lg:grid-cols-2 lg:items-start">
-      {/* What to expect */}
       <div>
         <SectionHeader eyebrow="What to expect" title="A working session, not a pitch." />
         <ul class="mt-8 flex flex-col gap-6">
@@ -87,284 +71,7 @@ const expectations = [
         </ul>
       </div>
 
-      {/* The card */}
-      <div id="lead-form" class="rounded-xl border border-line bg-paper shadow-md">
-        {/* Card header: per-step title + progress */}
-        <div class="border-b border-line p-8">
-          <div data-step-head="1">
-            <h2 class="font-display text-h3 text-ink-900">Get started with Purple Label</h2>
-            <p class="mt-2 text-body text-ink-500">
-              Tell us a bit about yourself and we'll be in touch.
-            </p>
-          </div>
-          <div data-step-head="2" hidden>
-            <h2 class="font-display text-h3 text-ink-900">About your company</h2>
-            <p class="mt-2 text-body text-ink-500">Help us prepare for your consult.</p>
-          </div>
-          <div id="lead-progress" class="mt-6 flex items-center gap-3" hidden>
-            <span class="h-1.5 flex-1 rounded-full bg-purple-600" aria-hidden="true"></span>
-            <span
-              id="lead-progress-bar-2"
-              class="h-1.5 flex-1 rounded-full bg-line"
-              aria-hidden="true"></span>
-            <span id="lead-progress-count" class="font-mono text-sm text-ink-400">1/2</span>
-          </div>
-        </div>
-
-        {/* Card body: the form */}
-        <form
-          id="lead-form-el"
-          method="POST"
-          action={FORM_ENDPOINT}
-          data-endpoint={FORM_ENDPOINT}
-          class="flex flex-col gap-5 p-8"
-        >
-          <input type="hidden" name="_next" value="/thank-you" />
-          <input type="hidden" name="lead_id" id="lead-id" value="" />
-          <input type="hidden" name="stage" id="lead-stage" value="complete" />
-          <input
-            type="text"
-            name="_gotcha"
-            tabindex="-1"
-            autocomplete="off"
-            class="hidden"
-            aria-hidden="true"
-          />
-
-          <fieldset data-step="1" class="flex flex-col gap-5">
-            <legend class="sr-only">About you</legend>
-            <div>
-              <label for="lead-name" class="block text-sm font-medium text-ink-700">
-                Full name
-              </label>
-              <input
-                id="lead-name"
-                name="name"
-                type="text"
-                required
-                autocomplete="name"
-                placeholder="Alex Rivera"
-                class={inputClasses}
-              />
-            </div>
-            <div>
-              <label for="lead-email" class="block text-sm font-medium text-ink-700">
-                Work email
-              </label>
-              <input
-                id="lead-email"
-                name="email"
-                type="email"
-                required
-                autocomplete="email"
-                placeholder="you@company.com"
-                class={inputClasses}
-              />
-            </div>
-            <div>
-              <label for="lead-phone" class="block text-sm font-medium text-ink-700">
-                Phone <span class="font-normal text-ink-400">(optional)</span>
-              </label>
-              <input
-                id="lead-phone"
-                name="phone"
-                type="tel"
-                autocomplete="tel"
-                placeholder="+1 (555) 000-0000"
-                class={inputClasses}
-              />
-            </div>
-          </fieldset>
-
-          <fieldset data-step="2" class="flex flex-col gap-5">
-            <legend class="sr-only">About your company</legend>
-            <div>
-              <label for="lead-company" class="block text-sm font-medium text-ink-700">
-                Company name
-              </label>
-              <input
-                id="lead-company"
-                name="company"
-                type="text"
-                required
-                autocomplete="organization"
-                placeholder="Acme Health"
-                class={inputClasses}
-              />
-            </div>
-            <div>
-              <label for="lead-website" class="block text-sm font-medium text-ink-700">
-                Website <span class="font-normal text-ink-400">(optional)</span>
-              </label>
-              <input
-                id="lead-website"
-                name="website"
-                type="text"
-                inputmode="url"
-                autocomplete="url"
-                placeholder="https://company.com"
-                class={inputClasses}
-              />
-            </div>
-            <div>
-              <label for="lead-message" class="block text-sm font-medium text-ink-700">
-                What are you building? <span class="font-normal text-ink-400">(optional)</span>
-              </label>
-              <textarea
-                id="lead-message"
-                name="message"
-                rows="3"
-                placeholder="The programs you want to offer and where you are today."
-                class={`${inputClasses} h-auto py-2.5`}></textarea>
-            </div>
-            <label class="flex items-start gap-3 text-sm text-ink-500">
-              <input
-                type="checkbox"
-                name="consent"
-                required
-                class="mt-0.5 size-4 shrink-0 rounded-sm border-line accent-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
-              />
-              <span>
-                I agree to be contacted about my inquiry. No newsletters, no drip campaigns — just a
-                reply.
-              </span>
-            </label>
-          </fieldset>
-
-          <p id="lead-form-error" hidden class="text-sm font-medium text-danger">
-            Something went wrong sending the form — please try again in a moment.
-          </p>
-
-          <div class="flex flex-col gap-3">
-            <Button id="lead-continue" type="button" variant="primary" class="w-full" hidden>
-              Continue
-              <Icon name="lucide:arrow-right" class="icon size-4" />
-            </Button>
-            <Button id="lead-submit" type="submit" variant="primary" class="w-full">
-              Get started
-              <Icon name="lucide:arrow-right" class="icon size-4" />
-            </Button>
-            <Button id="lead-back" type="button" variant="ghost" class="w-full" hidden>Back</Button>
-          </div>
-        </form>
-
-        {/* Card footer: trust row */}
-        <div
-          class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-line px-8 py-6 text-sm text-ink-500"
-        >
-          <span class="inline-flex items-center gap-2">
-            <Icon name="lucide:users" class="icon size-4 text-purple-600" />
-            50-state provider network
-          </span>
-          <span class="inline-flex items-center gap-2">
-            <Icon name="lucide:zap" class="icon size-4 text-purple-600" />
-            Live in ~30 days
-          </span>
-          <span class="inline-flex items-center gap-2">
-            <Icon name="lucide:sparkles" class="icon size-4 text-purple-600" />
-            100+ brands launched
-          </span>
-        </div>
-      </div>
+      <LeadCapture />
     </div>
   </Section>
-
-  <script>
-    /*
-     * Two-step lead capture, progressively enhanced:
-     *  - No JS: both fieldsets render stacked, one native POST to the Worker.
-     *  - JS: step 2 hides, Continue validates step 1 and fires it to the Worker as a
-     *    stage=partial lead (keepalive, fire-and-forget), then swaps to step 2. The final
-     *    submit sends everything as stage=complete under the same lead_id, and the Worker
-     *    upserts — so an abandoned step 2 still leaves a usable partial lead.
-     */
-    const form = document.getElementById('lead-form-el') as HTMLFormElement | null;
-    const step1 = form?.querySelector<HTMLFieldSetElement>('[data-step="1"]') ?? null;
-    const step2 = form?.querySelector<HTMLFieldSetElement>('[data-step="2"]') ?? null;
-    const continueBtn = document.getElementById('lead-continue') as HTMLButtonElement | null;
-    const backBtn = document.getElementById('lead-back') as HTMLButtonElement | null;
-    const submitBtn = document.getElementById('lead-submit') as HTMLButtonElement | null;
-    const leadId = document.getElementById('lead-id') as HTMLInputElement | null;
-    const progress = document.getElementById('lead-progress');
-    const progressBar2 = document.getElementById('lead-progress-bar-2');
-    const progressCount = document.getElementById('lead-progress-count');
-
-    if (form && step1 && step2 && continueBtn && backBtn && submitBtn && leadId) {
-      const endpoint = form.dataset.endpoint || form.action;
-      leadId.value = crypto.randomUUID();
-      let partialSent = false;
-
-      const setStep = (step: 1 | 2, focus = true) => {
-        step1.hidden = step !== 1;
-        step2.hidden = step !== 2;
-        continueBtn.hidden = step !== 1;
-        submitBtn.hidden = step !== 2;
-        backBtn.hidden = step !== 2;
-        document.querySelectorAll<HTMLElement>('[data-step-head]').forEach((head) => {
-          head.hidden = head.dataset.stepHead !== String(step);
-        });
-        progressBar2?.classList.toggle('bg-purple-600', step === 2);
-        progressBar2?.classList.toggle('bg-line', step !== 2);
-        if (progressCount) progressCount.textContent = `${step}/2`;
-        if (focus) {
-          const active = step === 1 ? step1 : step2;
-          active.querySelector<HTMLInputElement>('input, textarea')?.focus();
-        }
-      };
-
-      // Enhance: collapse to step 1 (without stealing focus on page load).
-      progress?.removeAttribute('hidden');
-      setStep(1, false);
-
-      continueBtn.addEventListener('click', () => {
-        for (const input of step1.querySelectorAll('input')) {
-          if (!input.reportValidity()) return;
-        }
-        if (!partialSent) {
-          partialSent = true;
-          const partial = new FormData();
-          partial.set('lead_id', leadId.value);
-          partial.set('stage', 'partial');
-          for (const name of ['name', 'email', 'phone'] as const) {
-            partial.set(
-              name,
-              form.elements.namedItem(name) instanceof HTMLInputElement
-                ? (form.elements.namedItem(name) as HTMLInputElement).value
-                : '',
-            );
-          }
-          fetch(endpoint, {
-            method: 'POST',
-            body: partial,
-            headers: { Accept: 'application/json' },
-            keepalive: true,
-          }).catch(() => {
-            partialSent = false; // let a retry happen if they bounce back through step 1
-          });
-        }
-        setStep(2);
-      });
-
-      backBtn.addEventListener('click', () => setStep(1));
-
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const error = document.getElementById('lead-form-error');
-        error?.setAttribute('hidden', '');
-        submitBtn.disabled = true;
-        try {
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: { Accept: 'application/json' },
-          });
-          if (!response.ok) throw new Error(`Form endpoint responded ${response.status}`);
-          window.location.assign('/thank-you');
-        } catch {
-          error?.removeAttribute('hidden');
-          submitBtn.disabled = false;
-        }
-      });
-    }
-  </script>
 </PageLayout>

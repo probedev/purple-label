@@ -1,0 +1,83 @@
+---
+/**
+ * LeadModal — the site-wide lead-capture popup (per Gregg 2026-07-21: the Rimo-style
+ * dialog, not a below-the-fold form). A native <dialog> wrapping LeadCapture; a global
+ * click listener promotes every link to /contact ("Book a consult", "Talk to sales",
+ * the mobile sticky bar) into opening this modal instead. Plain and modified clicks
+ * without JS still navigate to /contact, which renders the same card inline —
+ * PageLayout skips this component there so ids stay unique.
+ */
+import LeadCapture from './LeadCapture.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<dialog
+  id="lead-modal"
+  class="m-auto max-h-dvh w-full max-w-xl overflow-y-auto bg-transparent p-4 backdrop:bg-ink-900/60 backdrop:backdrop-blur-sm"
+  aria-label="Book a consult"
+>
+  <div class="relative">
+    <button
+      id="lead-modal-close"
+      type="button"
+      aria-label="Close"
+      class="absolute right-4 top-4 z-10 inline-flex size-9 items-center justify-center rounded-md text-ink-400 transition-colors duration-150 hover:bg-surface-sunken hover:text-ink-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+    >
+      <Icon name="lucide:x" class="icon size-5" />
+    </button>
+    <LeadCapture />
+  </div>
+</dialog>
+
+<style>
+  /* Gentle entry; the global prefers-reduced-motion guard disables all animation. */
+  dialog[open] {
+    animation: lead-modal-in 0.2s ease-out;
+  }
+  @keyframes lead-modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Lock page scroll while the lead modal is open. */
+  body:has(#lead-modal[open]) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const dialog = document.getElementById('lead-modal') as HTMLDialogElement | null;
+  const closeBtn = document.getElementById('lead-modal-close');
+
+  if (dialog && typeof dialog.showModal === 'function') {
+    // Promote every consult link into a modal trigger. Modified clicks (new tab, etc.)
+    // and browsers without JS keep the normal navigation to /contact.
+    document.addEventListener('click', (event) => {
+      if (event.defaultPrevented) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)
+        return;
+      const link = (event.target as Element | null)?.closest<HTMLAnchorElement>('a[href]');
+      if (!link) return;
+      const href = link.getAttribute('href') ?? '';
+      if (href !== '/contact' && !href.startsWith('/contact#')) return;
+      event.preventDefault();
+      dialog.showModal();
+      (document.getElementById('lead-name') as HTMLInputElement | null)?.focus();
+    });
+
+    closeBtn?.addEventListener('click', () => dialog.close());
+
+    // A click on the backdrop (outside the card) targets the <dialog> itself.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  }
+</script>
