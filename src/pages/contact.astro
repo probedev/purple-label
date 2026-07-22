@@ -10,8 +10,9 @@
  * GO LIVE (either or both):
  *   - CAL_LINK: your Cal.com "username/event-slug" (e.g. "purplelabel/intro") — the inline
  *     embed wires itself up. Height comes from --size-scheduler (tokens.css) via .cal-embed.
- *   - FORM_ENDPOINT: a form-intake URL (Formspree/Basin-style POST endpoint, or your own
- *     Worker route). The form posts there and redirects to /thank-you.
+ *   - FORM_ENDPOINT: set to '/api/lead' once the LEADS KV namespace is provisioned
+ *     (see wrangler.jsonc) — the Worker stores submissions and redirects to /thank-you.
+ *     A Formspree/Basin-style URL also works if we ever want a hosted inbox instead.
  * Until each is set, its card shows a gated interim state so nothing ships as working
  * that isn't.
  */
@@ -25,7 +26,7 @@ import { Icon } from 'astro-icon/components';
 
 // ── Set your Cal.com link here to go live (your "username/event-slug") ─────
 const CAL_LINK = '';
-// ── Set your form-intake endpoint here to enable the lead form ─────────────
+// ── Set to '/api/lead' once the LEADS KV namespace exists (wrangler.jsonc) ──
 const FORM_ENDPOINT = '';
 // ──────────────────────────────────────────────────────────────────────────
 

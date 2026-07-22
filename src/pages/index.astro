@@ -15,7 +15,6 @@ import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
 import FAQ from '../components/primitives/FAQ.astro';
 import HeroArt from '../components/marketing/HeroArt.astro';
-import Unconfirmed from '../components/marketing/Unconfirmed.astro';
 import { organizationJsonLd, softwareApplicationJsonLd, faqJsonLd } from '../lib/seo';
 
 const modules = [
@@ -235,7 +234,7 @@ const homeFaqs = [
       infrastructure behind 100+ telehealth brands.
     </p>
     <p class="mt-6 text-center text-xs uppercase tracking-eyebrow text-ink-400">
-      Customer logos — added once permitted
+      Trusted by founders like Trucker's Body Shop — more logos as permissions land
     </p>
   </Section>
 
@@ -468,21 +467,19 @@ const homeFaqs = [
     </div>
   </Section>
 
-  {/* 10 — Customer proof (folded from WLMD; gated until usage permission is confirmed) */}
+  {
+    /* 10 — Customer proof (the Steenblik quote, verbatim from WLMD's live site per Gregg 2026-07-21) */
+  }
   <Section size="sm">
     <figure class="mx-auto max-w-2xl text-center">
-      <Unconfirmed
-        display="block"
-        reason="Testimonial folded from the WLMD site — confirm Garret Steenblik's permission to use it here before launch"
-      >
-        <blockquote class="font-display text-h3 text-ink-900">
-          “WLMD helped us make our dreams a reality... they had the lowest costs on all medications
-          and the most advanced technology platform.”
-        </blockquote>
-        <figcaption class="mt-6 text-sm text-ink-500">
-          <span class="font-semibold text-ink-700">Garret Steenblik</span> — CEO, Trucker's Body Shop
-        </figcaption>
-      </Unconfirmed>
+      <blockquote class="font-display text-h3 text-ink-900">
+        “WLMD helped us make our dreams a reality. We did extensive research before selecting a
+        platform partner and WLMD had the best offering by far. They had the lowest costs on all
+        medications and the most advanced technology platform.”
+      </blockquote>
+      <figcaption class="mt-6 text-sm text-ink-500">
+        <span class="font-semibold text-ink-700">Garret Steenblik</span> — CEO, Trucker's Body Shop
+      </figcaption>
     </figure>
     <p class="mt-8 text-center text-xs uppercase tracking-eyebrow text-ink-400">
       More customer stories — added once permitted
