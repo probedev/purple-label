@@ -35,6 +35,30 @@ function redirectOrJson(request) {
 /** Client-generated id from the two-step form; used to upsert partial → complete. */
 const LEAD_ID_RE = /^[a-zA-Z0-9-]{8,64}$/;
 
+/**
+ * Verify the email's domain can receive mail: MX lookup, then A-record fallback (a
+ * bare A record is a valid implicit MX), over DNS-over-HTTPS. Fails OPEN on resolver
+ * trouble — losing a real lead to a DNS hiccup is worse than storing a fake one.
+ */
+async function emailDomainAcceptsMail(email) {
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (!domain || !domain.includes('.')) return false;
+  try {
+    for (const type of ['MX', 'A']) {
+      const response = await fetch(
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${type}`,
+        { headers: { accept: 'application/dns-json' } },
+      );
+      if (!response.ok) return true;
+      const data = await response.json();
+      if (Array.isArray(data.Answer) && data.Answer.length > 0) return true;
+    }
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 async function handleLead(request, env) {
   if (!env.LEADS) {
     return json({ ok: false, error: 'Lead intake is not provisioned yet' }, 503);
@@ -71,6 +95,17 @@ async function handleLead(request, env) {
 
   if (!lead.name || !lead.email) {
     return json({ ok: false, error: 'Name and email are required' }, 422);
+  }
+
+  if (!(await emailDomainAcceptsMail(lead.email))) {
+    return json(
+      {
+        ok: false,
+        error: 'email_domain',
+        message: "That email domain can't receive mail — double-check the address.",
+      },
+      422,
+    );
   }
 
   // Step 1 and step 2 of the same visit share a lead_id, so the complete submission

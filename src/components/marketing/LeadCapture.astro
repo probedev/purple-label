@@ -83,6 +83,8 @@ const inputClasses =
           required
           autocomplete="email"
           placeholder="you@company.com"
+          pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}"
+          title="Enter a full email address, like you@company.com"
           class={inputClasses}
         />
       </div>
@@ -196,10 +198,13 @@ const inputClasses =
   /*
    * Two-step lead capture, progressively enhanced:
    *  - No JS: both fieldsets render stacked, one native POST to the Worker.
-   *  - JS: step 2 hides, Continue validates step 1 and fires it to the Worker as a
-   *    stage=partial lead (keepalive, fire-and-forget), then swaps to step 2. The final
-   *    submit sends everything as stage=complete under the same lead_id, and the Worker
-   *    upserts — so an abandoned step 2 still leaves a usable partial lead.
+   *  - JS: step 2 hides. Continue validates step 1, sends it to the Worker as a
+   *    stage=partial lead, and AWAITS the verdict — the Worker MX-checks the email's
+   *    domain and answers 422 error=email_domain for an unreachable one, which pins the
+   *    visitor on step 1 with an inline field error. Worker/network trouble fails open
+   *    (advance anyway; the final submit re-sends everything). The final submit posts
+   *    stage=complete under the same lead_id and the Worker upserts — so an abandoned
+   *    step 2 still leaves a usable partial lead.
    */
   const form = document.getElementById('lead-form-el') as HTMLFormElement | null;
   const step1 = form?.querySelector<HTMLFieldSetElement>('[data-step="1"]') ?? null;
@@ -212,10 +217,22 @@ const inputClasses =
   const progressBar2 = document.getElementById('lead-progress-bar-2');
   const progressCount = document.getElementById('lead-progress-count');
 
-  if (form && step1 && step2 && continueBtn && backBtn && submitBtn && leadId) {
+  const emailInput = document.getElementById('lead-email') as HTMLInputElement | null;
+
+  if (form && step1 && step2 && continueBtn && backBtn && submitBtn && leadId && emailInput) {
     const endpoint = form.dataset.endpoint || form.action;
     leadId.value = crypto.randomUUID();
-    let partialSent = false;
+    // The email most recently accepted by the Worker's MX check; changing the address
+    // (e.g. after Back) forces a re-check on the next Continue.
+    let verifiedEmail: string | null = null;
+
+    emailInput.addEventListener('input', () => emailInput.setCustomValidity(''));
+
+    const flagEmail = (message: string) => {
+      setStep(1);
+      emailInput.setCustomValidity(message);
+      emailInput.reportValidity();
+    };
 
     const setStep = (step: 1 | 2, focus = true) => {
       step1.hidden = step !== 1;
@@ -239,31 +256,44 @@ const inputClasses =
     progress?.removeAttribute('hidden');
     setStep(1, false);
 
-    continueBtn.addEventListener('click', () => {
+    continueBtn.addEventListener('click', async () => {
       for (const input of step1.querySelectorAll('input')) {
         if (!input.reportValidity()) return;
       }
-      if (!partialSent) {
-        partialSent = true;
-        const partial = new FormData();
-        partial.set('lead_id', leadId.value);
-        partial.set('stage', 'partial');
-        for (const name of ['name', 'email', 'phone'] as const) {
-          partial.set(
-            name,
-            form.elements.namedItem(name) instanceof HTMLInputElement
-              ? (form.elements.namedItem(name) as HTMLInputElement).value
-              : '',
-          );
+      if (emailInput.value !== verifiedEmail) {
+        continueBtn.disabled = true;
+        try {
+          const partial = new FormData();
+          partial.set('lead_id', leadId.value);
+          partial.set('stage', 'partial');
+          for (const name of ['name', 'email', 'phone'] as const) {
+            partial.set(
+              name,
+              form.elements.namedItem(name) instanceof HTMLInputElement
+                ? (form.elements.namedItem(name) as HTMLInputElement).value
+                : '',
+            );
+          }
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            body: partial,
+            headers: { Accept: 'application/json' },
+            keepalive: true,
+          });
+          if (response.status === 422) {
+            const body = await response.json().catch(() => null);
+            if (body && body.error === 'email_domain') {
+              flagEmail(body.message ?? "That email domain can't receive mail.");
+              return;
+            }
+          }
+          if (response.ok) verifiedEmail = emailInput.value;
+          // Any other failure falls open: advance, and the final submit re-sends it all.
+        } catch {
+          // Network hiccup — fail open rather than block a real lead.
+        } finally {
+          continueBtn.disabled = false;
         }
-        fetch(endpoint, {
-          method: 'POST',
-          body: partial,
-          headers: { Accept: 'application/json' },
-          keepalive: true,
-        }).catch(() => {
-          partialSent = false; // let a retry happen if they bounce back through step 1
-        });
       }
       setStep(2);
     });
@@ -281,6 +311,14 @@ const inputClasses =
           body: new FormData(form),
           headers: { Accept: 'application/json' },
         });
+        if (response.status === 422) {
+          const body = await response.json().catch(() => null);
+          if (body && body.error === 'email_domain') {
+            submitBtn.disabled = false;
+            flagEmail(body.message ?? "That email domain can't receive mail.");
+            return;
+          }
+        }
         if (!response.ok) throw new Error(`Form endpoint responded ${response.status}`);
         window.location.assign('/thank-you');
       } catch {
