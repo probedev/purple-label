@@ -1,33 +1,22 @@
 ---
 /**
- * Contact `/contact` — a BOOK-A-MEETING calendar flow first. Every site CTA
- * ("Request a demo", "Talk to sales") lands here.
+ * Contact `/contact` — the site's single conversion path: a TWO-STEP lead form (modeled
+ * on the two-step get-started pattern, per Gregg 2026-07-21). Every site CTA
+ * ("Book a consult", "Talk to sales") lands here.
  *
- * Calendar-only was locked 2026-06-26; amended per Gregg 2026-07-21 (WLMD fold-in): the
- * calendar stays primary, backed by a TWO-STEP lead form (step 1 identity → fires a
- * stage=partial lead to the Worker on Continue; step 2 company → completes it under the
- * same lead_id). Abandoned second steps still leave a usable partial lead. Successful
- * submits land on /thank-you.
- *
- * GO LIVE (either or both):
- *   - CAL_LINK: your Cal.com "username/event-slug" (e.g. "purplelabel/intro") — the inline
- *     embed wires itself up. Height comes from --size-scheduler (tokens.css) via .cal-embed.
- *   - FORM_ENDPOINT: set to '/api/lead' once the LEADS KV namespace is provisioned
- *     (see wrangler.jsonc) — the Worker stores submissions and redirects to /thank-you.
- *     A Formspree/Basin-style URL also works if we ever want a hosted inbox instead.
- * Until each is set, its card shows a gated interim state so nothing ships as working
- * that isn't.
+ * Step 1 (identity) fires to the Worker as a stage=partial lead on Continue, so an
+ * abandoned step 2 still captures the visitor; step 2 (company) completes the record
+ * under the same client-generated lead_id (worker/index.js upserts by lead_id).
+ * Successful submits land on /thank-you. Calendar booking was removed 2026-07-21 —
+ * the consult gets scheduled in the reply email instead.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
 import SectionHeader from '../components/primitives/SectionHeader.astro';
 import Eyebrow from '../components/primitives/Eyebrow.astro';
-import Unconfirmed from '../components/marketing/Unconfirmed.astro';
 import Button from '../components/primitives/Button.astro';
 import { Icon } from 'astro-icon/components';
 
-// ── Set your Cal.com link here to go live (your "username/event-slug") ─────
-const CAL_LINK = '';
 // ── Lead intake: the Worker route backed by the LEADS KV namespace ─────────
 const FORM_ENDPOINT = '/api/lead';
 // ──────────────────────────────────────────────────────────────────────────
@@ -55,25 +44,29 @@ const expectations = [
 ---
 
 <PageLayout
-  title="Book a meeting — see Purple Label MD"
-  description="Book a time to see the platform live and scope your build with an engineer — intake, visits, e-prescribing, pharmacy, payments, and the developer surface. Enterprise: dedicated silo, BYOK, data residency, and the BAA."
+  title="Book a consult — Purple Label MD"
+  description="Tell us what you're building in two quick steps and we'll set up a working session with an engineer — intake, visits, e-prescribing, pharmacy, payments, and the developer surface."
   path="/contact"
   hideStickyCta
 >
   {/* Hero */}
   <Section size="lg">
-    <Eyebrow>Book a meeting</Eyebrow>
+    <Eyebrow>Book a consult</Eyebrow>
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
       Let's talk about what you're building.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Pick a time to see the platform live and scope your build with an engineer. No form that
-      disappears into a CRM — just a conversation about what you'd call, what you'd inherit, and how
-      fast you can launch.
+      Two quick steps and we'll reply by email to set up a working session with an engineer — what
+      you'd call, what you'd inherit, and how fast you can launch. No form that disappears into a
+      CRM.
     </p>
   </Section>
 
-  {/* Booking */}
+  {
+    /* What to expect + the two-step lead capture. Step 1 fires to the Worker on Continue,
+      so an abandoned step 2 still leaves a partial lead; step 2 completes it under the
+      same lead_id. Without JS both steps render as one form with a single submit. */
+  }
   <Section surface="surface" bordered>
     <div class="grid gap-10 lg:grid-cols-2 lg:items-start">
       {/* What to expect */}
@@ -94,219 +87,184 @@ const expectations = [
         </ul>
       </div>
 
-      {/* Scheduler */}
-      <div class="rounded-lg border border-line bg-paper p-8">
-        <p class="font-display text-h3 text-ink-900">Pick a time</p>
-        <p class="mt-2 text-body text-ink-500">
-          Choose a slot that works for you — you'll get a calendar invite with the details.
-        </p>
-        {
-          CAL_LINK ? (
-            <Fragment>
-              <div id="cal-inline" class="cal-embed mt-8" data-cal-link={CAL_LINK} />
-              <script is:inline src="/cal-embed.js" />
-            </Fragment>
-          ) : (
-            <div class="mt-8">
-              <Unconfirmed reason="Cal.com booking link pending from Gregg — set CAL_LINK (your username/event-slug) in contact.astro to go live">
-                Booking calendar is being connected.
-              </Unconfirmed>
+      {/* The card */}
+      <div id="lead-form" class="rounded-xl border border-line bg-paper shadow-md">
+        {/* Card header: per-step title + progress */}
+        <div class="border-b border-line p-8">
+          <div data-step-head="1">
+            <h2 class="font-display text-h3 text-ink-900">Get started with Purple Label</h2>
+            <p class="mt-2 text-body text-ink-500">
+              Tell us a bit about yourself and we'll be in touch.
+            </p>
+          </div>
+          <div data-step-head="2" hidden>
+            <h2 class="font-display text-h3 text-ink-900">About your company</h2>
+            <p class="mt-2 text-body text-ink-500">Help us prepare for your consult.</p>
+          </div>
+          <div id="lead-progress" class="mt-6 flex items-center gap-3" hidden>
+            <span class="h-1.5 flex-1 rounded-full bg-purple-600" aria-hidden="true"></span>
+            <span
+              id="lead-progress-bar-2"
+              class="h-1.5 flex-1 rounded-full bg-line"
+              aria-hidden="true"></span>
+            <span id="lead-progress-count" class="font-mono text-sm text-ink-400">1/2</span>
+          </div>
+        </div>
+
+        {/* Card body: the form */}
+        <form
+          id="lead-form-el"
+          method="POST"
+          action={FORM_ENDPOINT}
+          data-endpoint={FORM_ENDPOINT}
+          class="flex flex-col gap-5 p-8"
+        >
+          <input type="hidden" name="_next" value="/thank-you" />
+          <input type="hidden" name="lead_id" id="lead-id" value="" />
+          <input type="hidden" name="stage" id="lead-stage" value="complete" />
+          <input
+            type="text"
+            name="_gotcha"
+            tabindex="-1"
+            autocomplete="off"
+            class="hidden"
+            aria-hidden="true"
+          />
+
+          <fieldset data-step="1" class="flex flex-col gap-5">
+            <legend class="sr-only">About you</legend>
+            <div>
+              <label for="lead-name" class="block text-sm font-medium text-ink-700">
+                Full name
+              </label>
+              <input
+                id="lead-name"
+                name="name"
+                type="text"
+                required
+                autocomplete="name"
+                placeholder="Alex Rivera"
+                class={inputClasses}
+              />
             </div>
-          )
-        }
-      </div>
-    </div>
-  </Section>
+            <div>
+              <label for="lead-email" class="block text-sm font-medium text-ink-700">
+                Work email
+              </label>
+              <input
+                id="lead-email"
+                name="email"
+                type="email"
+                required
+                autocomplete="email"
+                placeholder="you@company.com"
+                class={inputClasses}
+              />
+            </div>
+            <div>
+              <label for="lead-phone" class="block text-sm font-medium text-ink-700">
+                Phone <span class="font-normal text-ink-400">(optional)</span>
+              </label>
+              <input
+                id="lead-phone"
+                name="phone"
+                type="tel"
+                autocomplete="tel"
+                placeholder="+1 (555) 000-0000"
+                class={inputClasses}
+              />
+            </div>
+          </fieldset>
 
-  {
-    /* Two-step lead capture. Step 1 (identity) fires to the Worker on Continue, so an
-      abandoned step 2 still leaves a partial lead; step 2 (company) completes it under
-      the same lead_id. Without JS both steps render as one form with a single submit. */
-  }
-  <Section id="lead-form" bordered>
-    <div class="mx-auto max-w-2xl">
-      <SectionHeader
-        align="center"
-        eyebrow="Prefer to write first?"
-        title="Tell us what you're building."
-        lead="Skip the calendar — two quick steps and we'll reply by email to set up a time."
-      />
-    </div>
+          <fieldset data-step="2" class="flex flex-col gap-5">
+            <legend class="sr-only">About your company</legend>
+            <div>
+              <label for="lead-company" class="block text-sm font-medium text-ink-700">
+                Company name
+              </label>
+              <input
+                id="lead-company"
+                name="company"
+                type="text"
+                required
+                autocomplete="organization"
+                placeholder="Acme Health"
+                class={inputClasses}
+              />
+            </div>
+            <div>
+              <label for="lead-website" class="block text-sm font-medium text-ink-700">
+                Website <span class="font-normal text-ink-400">(optional)</span>
+              </label>
+              <input
+                id="lead-website"
+                name="website"
+                type="text"
+                inputmode="url"
+                autocomplete="url"
+                placeholder="https://company.com"
+                class={inputClasses}
+              />
+            </div>
+            <div>
+              <label for="lead-message" class="block text-sm font-medium text-ink-700">
+                What are you building? <span class="font-normal text-ink-400">(optional)</span>
+              </label>
+              <textarea
+                id="lead-message"
+                name="message"
+                rows="3"
+                placeholder="The programs you want to offer and where you are today."
+                class={`${inputClasses} h-auto py-2.5`}></textarea>
+            </div>
+            <label class="flex items-start gap-3 text-sm text-ink-500">
+              <input
+                type="checkbox"
+                name="consent"
+                required
+                class="mt-0.5 size-4 shrink-0 rounded-sm border-line accent-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+              />
+              <span>
+                I agree to be contacted about my inquiry. No newsletters, no drip campaigns — just a
+                reply.
+              </span>
+            </label>
+          </fieldset>
 
-    <div class="mx-auto mt-10 max-w-xl rounded-xl border border-line bg-surface shadow-md">
-      {/* Card header: per-step title + progress */}
-      <div class="border-b border-line p-8">
-        <div data-step-head="1">
-          <h3 class="font-display text-h3 text-ink-900">Get started with Purple Label</h3>
-          <p class="mt-2 text-body text-ink-500">
-            Tell us a bit about yourself and we'll be in touch.
+          <p id="lead-form-error" hidden class="text-sm font-medium text-danger">
+            Something went wrong sending the form — please try again in a moment.
           </p>
+
+          <div class="flex flex-col gap-3">
+            <Button id="lead-continue" type="button" variant="primary" class="w-full" hidden>
+              Continue
+              <Icon name="lucide:arrow-right" class="icon size-4" />
+            </Button>
+            <Button id="lead-submit" type="submit" variant="primary" class="w-full">
+              Get started
+              <Icon name="lucide:arrow-right" class="icon size-4" />
+            </Button>
+            <Button id="lead-back" type="button" variant="ghost" class="w-full" hidden>Back</Button>
+          </div>
+        </form>
+
+        {/* Card footer: trust row */}
+        <div
+          class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-line px-8 py-6 text-sm text-ink-500"
+        >
+          <span class="inline-flex items-center gap-2">
+            <Icon name="lucide:users" class="icon size-4 text-purple-600" />
+            50-state provider network
+          </span>
+          <span class="inline-flex items-center gap-2">
+            <Icon name="lucide:zap" class="icon size-4 text-purple-600" />
+            Live in ~30 days
+          </span>
+          <span class="inline-flex items-center gap-2">
+            <Icon name="lucide:sparkles" class="icon size-4 text-purple-600" />
+            100+ brands launched
+          </span>
         </div>
-        <div data-step-head="2" hidden>
-          <h3 class="font-display text-h3 text-ink-900">About your company</h3>
-          <p class="mt-2 text-body text-ink-500">Help us prepare for your consult.</p>
-        </div>
-        <div id="lead-progress" class="mt-6 flex items-center gap-3" hidden>
-          <span class="h-1.5 flex-1 rounded-full bg-purple-600" aria-hidden="true"></span>
-          <span
-            id="lead-progress-bar-2"
-            class="h-1.5 flex-1 rounded-full bg-line"
-            aria-hidden="true"></span>
-          <span id="lead-progress-count" class="font-mono text-sm text-ink-400">1/2</span>
-        </div>
-      </div>
-
-      {/* Card body: the form */}
-      <form
-        id="lead-form-el"
-        method="POST"
-        action={FORM_ENDPOINT}
-        data-endpoint={FORM_ENDPOINT}
-        class="flex flex-col gap-5 p-8"
-      >
-        <input type="hidden" name="_next" value="/thank-you" />
-        <input type="hidden" name="lead_id" id="lead-id" value="" />
-        <input type="hidden" name="stage" id="lead-stage" value="complete" />
-        <input
-          type="text"
-          name="_gotcha"
-          tabindex="-1"
-          autocomplete="off"
-          class="hidden"
-          aria-hidden="true"
-        />
-
-        <fieldset data-step="1" class="flex flex-col gap-5">
-          <legend class="sr-only">About you</legend>
-          <div>
-            <label for="lead-name" class="block text-sm font-medium text-ink-700">Full name</label>
-            <input
-              id="lead-name"
-              name="name"
-              type="text"
-              required
-              autocomplete="name"
-              placeholder="Alex Rivera"
-              class={inputClasses}
-            />
-          </div>
-          <div>
-            <label for="lead-email" class="block text-sm font-medium text-ink-700">
-              Work email
-            </label>
-            <input
-              id="lead-email"
-              name="email"
-              type="email"
-              required
-              autocomplete="email"
-              placeholder="you@company.com"
-              class={inputClasses}
-            />
-          </div>
-          <div>
-            <label for="lead-phone" class="block text-sm font-medium text-ink-700">
-              Phone <span class="font-normal text-ink-400">(optional)</span>
-            </label>
-            <input
-              id="lead-phone"
-              name="phone"
-              type="tel"
-              autocomplete="tel"
-              placeholder="+1 (555) 000-0000"
-              class={inputClasses}
-            />
-          </div>
-        </fieldset>
-
-        <fieldset data-step="2" class="flex flex-col gap-5">
-          <legend class="sr-only">About your company</legend>
-          <div>
-            <label for="lead-company" class="block text-sm font-medium text-ink-700">
-              Company name
-            </label>
-            <input
-              id="lead-company"
-              name="company"
-              type="text"
-              required
-              autocomplete="organization"
-              placeholder="Acme Health"
-              class={inputClasses}
-            />
-          </div>
-          <div>
-            <label for="lead-website" class="block text-sm font-medium text-ink-700">
-              Website <span class="font-normal text-ink-400">(optional)</span>
-            </label>
-            <input
-              id="lead-website"
-              name="website"
-              type="text"
-              inputmode="url"
-              autocomplete="url"
-              placeholder="https://company.com"
-              class={inputClasses}
-            />
-          </div>
-          <div>
-            <label for="lead-message" class="block text-sm font-medium text-ink-700">
-              What are you building? <span class="font-normal text-ink-400">(optional)</span>
-            </label>
-            <textarea
-              id="lead-message"
-              name="message"
-              rows="3"
-              placeholder="The programs you want to offer and where you are today."
-              class={`${inputClasses} h-auto py-2.5`}></textarea>
-          </div>
-          <label class="flex items-start gap-3 text-sm text-ink-500">
-            <input
-              type="checkbox"
-              name="consent"
-              required
-              class="mt-0.5 size-4 shrink-0 rounded-sm border-line accent-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
-            />
-            <span>
-              I agree to be contacted about my inquiry. No newsletters, no drip campaigns — just a
-              reply.
-            </span>
-          </label>
-        </fieldset>
-
-        <p id="lead-form-error" hidden class="text-sm font-medium text-danger">
-          Something went wrong sending the form — please try again, or book a time above instead.
-        </p>
-
-        <div class="flex flex-col gap-3">
-          <Button id="lead-continue" type="button" variant="primary" class="w-full" hidden>
-            Continue
-            <Icon name="lucide:arrow-right" class="icon size-4" />
-          </Button>
-          <Button id="lead-submit" type="submit" variant="primary" class="w-full">
-            Get started
-            <Icon name="lucide:arrow-right" class="icon size-4" />
-          </Button>
-          <Button id="lead-back" type="button" variant="ghost" class="w-full" hidden>Back</Button>
-        </div>
-      </form>
-
-      {/* Card footer: trust row */}
-      <div
-        class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-line px-8 py-6 text-sm text-ink-500"
-      >
-        <span class="inline-flex items-center gap-2">
-          <Icon name="lucide:users" class="icon size-4 text-purple-600" />
-          50-state provider network
-        </span>
-        <span class="inline-flex items-center gap-2">
-          <Icon name="lucide:zap" class="icon size-4 text-purple-600" />
-          Live in ~30 days
-        </span>
-        <span class="inline-flex items-center gap-2">
-          <Icon name="lucide:sparkles" class="icon size-4 text-purple-600" />
-          100+ brands launched
-        </span>
       </div>
     </div>
   </Section>

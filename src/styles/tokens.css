@@ -80,7 +80,6 @@
   --container-wide: 82.5rem; /* 1320px feature canvases */
   --measure: 68ch; /* prose measure (≤ 72ch rule) */
   --page-pad: clamp(1.25rem, 5vw, 2rem);
-  --size-scheduler: 44rem; /* inline scheduler (Cal.com) embed min-height */
 
   /* §4 Radius */
   --radius-sm: 8px;
