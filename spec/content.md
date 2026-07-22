@@ -1,3 +1,9 @@
+> **SUPERSEDED (2026-07-21).** This document predates the current site (no /programs,
+> /managed, /architecture, /legitscript, /about, /legal/*; still lists /solutions). The live
+> IA's source of truth is `src/lib/nav.ts`; the claims registry is `src/lib/stats.ts`; the
+> governing edit plan is `CONTENT-REVIEW-2026-07-21.md`. Do not rebuild from this map.
+> `spec/design.md` remains law.
+
 # Purple Label MD — Site Content
 
 > **Positioning rewrite (2026-06-24).** Steered by `memory/purplelabel-positioning.md` + `purplelabel-differentiators.md`. AI-agent-first / developer-first, modular, code-first. "Purple Label" = the tailored, AI-native version of white label. **Do not use the word "headless"** — say modular / composable / code-first / API-first. Bracketed `[CONFIRM]` items are claims Gregg must verify before launch. (The AI capabilities — MCP servers, agent-ready docs, prompt library — are **confirmed shipping at launch as of 2026-06-25** and are no longer gated.) Never publish unverified numbers, certifications, customer names, pricing, or other claims.

@@ -1,3 +1,9 @@
+> **SUPERSEDED (2026-07-21).** This document predates the current site (no /programs,
+> /managed, /architecture, /legitscript, /about, /legal/*; still lists /solutions). The live
+> IA's source of truth is `src/lib/nav.ts`; the claims registry is `src/lib/stats.ts`; the
+> governing edit plan is `CONTENT-REVIEW-2026-07-21.md`. Do not rebuild from this map.
+> `spec/design.md` remains law.
+
 # Purple Label MD — Sitemap & Information Architecture
 
 > **Positioning rewrite (2026-06-24).** This IA is steered by `memory/purplelabel-positioning.md` (AI-agent-first / developer-first, modular, "Purple Label" = the tailored AI version of white label). When this file and the old bask-derived structure conflict, the positioning wins. Locked decisions baked in: (1) Intake is agent/API-first — no no-code/builder language; (2) **Developers** is a primary nav group; (3) category line is **"Telemedicine infrastructure for the agent era."**
