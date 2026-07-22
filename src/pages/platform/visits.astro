@@ -10,7 +10,6 @@ import SectionHeader from '../../components/primitives/SectionHeader.astro';
 import Eyebrow from '../../components/primitives/Eyebrow.astro';
 import Button from '../../components/primitives/Button.astro';
 import Card from '../../components/primitives/Card.astro';
-import Unconfirmed from '../../components/marketing/Unconfirmed.astro';
 
 const features = [
   {
@@ -32,7 +31,8 @@ const features = [
     icon: 'file-text',
     title: 'Certified e-prescribing',
     body: 'Send prescriptions electronically through Surescripts — certified, and connected to the nationwide pharmacy network.',
-    note: 'Controlled-substance e-prescribing (EPCS) is supported where clinically appropriate and permitted by state and federal law.',
+    // G4 safe form — EPCS specifics stay off public copy until counsel confirms them.
+    note: 'Prescribing rules are enforced per medication and per state.',
   },
   {
     icon: 'clipboard-list',
@@ -78,7 +78,7 @@ const visitSample = `POST /v1/visits
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="link-arrow" href="/developers">Read the docs</Button>
+      <Button variant="link-arrow" href="/developers">Explore the developer surface</Button>
     </div>
   </Section>
 
@@ -94,13 +94,7 @@ const visitSample = `POST /v1/visits
         features.map((f) => (
           <Card icon={f.icon} title={f.title}>
             {f.body}
-            {f.note && (
-              <span class="mt-2 block text-ink-500">
-                <Unconfirmed reason="EPCS / controlled-substance prescribing — confirm certification & exact wording with counsel">
-                  {f.note}
-                </Unconfirmed>
-              </span>
-            )}
+            {f.note && <span class="mt-2 block text-ink-500">{f.note}</span>}
           </Card>
         ))
       }
@@ -136,7 +130,7 @@ const visitSample = `POST /v1/visits
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href="/developers">Read the docs</Button>
+      <Button variant="secondary" href="/developers">Explore the developer surface</Button>
     </div>
   </Section>
 </PageLayout>

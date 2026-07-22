@@ -12,7 +12,6 @@ import SectionHeader from '../components/primitives/SectionHeader.astro';
 import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
-import Unconfirmed from '../components/marketing/Unconfirmed.astro';
 import { Icon } from 'astro-icon/components';
 
 const pipeline = [
@@ -53,8 +52,10 @@ const pipeline = [
     n: '06',
     title: 'Prescribed',
     patient: 'If appropriate, the doctor writes a prescription.',
-    behind: 'E-prescription to a partner pharmacy under controlled-substance rules.',
-    gated: true,
+    // G4 safe form — controlled-substance/EPCS specifics stay off public copy until
+    // counsel confirms them.
+    behind:
+      'E-prescription routed to a partner pharmacy — with prescribing rules enforced per medication and per state.',
   },
   {
     n: '07',
@@ -202,8 +203,8 @@ const stack = [
   {
     area: 'Compliance',
     choice: 'PHI-segregated, PCI-minimized',
-    why: 'PHI is field-encrypted; an append-only audit log is compliance evidence by construction; controlled-substance e-prescribing (EPCS) runs under DEA and state rules; cards are tokenized client-side so card data never touches us — SAQ-A scope, not full PCI-DSS.',
-    gated: true,
+    // G4 safe form — the SAQ-A scope claim returns once counsel confirms it.
+    why: 'PHI is field-encrypted; an append-only audit log is compliance evidence by construction; and cards are tokenized client-side, so card data never touches our servers.',
   },
   {
     area: 'Delivery',
@@ -231,7 +232,7 @@ const stack = [
       build-vs-buy question in one sentence: you don’t want to own this.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/developers">Read the docs</Button>
+      <Button variant="primary" href="/developers">Explore the developer surface</Button>
       <Button variant="link-arrow" href="/contact">Talk to sales</Button>
     </div>
   </Section>
@@ -278,15 +279,7 @@ const stack = [
             <p class="mt-2 text-sm text-ink-500">{s.patient}</p>
             <div class="mt-auto border-t border-line pt-4">
               <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">Behind it</p>
-              <p class="mt-1 text-sm text-ink-700">
-                {s.gated ? (
-                  <Unconfirmed reason="controlled-substance / EPCS wording — counsel pass before launch">
-                    {s.behind}
-                  </Unconfirmed>
-                ) : (
-                  s.behind
-                )}
-              </p>
+              <p class="mt-1 text-sm text-ink-700">{s.behind}</p>
             </div>
           </div>
         ))
@@ -466,15 +459,7 @@ const stack = [
           <div class="rounded-lg border border-line bg-surface p-6">
             <Eyebrow>{d.area}</Eyebrow>
             <p class="mt-2 font-display text-base font-semibold text-ink-900">{d.choice}</p>
-            <p class="mt-2 text-sm text-ink-500">
-              {d.gated ? (
-                <Unconfirmed reason="PCI scope (SAQ-A), WORM audit log & PAN-handling wording — confirm with counsel before launch">
-                  {d.why}
-                </Unconfirmed>
-              ) : (
-                d.why
-              )}
-            </p>
+            <p class="mt-2 text-sm text-ink-500">{d.why}</p>
           </div>
         ))
       }
@@ -490,7 +475,7 @@ const stack = [
       lead="We built, operate, and audit the hard part. Your agents drive it with a few calls."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/developers">Read the docs</Button>
+      <Button variant="primary" href="/developers">Explore the developer surface</Button>
       <Button variant="secondary" href="/contact">Talk to sales</Button>
     </div>
   </Section>

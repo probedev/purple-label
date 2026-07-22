@@ -2,8 +2,9 @@
 /**
  * Payments `/platform/payments` (sitemap.md §4, content.md). Telehealth merchant accounts,
  * subscriptions, refunds — on each client's own merchant. Back-references /architecture
- * (refunds = the saga's compensation path; client-side tokenization → SAQ-A). The PCI/SAQ-A claim is
- * counsel-gated via <Unconfirmed>. Processing rates live on /pricing.
+ * (refunds = the saga's compensation path). PCI copy uses the G4 safe form (client-side
+ * tokenization); the SAQ-A scope claim returns once counsel confirms it (review C12).
+ * Processing rates live on /pricing.
  */
 import PageLayout from '../../layouts/PageLayout.astro';
 import Section from '../../components/layout/Section.astro';
@@ -11,7 +12,6 @@ import SectionHeader from '../../components/primitives/SectionHeader.astro';
 import Eyebrow from '../../components/primitives/Eyebrow.astro';
 import Button from '../../components/primitives/Button.astro';
 import Card from '../../components/primitives/Card.astro';
-import Unconfirmed from '../../components/marketing/Unconfirmed.astro';
 
 const features = [
   {
@@ -32,12 +32,13 @@ const features = [
   {
     icon: 'rotate-ccw',
     title: 'Refunds & adjustments',
-    body: 'Issue refunds programmatically — a refund and a cancelled order always stay in sync, so money and fulfillment match.',
+    body: 'Issue refunds programmatically — a refund is a first-class journey event wired into the order saga, not a support ticket. A refund and a cancelled order always stay in sync, so money and fulfillment match.',
   },
   {
     icon: 'shield-check',
     title: 'Card data never touches us',
-    note: 'Client-side tokenization keeps cardholder data off our systems — SAQ-A scope, not full PCI-DSS.',
+    // G4 safe form — the SAQ-A scope claim returns once counsel confirms it.
+    note: 'Client-side tokenization keeps cardholder data off our systems entirely.',
   },
   {
     icon: 'code',
@@ -92,11 +93,7 @@ const paymentSample = `POST /v1/subscriptions
         features.map((f) => (
           <Card icon={f.icon} title={f.title}>
             {f.body}
-            {f.note && (
-              <Unconfirmed reason="PCI scope (SAQ-A) & tokenization wording — confirm with counsel before launch">
-                {f.note}
-              </Unconfirmed>
-            )}
+            {f.note && <span class="mt-2 block text-ink-500">{f.note}</span>}
           </Card>
         ))
       }
