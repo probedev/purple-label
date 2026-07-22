@@ -5,12 +5,10 @@
   // auto-generated this name); it's internal-only — attach purplelabelmd.com as the
   // custom domain in the Cloudflare dashboard once content is launch-ready.
   //
-  // Lead-form go-live (one time):
-  //   1. npx wrangler kv namespace create LEADS
-  //   2. Uncomment kv_namespaces below and paste the id it prints.
-  //   3. Set FORM_ENDPOINT = '/api/lead' in src/pages/contact.astro.
-  //   4. npx wrangler deploy
-  // Until then the worker answers 503 on /api/lead and the form's send button stays gated.
+  // Lead-form intake is live: POST /api/lead stores submissions in the LEADS KV
+  // namespace (provisioned 2026-07-21). Read them with:
+  //   npx wrangler kv key list --binding LEADS --remote
+  //   npx wrangler kv key get --binding LEADS --remote "<key>"
   "name": "weathered-forest-66b6",
   "main": "worker/index.js",
   "compatibility_date": "2026-06-26",
@@ -18,5 +16,5 @@
     "directory": "./dist",
     "binding": "ASSETS",
   },
-  // "kv_namespaces": [{ "binding": "LEADS", "id": "<paste the id from step 1>" }],
+  "kv_namespaces": [{ "binding": "LEADS", "id": "a2f54603349a43f19f695e0f949bed41" }],
 }
