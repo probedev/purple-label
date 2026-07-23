@@ -13,7 +13,6 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
-import Eyebrow from '../components/primitives/Eyebrow.astro';
 import FAQ from '../components/primitives/FAQ.astro';
 import HeroArt from '../components/marketing/HeroArt.astro';
 import Heritage from '../components/marketing/Heritage.astro';
@@ -252,6 +251,17 @@ const homeFaqs = [
     </div>
   </Section>
 
+  {/* 1.5 — Scale strip, right under the hero (per Gregg 2026-07-23) */}
+  <Section size="sm" surface="surface" bordered>
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
+      <StatCard {...stat('rxMonthly')} />
+      <StatCard {...stat('providerNetwork')} />
+      <StatCard {...stat('deviceIntegrations')} />
+      <StatCard {...stat('legitscriptCerts')} />
+      <StatCard {...stat('ordersWeekly')} />
+    </div>
+  </Section>
+
   {/* 2 — Proof bar */}
   <Section size="sm" surface="surface" bordered>
     <p class="mx-auto max-w-prose text-center text-body text-ink-500">
@@ -427,17 +437,6 @@ const homeFaqs = [
     </div>
   </Section>
 
-  {/* 8 — Scale strip */}
-  <Section surface="surface" bordered>
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
-      <StatCard {...stat('rxMonthly')} />
-      <StatCard {...stat('providerNetwork')} />
-      <StatCard {...stat('deviceIntegrations')} />
-      <StatCard {...stat('legitscriptCerts')} />
-      <StatCard {...stat('ordersWeekly')} />
-    </div>
-  </Section>
-
   {/* 8.5 — Ownership / sovereignty */}
   <Section>
     <SectionHeader
@@ -477,25 +476,10 @@ const homeFaqs = [
   </Section>
 
   {
-    /* 10 — Customer proof: the Steenblik quote, verbatim from WLMD's live site (per Gregg
-       2026-07-21), framed as heritage per G9 so "WLMD" reads as the operators' first
-       platform, not an unexplained brand. Permission status: [GREGG-CONFIRM]. More
-       customer stories land here as permissions are confirmed. */
+    /* 10 — Customer proof: removed per Gregg 2026-07-23 until real Purple Label customer
+       stories exist. The Steenblik/Trucker's Body Shop quote (verbatim from WLMD's live
+       site) lives in git history — restore it here when examples are ready. */
   }
-  <Section size="sm">
-    <figure class="mx-auto max-w-2xl text-center">
-      <Eyebrow>From the operators' first platform</Eyebrow>
-      <blockquote class="mt-6 font-display text-h3 text-ink-900">
-        “WLMD helped us make our dreams a reality. We did extensive research before selecting a
-        platform partner and WLMD had the best offering by far. They had the lowest costs on all
-        medications and the most advanced technology platform.”
-      </blockquote>
-      <figcaption class="mt-6 text-sm text-ink-500">
-        <span class="font-semibold text-ink-700">Garret Steenblik</span> — CEO, Trucker's Body Shop, on
-        White Label MD — the platform our team ran before building Purple Label
-      </figcaption>
-    </figure>
-  </Section>
 
   {/* 10.5 — FAQ */}
   <Section>

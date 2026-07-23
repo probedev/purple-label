@@ -75,8 +75,8 @@ export const STATS = {
     asOf: '2026-07-21',
   },
   providerNetwork: {
-    value: '50-State',
-    label: 'Provider network',
+    value: '50',
+    label: 'State provider network',
     caption: 'Board-certified, licensed nationwide',
     entity: 'platform',
     source: 'Founder-confirmed network claim; [GREGG-CONFIRM] phrasing with clinical owner',
