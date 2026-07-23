@@ -211,8 +211,12 @@ const homeFaqs = [
             >{RX_ANCHOR.toLocaleString('en-US')}</span
           >
         </p>
+        {
+          /* The explicit {' '} matters: Astro collapses the newline before the span,
+            which shipped as "brandedtelehealth" on the live hero. */
+        }
         <h1 class="mt-5 max-w-prose font-display text-display text-ink-900">
-          Launch and own a branded
+          Launch and own a branded{' '}
           <span class="text-purple-600">telehealth business.</span>
         </h1>
         <p class="mt-6 max-w-prose text-body-lg text-ink-500">
@@ -226,16 +230,24 @@ const homeFaqs = [
           <Button variant="secondary" href="/pricing">See pricing</Button>
           <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
         </div>
-        <p class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
-          <span class="inline-flex items-center gap-1.5">
-            <Icon name="lucide:shield-check" class="icon size-4 text-success" />
+        {
+          /* No free-floating separator dots — they strand at line ends when this wraps
+            on phones. Each item carries its own icon and wraps as a unit. */
+        }
+        <ul class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-400">
+          <li class="inline-flex items-center gap-1.5">
+            <Icon name="lucide:shield-check" class="icon size-4 shrink-0 text-success" />
             LegitScript Enterprise Partner
-          </span>
-          <span aria-hidden="true">·</span>
-          <span>HIPAA-compliant</span>
-          <span aria-hidden="true">·</span>
-          <span>50-state network</span>
-        </p>
+          </li>
+          <li class="inline-flex items-center gap-1.5">
+            <Icon name="lucide:check" class="icon size-4 shrink-0 text-success" />
+            HIPAA-compliant
+          </li>
+          <li class="inline-flex items-center gap-1.5">
+            <Icon name="lucide:check" class="icon size-4 shrink-0 text-success" />
+            50-state network
+          </li>
+        </ul>
       </div>
     </div>
   </Section>

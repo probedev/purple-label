@@ -27,7 +27,8 @@ const {
 const base =
   'inline-flex items-center justify-center gap-2 font-sans text-sm font-semibold transition duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 disabled:pointer-events-none disabled:opacity-50';
 
-const boxed = 'h-11 rounded-md px-6';
+// Boxed labels never wrap (a two-line pill reads broken); link-arrow labels may.
+const boxed = 'h-11 whitespace-nowrap rounded-md px-6';
 
 const variants: Record<string, string> = {
   primary: `${boxed} bg-purple-600 text-white hover:-translate-y-px hover:bg-purple-700 hover:shadow-cta active:translate-y-0`,

@@ -40,9 +40,13 @@ import { HEADER_GROUPS, HEADER_LINKS, CTA } from '../../lib/nav';
     <div class="flex items-center gap-2">
       <ThemeToggle />
       {/* Dashboard button removed per review G10 — returns when the real portal ships. */}
-      <Button variant="primary" href={CTA.consult.href} class="hidden sm:inline-flex">
-        {CTA.consult.label}
-      </Button>
+      {
+        /* Visibility lives on a wrapper: passing `hidden` to Button loses to its own
+          inline-flex base class, which is exactly how the button leaked onto phones. */
+      }
+      <div class="hidden sm:block">
+        <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      </div>
       <button
         type="button"
         id="menu-open"

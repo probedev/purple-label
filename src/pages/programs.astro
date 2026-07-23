@@ -31,8 +31,12 @@ const economics = [
   {/* Hero */}
   <Section size="lg">
     <Eyebrow>Rx</Eyebrow>
+    {
+      /* Explicit {' '}: Astro collapses the newline before the span (same bug as the
+        home hero's "brandedtelehealth"). */
+    }
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      The full Rx catalog — at the
+      The full Rx catalog — at the{' '}
       <span class="text-purple-600">pass-through cost</span>, under your brand.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
