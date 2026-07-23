@@ -1,53 +1,99 @@
 ---
 /**
- * HeroArt — the homepage hero canvas (replaces the old, imperceptible aurora). Two layers on
- * the plain page background (no gradient):
- *   1. uniform two-tone purple+teal capsules (pills) that drop from the top on an accelerating
- *      schedule (one super-slow, then a few, then a bunch), bounce, and settle into a loose pile
- *      bottom-right — then the whole pile gets swept off the table in a fast brush-off, and the
- *      gag loops. The timing contrast (slow pile-up → snappy sweep) is the joke.
- *   2. a faint ECG "pulse" line with a lit blip that travels it on its own loop.
- * Direction: "friendly pharmacy motif," warm but restrained — whimsical, subtle palette.
- * Right-weighted (masked to fade toward the copy) so the hero text stays clean. Every color
- * traces to design tokens, so it re-themes with light/dark. All motion is GSAP-driven and gated
- * on prefers-reduced-motion (which shows the settled pile directly + a parked pulse blip).
+ * HeroArt — the patient saga as a living flow diagram (per Gregg 2026-07-23, replacing
+ * the pill-pile gag: same muted palette and non-distracting energy, but targeted — it
+ * shows the value, a complex patient journey simplified behind one API call).
+ *
+ * One cycle: a `POST /v1/orders` chip fires → a comet draws the serpentine pipeline
+ * through the seven journey steps (qualify → pay → verify → visit → rx → deliver →
+ * follow-up) → each node pops and emits its real platform event name (the same set
+ * /architecture and /developers publish) → the refill loop arcs back to the visit with
+ * `order.titrated` → the whole thing fades and repeats. The ECG jag from the old hero
+ * lives on inside the pipe between visit and rx.
+ *
+ * Every color traces to design tokens (re-themes with light/dark). GSAP-driven, gated on
+ * prefers-reduced-motion (which shows the completed pipeline as a still diagram).
+ * Right-weighted and masked to fade toward the copy.
  */
+
+// Journey nodes ON the pipeline path below — cx/cy must sit on the path's segments.
+// `t` = seconds after draw start when the comet front reaches the node (computed from
+// each node's share of the path's total length; keep in sync if the path changes).
+const NODES = [
+  { id: 'qualify', label: '01 qualify', cx: 100, cy: 70, t: 0.36 },
+  { id: 'pay', label: '02 pay', cx: 280, cy: 70, t: 1.42 },
+  { id: 'verify', label: '03 verify id', cx: 440, cy: 70, t: 2.37 },
+  { id: 'visit', label: '04 visit', cx: 440, cy: 200, t: 3.66 },
+  { id: 'rx', label: '05 rx', cx: 300, cy: 200, t: 4.83 },
+  { id: 'deliver', label: '06 deliver', cx: 140, cy: 200, t: 5.77 },
+  { id: 'follow', label: '07 follow-up', cx: 260, cy: 330, t: 7.76 },
+];
+
+// The event chips that pop as the comet passes — the platform's canonical event names.
+const EVENTS = [
+  { node: 'qualify', text: 'patient.qualified', x: 100, y: 48 },
+  { node: 'pay', text: 'payment.captured', x: 280, y: 48 },
+  { node: 'visit', text: 'visit.completed', x: 440, y: 176 },
+  { node: 'rx', text: 'rx.prescribed', x: 300, y: 178 },
+  { node: 'deliver', text: 'shipment.updated', x: 140, y: 178 },
+];
+
+// Serpentine pipeline: row 1 rightward, down, row 2 leftward (with the ECG jag),
+// down, row 3 rightward to the follow-up. pathLength=1000 normalizes dash math.
+const PIPE =
+  'M40,70 H460 Q500,70 500,110 V160 Q500,200 460,200 H408 l-10,-24 l-10,40 l-8,-16 H120 Q80,200 80,240 V290 Q80,330 120,330 H300';
+
+// The refill loop: follow-up arcs back up to the visit node.
+const LOOP = 'M260,330 Q600,318 448,212';
 ---
 
 <div class="hero-art" aria-hidden="true">
-  {/* faint pulse line (drawn behind the capsules) */}
-  <svg class="ha-pulse" viewBox="0 0 800 220" preserveAspectRatio="none" fill="none">
-    <path
-      class="ha-pulse-track"
-      pathLength="1000"
-      d="M0,120 H300 l22,-66 l20,128 l18,-92 l14,30 H800"></path>
-    <path
-      class="ha-pulse-sweep"
-      pathLength="1000"
-      d="M0,120 H300 l22,-66 l20,128 l18,-92 l14,30 H800"></path>
-  </svg>
+  <svg class="ha-flow" viewBox="0 0 640 400" fill="none" preserveAspectRatio="xMaxYMid meet">
+    <g class="ha-cycle">
+      {/* the pipe: faint track, drawn trail, and the traveling comet */}
+      <path class="ha-track" d={PIPE} pathLength="1000"></path>
+      <path class="ha-trail" d={PIPE} pathLength="1000"></path>
+      <path class="ha-comet" d={PIPE} pathLength="1000"></path>
 
-  {
-    /* pills — drop from the top, bounce, and settle into a pile (bottom-right). They arrive on
-      an accelerating schedule: one super-slow, then a few, then a bunch (see PILLS below). */
-  }
-  <span class="ha-capsule ha-cap-1"></span>
-  <span class="ha-capsule ha-cap-2"></span>
-  <span class="ha-capsule ha-cap-3"></span>
-  <span class="ha-capsule ha-cap-4"></span>
-  <span class="ha-capsule ha-cap-5"></span>
-  <span class="ha-capsule ha-cap-6"></span>
-  <span class="ha-capsule ha-cap-7"></span>
-  <span class="ha-capsule ha-cap-8"></span>
-  <span class="ha-capsule ha-cap-9"></span>
-  <span class="ha-capsule ha-cap-10"></span>
-  <span class="ha-capsule ha-cap-11"></span>
-  <span class="ha-capsule ha-cap-12"></span>
+      {/* the refill loop back to the visit */}
+      <path class="ha-loop-path" d={LOOP}></path>
+      <circle class="ha-loop-dot" r="4"></circle>
+      <text class="ha-mono ha-event ha-event-loop" x="480" y="298" text-anchor="middle"
+        >order.titrated</text
+      >
+
+      {/* the API call that starts it all */}
+      <g class="ha-post">
+        <rect x="20" y="8" width="152" height="26" rx="7"></rect>
+        <text class="ha-mono ha-post-text" x="30" y="25">POST /v1/orders</text>
+      </g>
+
+      {/* journey nodes + their always-on step labels */}
+      {
+        NODES.map((n) => (
+          <g>
+            <circle class={`ha-node ha-node-${n.id}`} cx={n.cx} cy={n.cy} r="5" />
+            <text class="ha-mono ha-step" x={n.cx} y={n.cy + 24} text-anchor="middle">
+              {n.label}
+            </text>
+          </g>
+        ))
+      }
+
+      {/* event chips that pop as the comet passes */}
+      {
+        EVENTS.map((e) => (
+          <text class={`ha-mono ha-event ha-event-${e.node}`} x={e.x} y={e.y} text-anchor="middle">
+            {e.text}
+          </text>
+        ))
+      }
+    </g>
+  </svg>
 </div>
 
 <style>
-  /* Right-weighted canvas: fills the hero box, clips its own overflow (so pills fall in and
-     out of frame), and fades toward the left so the motif never competes with the headline. */
+  /* Right-weighted canvas, faded toward the copy so the headline stays clean. */
   .hero-art {
     position: absolute;
     inset: 0;
@@ -57,114 +103,93 @@
     mask-image: linear-gradient(105deg, transparent 2%, transparent 26%, #000 60%);
   }
 
-  /* ---- pulse line ----------------------------------------------------------- */
-  .ha-pulse {
+  .ha-flow {
     position: absolute;
     top: 50%;
     right: 0;
-    width: 72%;
-    height: 46%;
+    width: 78%;
+    height: 96%;
     transform: translateY(-50%);
     overflow: visible;
   }
-  .ha-pulse-track,
-  .ha-pulse-sweep {
+
+  /* ---- pipeline --------------------------------------------------------- */
+  .ha-track,
+  .ha-trail,
+  .ha-comet,
+  .ha-loop-path {
     fill: none;
-    stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
   }
-  .ha-pulse-track {
+  .ha-track {
     stroke: var(--pl-purple-400);
-    opacity: 0.18;
+    stroke-width: 2;
+    opacity: 0.16;
   }
-  .ha-pulse-sweep {
+  .ha-trail {
     stroke: var(--pl-purple-500);
-    opacity: 0.75;
-    /* 130/1000 of the normalized path is lit; the rest is gap — a travelling "blip". */
-    stroke-dasharray: 130 1000;
+    stroke-width: 2;
+    opacity: 0.55;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000; /* drawn on by GSAP */
+    will-change: stroke-dashoffset;
+  }
+  .ha-comet {
+    stroke: var(--pl-teal-500);
+    stroke-width: 3;
+    opacity: 0.9;
+    stroke-dasharray: 30 970; /* a 30/1000 lit window — the traveling front */
     stroke-dashoffset: 0;
     will-change: stroke-dashoffset;
   }
-
-  /* ---- capsules ------------------------------------------------------------- */
-  .ha-capsule {
-    position: absolute;
-    /* All pills are one small, uniform size. */
-    width: 60px;
-    height: 22px;
-    border-radius: var(--radius-full);
-    border: 1.5px solid color-mix(in srgb, var(--pl-purple-400) 52%, transparent);
-    /* Two-tone pill: purple half | teal half — the brand pairing, kept faint. */
-    background: linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--pl-purple-400) 16%, transparent) 0 50%,
-      color-mix(in srgb, var(--pl-teal-400) 16%, transparent) 50% 100%
-    );
-    will-change: transform, opacity;
-    /* Hidden until JS drops them in (prevents a flash of the resting pile on load). */
+  .ha-loop-path {
+    stroke: var(--pl-teal-500);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 7;
+    opacity: 0; /* fades in when the refill loop runs */
+  }
+  .ha-loop-dot {
+    fill: var(--pl-teal-500);
     opacity: 0;
   }
-  /* The capsule seam where the two halves meet. */
-  .ha-capsule::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 18%;
-    bottom: 18%;
-    width: 1px;
-    background: color-mix(in srgb, var(--pl-purple-400) 45%, transparent);
+
+  /* ---- nodes & type ------------------------------------------------------ */
+  .ha-node {
+    fill: var(--pl-paper);
+    stroke: var(--pl-purple-400);
+    stroke-width: 2;
+    opacity: 0.9;
+    transform-box: fill-box;
+    transform-origin: center;
   }
-  /* Resting positions form a loose pile in the bottom-right. Earlier-dropping pills sit lower
-     (the base); later ones stack on top. Rotation is owned by GSAP (drop tumble → settle). */
-  .ha-cap-1 {
-    bottom: 4%;
-    right: 12%;
+  .ha-mono {
+    font-family: var(--font-mono);
   }
-  .ha-cap-2 {
-    bottom: 5%;
-    right: 22%;
+  .ha-step {
+    font-size: 11px;
+    fill: var(--pl-ink-400);
+    opacity: 0.75;
   }
-  .ha-cap-3 {
-    bottom: 4%;
-    right: 30%;
+  .ha-event {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--pl-teal-600);
+    opacity: 0; /* popped by GSAP as the comet passes */
   }
-  .ha-cap-4 {
-    bottom: 6%;
-    right: 7%;
+  .ha-post rect {
+    fill: var(--pl-surface);
+    stroke: var(--pl-line);
+    stroke-width: 1;
   }
-  .ha-cap-5 {
-    bottom: 10%;
-    right: 26%;
+  .ha-post-text {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--pl-purple-600);
   }
-  .ha-cap-6 {
-    bottom: 9%;
-    right: 16%;
-  }
-  .ha-cap-7 {
-    bottom: 12%;
-    right: 21%;
-  }
-  .ha-cap-8 {
-    bottom: 8%;
-    right: 31%;
-  }
-  .ha-cap-9 {
-    bottom: 14%;
-    right: 12%;
-  }
-  .ha-cap-10 {
-    bottom: 15%;
-    right: 24%;
-  }
-  .ha-cap-11 {
-    bottom: 19%;
-    right: 18%;
-  }
-  .ha-cap-12 {
-    bottom: 21%;
-    right: 22%;
+  .ha-post {
+    opacity: 0; /* faded in at cycle start */
   }
 </style>
 
@@ -174,78 +199,143 @@
   const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const art = document.querySelector('.hero-art');
 
-  // Per pill: when it starts dropping (at, seconds on the timeline) and how long the fall takes
-  // (dur). The schedule accelerates — one super-slow drop, then a few, then a bunch — so big
-  // early gaps shrink to tight late ones. restRot/spin = its settled angle + the tumble it turns
-  // through; peak = settled opacity. CSS owns the resting x/y (bottom/right); GSAP owns rotation.
-  const PILLS = [
-    { sel: '.ha-cap-1', at: 0.0, dur: 2.4, restRot: -10, spin: 130, peak: 0.95 },
-    { sel: '.ha-cap-2', at: 4.5, dur: 2.2, restRot: 12, spin: -100, peak: 0.9 },
-    { sel: '.ha-cap-3', at: 8.0, dur: 2.1, restRot: -24, spin: 150, peak: 0.8 },
-    { sel: '.ha-cap-4', at: 11.0, dur: 2.0, restRot: 8, spin: -120, peak: 1.0 },
-    { sel: '.ha-cap-5', at: 13.4, dur: 1.9, restRot: -16, spin: 110, peak: 0.85 },
-    { sel: '.ha-cap-6', at: 15.3, dur: 1.8, restRot: 20, spin: -140, peak: 0.9 },
-    { sel: '.ha-cap-7', at: 16.8, dur: 1.7, restRot: -6, spin: 120, peak: 0.85 },
-    { sel: '.ha-cap-8', at: 18.0, dur: 1.7, restRot: 28, spin: -90, peak: 0.75 },
-    { sel: '.ha-cap-9', at: 19.0, dur: 1.6, restRot: -20, spin: 140, peak: 0.85 },
-    { sel: '.ha-cap-10', at: 19.8, dur: 1.6, restRot: 16, spin: -110, peak: 0.8 },
-    { sel: '.ha-cap-11', at: 20.5, dur: 1.5, restRot: -12, spin: 130, peak: 0.8 },
-    { sel: '.ha-cap-12', at: 21.1, dur: 1.5, restRot: 24, spin: -100, peak: 0.7 },
+  // Seconds after draw start when the comet front reaches each node — keep in sync
+  // with NODES in the template (same numbers, duplicated because template values
+  // don't reach the client script).
+  const NODE_TIMES: Array<[string, number]> = [
+    ['qualify', 0.36],
+    ['pay', 1.42],
+    ['verify', 2.37],
+    ['visit', 3.66],
+    ['rx', 4.83],
+    ['deliver', 5.77],
+    ['follow', 7.76],
   ];
+  const EVENT_NODES = ['qualify', 'pay', 'visit', 'rx', 'deliver'];
 
-  if (motionOk && art) {
-    const fall = (art as HTMLElement).clientHeight + 60; // start just above the top edge
-    const sweepX = (art as HTMLElement).clientWidth + 120; // clear the right edge entirely
-    const lastSettle = Math.max(...PILLS.map((p) => p.at + p.dur)); // ~22.6s
-    const BRUSH_AT = lastSettle + 2.5; // the pile sits a beat, then gets swept
+  const DRAW_AT = 0.6; // the POST chip lands first, then the pipe draws
+  const DRAW_DUR = 8;
+  const LOOP_AT = DRAW_AT + DRAW_DUR + 0.4; // the refill loop, after the pipe completes
 
-    // The whole gag loops: laborious pile-up → snappy brush-off → repeat. fromTo "from" values
-    // (incl. x:0) reset every iteration, so the loop is clean.
-    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.4 });
+  if (art) {
+    const q = (sel: string) => art.querySelector(sel);
+    const nodeEl = (id: string) => q(`.ha-node-${id}`);
 
-    // 1) Pills drop from above the top edge, bounce on landing (bounce.out), and settle into the
-    //    pile on the accelerating schedule above.
-    PILLS.forEach((p) => {
-      const el = art.querySelector(p.sel);
-      if (!el) return;
-      tl.fromTo(el, { y: -fall, x: 0 }, { y: 0, duration: p.dur, ease: 'bounce.out' }, p.at)
-        .fromTo(
-          el,
-          { rotation: p.restRot - p.spin },
-          { rotation: p.restRot, duration: p.dur, ease: 'power2.out' },
-          p.at,
-        )
-        .fromTo(el, { opacity: 0 }, { opacity: p.peak, duration: 0.5, ease: 'none' }, p.at);
-    });
+    if (motionOk) {
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.9 });
 
-    // 2) The brush-off — a fast swipe sends the whole pile tumbling off the right edge in a quick
-    //    left-to-right wave. The speed contrast with the slow pile-up is the joke.
-    PILLS.forEach((p, i) => {
-      const el = art.querySelector(p.sel);
-      if (!el) return;
-      const tumble = p.spin > 0 ? 460 : -460; // keep each pill's tumble direction
-      // Absolute targets (rest is x:0 / y:0 / rotation:restRot) so the loop resets cleanly.
-      tl.to(
-        el,
-        { x: sweepX, y: -22, rotation: p.restRot + tumble, duration: 0.75, ease: 'power3.in' },
-        BRUSH_AT + i * 0.035,
+      // 1) The API call lands.
+      tl.fromTo('.ha-post', { opacity: 0, y: 6 }, { opacity: 0.9, y: 0, duration: 0.5 }, 0);
+
+      // 2) The pipe draws while the comet rides its front (both ease:none so the
+      //    node timings below stay exact).
+      tl.fromTo(
+        '.ha-trail',
+        { strokeDashoffset: 1000 },
+        { strokeDashoffset: 0, duration: DRAW_DUR, ease: 'none' },
+        DRAW_AT,
+      ).fromTo(
+        '.ha-comet',
+        { strokeDashoffset: 0, opacity: 0.9 },
+        { strokeDashoffset: -970, duration: DRAW_DUR, ease: 'none' },
+        DRAW_AT,
       );
-    });
+      tl.to('.ha-comet', { opacity: 0, duration: 0.35 }, DRAW_AT + DRAW_DUR);
 
-    // Pulse — a lit blip travels the ECG path on its own loop, independent of the pill cycle.
-    gsap.fromTo(
-      '.ha-pulse-sweep',
-      { strokeDashoffset: 0 },
-      { strokeDashoffset: -1130, duration: 6, repeat: -1, ease: 'none' },
-    );
-  } else if (art) {
-    // Reduced motion: skip the drop — show the settled pile directly, and park the pulse blip
-    // on the ECG spike so the still composition reads as deliberate, not dead.
-    PILLS.forEach((p) => {
-      const el = art.querySelector(p.sel);
-      if (el) gsap.set(el, { rotation: p.restRot, opacity: p.peak * 0.85 });
-    });
-    const sweep = art.querySelector('.ha-pulse-sweep') as SVGPathElement | null;
-    if (sweep) sweep.style.strokeDashoffset = '-370';
+      // 3) Nodes pop as the front arrives; the real event names float up and fade.
+      // Fills switch via set() (GSAP can't interpolate var() colors) — the scale pop
+      // carries the motion. The t=0 set() restores the resting fill on every loop.
+      NODE_TIMES.forEach(([id, t]) => {
+        const el = nodeEl(id);
+        if (!el) return;
+        const at = DRAW_AT + t;
+        tl.set(el, { fill: 'var(--pl-paper)', stroke: 'var(--pl-purple-400)' }, 0);
+        tl.set(el, { fill: 'var(--pl-purple-500)', stroke: 'var(--pl-purple-500)' }, at);
+        tl.fromTo(
+          el,
+          { scale: 1 },
+          {
+            keyframes: [
+              { scale: 1.55, duration: 0.18, ease: 'power2.out' },
+              { scale: 1, duration: 0.3, ease: 'power2.in' },
+            ],
+            transformOrigin: 'center',
+            duration: 0.48,
+          },
+          at,
+        );
+        if (EVENT_NODES.includes(id)) {
+          tl.fromTo(
+            `.ha-event-${id}`,
+            { opacity: 0, y: 8 },
+            { opacity: 0.95, y: 0, duration: 0.3 },
+            at + 0.05,
+          ).to(`.ha-event-${id}`, { opacity: 0, duration: 0.5 }, at + 2.1);
+        }
+      });
+
+      // 4) The refill loop: the dashed arc appears, a dot rides it back to the visit
+      //    node, order.titrated pops, and the visit re-fires — care is a cycle.
+      const arc = q('.ha-loop-path') as SVGPathElement | null;
+      const dot = q('.ha-loop-dot');
+      if (arc && dot) {
+        const len = arc.getTotalLength();
+        const prog = { p: 0 };
+        tl.fromTo('.ha-loop-path', { opacity: 0 }, { opacity: 0.55, duration: 0.5 }, LOOP_AT);
+        tl.fromTo(dot, { opacity: 0 }, { opacity: 0.95, duration: 0.2 }, LOOP_AT + 0.3);
+        tl.fromTo(
+          prog,
+          { p: 0 },
+          {
+            p: 1,
+            duration: 1.8,
+            ease: 'power1.inOut',
+            onUpdate() {
+              const pt = arc.getPointAtLength(prog.p * len);
+              gsap.set(dot, { attr: { cx: pt.x, cy: pt.y } });
+            },
+          },
+          LOOP_AT + 0.3,
+        );
+        tl.to(dot, { opacity: 0, duration: 0.25 }, LOOP_AT + 2.1);
+        tl.fromTo(
+          '.ha-event-loop',
+          { opacity: 0, y: 8 },
+          { opacity: 0.9, y: 0, duration: 0.3 },
+          LOOP_AT + 0.9,
+        ).to('.ha-event-loop', { opacity: 0, duration: 0.5 }, LOOP_AT + 2.6);
+        const visit = nodeEl('visit');
+        if (visit) {
+          tl.fromTo(
+            visit,
+            { scale: 1 },
+            {
+              keyframes: [
+                { scale: 1.55, duration: 0.18, ease: 'power2.out' },
+                { scale: 1, duration: 0.3, ease: 'power2.in' },
+              ],
+            },
+            LOOP_AT + 2.0,
+          );
+        }
+      }
+
+      // 5) Hold the completed journey a beat, then fade the cycle out and repeat.
+      tl.set('.ha-cycle', { opacity: 1 }, 0);
+      tl.to('.ha-cycle', { opacity: 0, duration: 0.7 }, LOOP_AT + 3.4);
+    } else {
+      // Reduced motion: the completed pipeline as a still diagram — pipe drawn, nodes
+      // lit, refill loop visible, two event chips shown so the diagram reads as alive.
+      gsap.set('.ha-trail', { strokeDashoffset: 0, opacity: 0.45 });
+      gsap.set('.ha-comet', { opacity: 0 });
+      gsap.set('.ha-post', { opacity: 0.85 });
+      gsap.set('.ha-loop-path', { opacity: 0.45 });
+      NODE_TIMES.forEach(([id]) => {
+        const el = nodeEl(id);
+        if (el) gsap.set(el, { fill: 'var(--pl-purple-500)', stroke: 'var(--pl-purple-500)' });
+      });
+      gsap.set('.ha-event-rx', { opacity: 0.9 });
+      gsap.set('.ha-event-loop', { opacity: 0.7 });
+    }
   }
 </script>
