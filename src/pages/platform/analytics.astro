@@ -10,6 +10,7 @@ import SectionHeader from '../../components/primitives/SectionHeader.astro';
 import Eyebrow from '../../components/primitives/Eyebrow.astro';
 import Button from '../../components/primitives/Button.astro';
 import Card from '../../components/primitives/Card.astro';
+import { DOCS_URL } from '../../lib/nav';
 
 const features = [
   {
@@ -73,7 +74,7 @@ const analyticsSample = `POST /v1/metrics/query
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="link-arrow" href="/developers">Explore the developer surface</Button>
+      <Button variant="link-arrow" href={DOCS_URL}>Read the docs</Button>
     </div>
   </Section>
 
@@ -113,7 +114,11 @@ const analyticsSample = `POST /v1/metrics/query
         <pre
           class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{analyticsSample}</code></pre>
         <p class="mt-3 text-sm text-ink-400">
-          Illustrative — the live API surface is published in the docs.
+          Illustrative — the live reference lives at <a
+            href={DOCS_URL}
+            class="font-semibold text-purple-600 transition-colors duration-150 hover:text-purple-700"
+            >docs.purplelabelmd.com</a
+          >.
         </p>
       </div>
     </div>
@@ -124,7 +129,7 @@ const analyticsSample = `POST /v1/metrics/query
     <SectionHeader align="center" eyebrow="Get started" title="Point your agents at the numbers." />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href="/developers">Explore the developer surface</Button>
+      <Button variant="secondary" href={DOCS_URL}>Read the docs</Button>
     </div>
   </Section>
 </PageLayout>

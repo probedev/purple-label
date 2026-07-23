@@ -19,6 +19,7 @@ import HeroArt from '../components/marketing/HeroArt.astro';
 import Heritage from '../components/marketing/Heritage.astro';
 import { organizationJsonLd, softwareApplicationJsonLd, faqJsonLd } from '../lib/seo';
 import { STATS, RX_ODOMETER, PROOF_LINE } from '../lib/stats';
+import { DOCS_URL } from '../lib/nav';
 
 /** StatCard props from a registry entry — no literal stats in this file (G1). */
 const stat = (key: keyof typeof STATS) => ({
@@ -223,7 +224,7 @@ const homeFaqs = [
         <div class="mt-8 flex flex-wrap items-center gap-4">
           <Button variant="primary" href="/contact">Book a consult</Button>
           <Button variant="secondary" href="/pricing">See pricing</Button>
-          <Button variant="link-arrow" href="/developers">Start building</Button>
+          <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
         </div>
         <p class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ink-400">
           <span class="inline-flex items-center gap-1.5">
@@ -304,7 +305,7 @@ const homeFaqs = [
     <SectionHeader
       eyebrow="Two ways to launch"
       title="Build it yourself, or have us run it."
-      lead="Same proven platform, same cleared audits, same pass-through drug pricing — you choose how hands-on you want to be."
+      lead="Same proven platform, same cleared reviews, same pass-through drug pricing — you choose how hands-on you want to be."
     />
     <div class="mt-12 grid gap-6 md:grid-cols-2">
       <Card icon="code" title="Build it with agents">
@@ -312,7 +313,7 @@ const homeFaqs = [
         webhooks with signed deliveries — and assemble a branded telehealth business in code. Full
         control, no glue, no console to outgrow.
         <span class="mt-6 block">
-          <Button variant="link-arrow" href="/developers">Start building</Button>
+          <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
         </span>
       </Card>
       <Card icon="headset" title="We run it for you">
@@ -343,7 +344,7 @@ const homeFaqs = [
       }
     </div>
     <div class="mt-6 grid gap-6 md:grid-cols-2">
-      <Card icon="watch" title="Wearables & Monitoring">
+      <Card icon="watch" title="Wearables & Monitoring" href="/platform/wearables">
         {STATS.deviceIntegrations.value} wearable and device integrations — rings, watches, CGMs, scales,
         and more — stream patient data into the same longitudinal record your programs act on.
       </Card>

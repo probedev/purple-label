@@ -7,6 +7,9 @@
  */
 import { PROGRAMS_DATA } from './programs';
 
+/** The public docs property (confirmed by Gregg 2026-07-23). */
+export const DOCS_URL = 'https://docs.purplelabelmd.com';
+
 export interface NavItem {
   label: string;
   href: string;
@@ -49,6 +52,18 @@ export const PLATFORM: NavGroup = {
       href: '/platform/pharmacy-fulfillment',
       icon: 'pill',
       desc: 'Nationwide 503A/503B network, pass-through pricing, 50 states.',
+    },
+    {
+      label: 'Labs & Diagnostics',
+      href: '/programs/labs',
+      icon: 'microscope',
+      desc: 'At-home kits and draw sites — ordered and resulted in-journey.',
+    },
+    {
+      label: 'Wearables & Monitoring',
+      href: '/platform/wearables',
+      icon: 'watch',
+      desc: 'Rings, watches, CGMs, and scales feeding one clinical view.',
     },
     {
       label: 'Payments',
@@ -206,5 +221,6 @@ export const TRUST_BADGES = [
 export const CTA = {
   consult: { label: 'Book a consult', href: '/contact' },
   pricing: { label: 'See pricing', href: '/pricing' },
-  build: { label: 'Start building', href: '/developers' },
+  // "Start building" lands on the real docs, not /developers circularly (review G10).
+  build: { label: 'Start building', href: DOCS_URL },
 } as const;

@@ -12,6 +12,7 @@ import Button from '../../components/primitives/Button.astro';
 import Card from '../../components/primitives/Card.astro';
 import StatCard from '../../components/primitives/StatCard.astro';
 import Heritage from '../../components/marketing/Heritage.astro';
+import { DOCS_URL } from '../../lib/nav';
 import { STATS, PROOF_LINE } from '../../lib/stats';
 
 /** StatCard props from a registry entry — no literal stats in this file (G1). */
@@ -85,7 +86,7 @@ const modules = [
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="link-arrow" href="/developers">Explore the developer surface</Button>
+      <Button variant="link-arrow" href={DOCS_URL}>Read the docs</Button>
     </div>
   </Section>
 
@@ -159,7 +160,7 @@ const modules = [
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href="/developers">Explore the developer surface</Button>
+      <Button variant="secondary" href={DOCS_URL}>Read the docs</Button>
     </div>
   </Section>
 </PageLayout>

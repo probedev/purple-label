@@ -1,0 +1,147 @@
+---
+/**
+ * Wearables & Monitoring `/platform/wearables` — promoted to the top nav per Gregg
+ * 2026-07-23. The device-data story folded from WLMD: rings, watches, CGMs, scales, and
+ * BP cuffs feeding one clinical view under the client's brand. Device names render as
+ * text chips (brand logos land once brand-use permission is confirmed); counts come from
+ * the stats registry.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+import StatCard from '../../components/primitives/StatCard.astro';
+import { STATS } from '../../lib/stats';
+
+const devices = [
+  'Apple Health',
+  'Fitbit',
+  'Garmin',
+  'Dexcom',
+  'Withings',
+  'Google Fit',
+  'Polar',
+  'Samsung Health',
+];
+
+const features = [
+  {
+    icon: 'watch',
+    title: 'The devices patients already own',
+    body: `Rings, watches, CGMs, smart scales, and blood-pressure cuffs — ${STATS.deviceIntegrations.value} integrations, connected in your branded experience, not a separate app.`,
+  },
+  {
+    icon: 'activity',
+    title: 'Measured, not self-reported',
+    body: 'Weight, glucose, sleep, and activity stream in continuously — progress your providers can trust instead of what a patient remembers at check-in.',
+  },
+  {
+    icon: 'users',
+    title: 'One clinical view',
+    body: 'Device data lands on the same longitudinal patient record as visits, prescriptions, and labs — one timeline, every program.',
+  },
+  {
+    icon: 'stethoscope',
+    title: 'Clinician oversight built in',
+    body: 'Monitoring data informs care, and licensed providers act on it — readings never trigger clinical decisions on their own.',
+  },
+  {
+    icon: 'route',
+    title: 'Data that drives the journey',
+    body: 'Readings can prompt check-ins, flag follow-ups, and enrich titration reviews inside the same durable order pipeline.',
+  },
+  {
+    icon: 'code',
+    title: 'Callable by your agents',
+    body: 'Connected-device status and readings are exposed as API reads and events, so your storefront and your agents can react to real-world signals.',
+  },
+];
+---
+
+<PageLayout
+  title="Wearables & Monitoring — device data in one clinical view"
+  description="Rings, watches, CGMs, scales, and BP cuffs — 300+ device integrations streaming patient data into one longitudinal clinical record under your brand, with clinician oversight built in."
+  path="/platform/wearables"
+>
+  {/* Hero */}
+  <Section size="lg">
+    <Eyebrow>Wearables & Monitoring</Eyebrow>
+    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
+      {STATS.deviceIntegrations.value} devices, working for your programs.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      The rings, watches, CGMs, and scales your patients already own feed one clinical view under
+      your brand — so progress is measured, not self-reported, and your programs act on real-world
+      signals instead of check-in guesswork.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="link-arrow" href="/platform">See the whole platform</Button>
+    </div>
+  </Section>
+
+  {/* The numbers */}
+  <Section size="sm" surface="surface" bordered>
+    <div class="grid gap-8 sm:grid-cols-3">
+      <StatCard
+        value={STATS.deviceIntegrations.value}
+        label="Device integrations"
+        caption={STATS.deviceIntegrations.caption}
+      />
+      <StatCard value="1" label="Clinical view" caption="Across every program" />
+      <StatCard value="24/7" label="Continuous data" caption="With clinician oversight" />
+    </div>
+  </Section>
+
+  {/* Features */}
+  <Section>
+    <SectionHeader
+      eyebrow="What's inside"
+      title="Real-world signals, on the clinical record."
+      lead="Monitoring isn't a dashboard bolted to the side — it's data flowing into the same record and pipeline everything else uses."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((f) => (
+          <Card icon={f.icon} title={f.title}>
+            {f.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Ecosystem */}
+  <Section surface="sunken" bordered size="sm">
+    <SectionHeader eyebrow="The ecosystem" title="Syncs with the platforms patients use." />
+    <ul class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2" aria-label="Device integrations">
+      {
+        devices.map((d) => (
+          <li class="rounded-md border border-line bg-paper px-3 py-1.5 text-sm font-medium text-ink-500">
+            {d}
+          </li>
+        ))
+      }
+      <li class="text-sm text-ink-400">…and {STATS.deviceIntegrations.value} in all</li>
+    </ul>
+    <p class="mt-4 text-xs text-ink-300">
+      All trademarks are the property of their respective owners. Listing indicates data
+      compatibility, not endorsement.
+    </p>
+  </Section>
+
+  {/* Closing CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="Put the devices your patients own to work."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="secondary" href="/programs/labs">Pair it with labs</Button>
+    </div>
+  </Section>
+</PageLayout>

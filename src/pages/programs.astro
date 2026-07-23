@@ -13,6 +13,7 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import Badge from '../components/primitives/Badge.astro';
 import { PROGRAMS_DATA } from '../lib/programs';
+import { DOCS_URL } from '../lib/nav';
 
 const economics = [
   'Recurring, subscription-based revenue with high retention',
@@ -41,7 +42,7 @@ const economics = [
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="link-arrow" href="/developers">Start building</Button>
+      <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>
 
@@ -138,7 +139,7 @@ const economics = [
     <SectionHeader
       eyebrow="How it works"
       title="One pipeline underneath every program."
-      lead="Every vertical runs on the same modules and the same cleared audits — so adding a program is composition, not a new build."
+      lead="Every vertical runs on the same modules and the same cleared reviews — so adding a program is composition, not a new build."
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       <Card icon="boxes" title="Composed from modules" href="/platform">
@@ -165,7 +166,7 @@ const economics = [
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href="/developers">Start building</Button>
+      <Button variant="secondary" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>
 </PageLayout>

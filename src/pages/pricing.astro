@@ -13,6 +13,7 @@ import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Button from '../components/primitives/Button.astro';
 import Badge from '../components/primitives/Badge.astro';
 import { Icon } from 'astro-icon/components';
+import { DOCS_URL } from '../lib/nav';
 
 const tiers = [
   {
@@ -24,12 +25,12 @@ const tiers = [
       'Every module — intake, visits, e-prescribing, pharmacy, payments, analytics',
       'Developer docs, API, and the agent pack (MCP connectors at launch)',
       'The durable order pipeline, built and operated for you',
-      'HIPAA-compliant, encrypted infrastructure — behind the same cleared audits',
+      'HIPAA-compliant, encrypted infrastructure — behind the same cleared reviews',
       'Pass-through Rx pricing — our cost is your cost, no markup',
     ],
     start:
       'Sandbox access and API keys start with your consult; sign a BAA and onboard to go live.',
-    primary: { label: 'Start building', href: '/developers' },
+    primary: { label: 'Start building', href: DOCS_URL },
     secondary: { label: 'Book a consult', href: '/contact' },
     featured: true,
   },
@@ -116,23 +117,20 @@ const matrix = [
   description="Three ways to build on Purple Label MD. Platform: the full multi-tenant stack with developer docs, API, and pass-through Rx pricing. Enterprise: a dedicated data silo, per-tenant encryption keys, residency, and data portability. Managed: we build and operate your branded telehealth business for you — on the same audited foundation."
   path="/pricing"
 >
-  {/* Hero */}
-  <Section size="lg">
+  {
+    /* Hero + tier cards share one compact section so the cards sit at the fold
+      (Gregg 2026-07-23: cards were too far below it). */
+  }
+  <Section size="sm">
     <Eyebrow>Plans</Eyebrow>
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
       Build it, own it, or have us run it.
     </h1>
-    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Start on the multi-tenant Platform with the full toolkit your agents need, run on dedicated
-      Enterprise infrastructure with your own keys and data residency, or have our team build and
-      operate the whole thing for you. Every path rides the same proven pipeline — and the same
-      cleared audits.
+    <p class="mt-4 max-w-prose text-body-lg text-ink-500">
+      The multi-tenant Platform, dedicated Enterprise infrastructure, or our team running the whole
+      thing — every path rides the same proven pipeline and the same cleared reviews.
     </p>
-  </Section>
-
-  {/* Tier cards */}
-  <Section>
-    <div class="grid gap-6 lg:grid-cols-3">
+    <div class="mt-10 grid gap-6 lg:grid-cols-3">
       {
         tiers.map((t) => (
           <div
@@ -280,7 +278,7 @@ const matrix = [
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href="/developers">Start building</Button>
+      <Button variant="secondary" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>
 </PageLayout>

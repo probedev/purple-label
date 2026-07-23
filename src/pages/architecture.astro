@@ -13,6 +13,7 @@ import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import { Icon } from 'astro-icon/components';
+import { DOCS_URL } from '../lib/nav';
 
 const pipeline = [
   {
@@ -238,7 +239,7 @@ const stack = [
       build-vs-buy question in one sentence: you don’t want to own this.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/developers">Explore the developer surface</Button>
+      <Button variant="primary" href={DOCS_URL}>Read the docs</Button>
       <Button variant="link-arrow" href="/contact">Talk to sales</Button>
     </div>
   </Section>
@@ -509,7 +510,7 @@ const stack = [
       lead="We built, operate, and audit the hard part. Your agents drive it with a few calls."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/developers">Explore the developer surface</Button>
+      <Button variant="primary" href={DOCS_URL}>Read the docs</Button>
       <Button variant="secondary" href="/contact">Talk to sales</Button>
     </div>
   </Section>

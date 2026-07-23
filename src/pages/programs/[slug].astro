@@ -16,6 +16,7 @@ import FAQ from '../../components/primitives/FAQ.astro';
 import { Icon } from 'astro-icon/components';
 import { PROGRAMS_DATA, PROGRAM_TRUST, DEFAULT_JOURNEY, type Program } from '../../lib/programs';
 import { faqJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { DOCS_URL } from '../../lib/nav';
 
 export function getStaticPaths() {
   return PROGRAMS_DATA.map((program) => ({
@@ -62,7 +63,7 @@ const siblings = PROGRAMS_DATA.filter((p) => p.slug !== program.slug);
     </ul>
     <div class="mt-8 flex flex-wrap items-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="link-arrow" href="/developers">Start building</Button>
+      <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>
 
@@ -139,7 +140,7 @@ const siblings = PROGRAMS_DATA.filter((p) => p.slug !== program.slug);
     <SectionHeader
       eyebrow="How it works"
       title="One pipeline underneath the program."
-      lead="The same modules and the same cleared audits power every vertical — so adding this program is composition, not a new build."
+      lead="The same modules and the same cleared reviews power every vertical — so adding this program is composition, not a new build."
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
       <Card icon="boxes" title="Composed from modules" href="/platform">
@@ -198,7 +199,7 @@ const siblings = PROGRAMS_DATA.filter((p) => p.slug !== program.slug);
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
       <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href="/developers">Start building</Button>
+      <Button variant="secondary" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>
 </PageLayout>
