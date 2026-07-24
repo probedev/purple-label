@@ -192,33 +192,35 @@ const homeFaqs = [
   jsonLd={[organizationJsonLd(), softwareApplicationJsonLd(), faqJsonLd(homeFaqs)]}
 >
   {
-    /* 1 — Hero: split layout (per Gregg 2026-07-24) — headline left, support copy +
-      CTAs right, with the saga animation as its own full-width band below. */
+    /* 1 — Hero: eyebrow across the top, headline left / support + CTAs right
+      (top-aligned), and the saga animation blending up into the same section —
+      one continuous composition that walks the eye from headline to diagram. */
   }
   <Section size="lg">
-    <div class="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-14">
+    <p
+      class="flex flex-wrap items-baseline gap-x-2 text-xs uppercase tracking-eyebrow text-ink-400"
+    >
+      <span>Rx filled by our operators' platforms to date</span>
+      <span
+        id="rx-counter"
+        class="font-mono text-sm tabular-nums tracking-normal text-purple-600 normal-case"
+        >{RX_ANCHOR.toLocaleString('en-US')}</span
+      >
+    </p>
+
+    <div class="mt-5 grid gap-10 lg:grid-cols-12 lg:gap-14">
       <div class="lg:col-span-7">
-        <p
-          class="flex flex-wrap items-baseline gap-x-2 text-xs uppercase tracking-eyebrow text-ink-400"
-        >
-          <span>Rx filled by our operators' platforms to date</span>
-          <span
-            id="rx-counter"
-            class="font-mono text-sm tabular-nums tracking-normal text-purple-600 normal-case"
-            >{RX_ANCHOR.toLocaleString('en-US')}</span
-          >
-        </p>
         {
           /* The explicit {' '} matters: Astro collapses the newline before the span,
             which shipped as "brandedtelehealth" on the live hero. */
         }
-        <h1 class="mt-5 font-display text-display text-ink-900">
+        <h1 class="font-display text-display text-ink-900">
           Launch and own a branded{' '}
           <span class="text-purple-600">telehealth business.</span>
         </h1>
       </div>
 
-      <div class="lg:col-span-5">
+      <div class="lg:col-span-5 lg:pt-3">
         <p class="max-w-prose text-body-lg text-ink-500">
           Providers, pharmacy, payments, and compliance — from the team behind{' '}
           {STATS.brandsLaunched.value} branded telehealth launches, rebuilt API-first for the agent era.
@@ -250,11 +252,12 @@ const homeFaqs = [
         </ul>
       </div>
     </div>
-  </Section>
 
-  {/* 1.2 — The saga band: the patient-journey animation, full width and prominent */}
-  <Section size="sm" surface="sunken" bordered>
-    <div class="mx-auto h-72 max-w-4xl sm:h-80 md:h-96">
+    {
+      /* The saga — same section, no seam; it rises toward the headline block so the
+        POST chip sits just under the copy and the pipeline carries the eye down. */
+    }
+    <div class="mx-auto mt-4 max-w-5xl md:-mt-6">
       <HeroArt />
     </div>
   </Section>

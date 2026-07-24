@@ -94,18 +94,18 @@ const LOOP = 'M260,330 Q600,318 448,212';
 </div>
 
 <style>
-  /* A centered block that fills its parent band — the diagram is the hero image now. */
+  /* A centered block that sizes to its container's width at the diagram's own 640:400
+     aspect ratio — the diagram is the hero image now. */
   .hero-art {
     position: relative;
-    height: 100%;
     width: 100%;
     pointer-events: none;
   }
 
   .ha-flow {
     display: block;
-    height: 100%;
     width: 100%;
+    height: auto;
     overflow: visible;
   }
 
