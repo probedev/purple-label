@@ -13,7 +13,8 @@
  *
  * Every color traces to design tokens (re-themes with light/dark). GSAP-driven, gated on
  * prefers-reduced-motion (which shows the completed pipeline as a still diagram).
- * Right-weighted and masked to fade toward the copy.
+ * Renders as a centered block that fills its parent's height (per Gregg 2026-07-24 the
+ * diagram is its own full-width band below the split hero, no longer masked behind copy).
  */
 
 // Journey nodes ON the pipeline path below — cx/cy must sit on the path's segments.
@@ -48,7 +49,7 @@ const LOOP = 'M260,330 Q600,318 448,212';
 ---
 
 <div class="hero-art" aria-hidden="true">
-  <svg class="ha-flow" viewBox="0 0 640 400" fill="none" preserveAspectRatio="xMaxYMid meet">
+  <svg class="ha-flow" viewBox="0 0 640 400" fill="none" preserveAspectRatio="xMidYMid meet">
     <g class="ha-cycle">
       {/* the pipe: faint track, drawn trail, and the traveling comet */}
       <path class="ha-track" d={PIPE} pathLength="1000"></path>
@@ -93,23 +94,18 @@ const LOOP = 'M260,330 Q600,318 448,212';
 </div>
 
 <style>
-  /* Right-weighted canvas, faded toward the copy so the headline stays clean. */
+  /* A centered block that fills its parent band — the diagram is the hero image now. */
   .hero-art {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
+    position: relative;
+    height: 100%;
+    width: 100%;
     pointer-events: none;
-    -webkit-mask-image: linear-gradient(105deg, transparent 2%, transparent 26%, #000 60%);
-    mask-image: linear-gradient(105deg, transparent 2%, transparent 26%, #000 60%);
   }
 
   .ha-flow {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    width: 78%;
-    height: 96%;
-    transform: translateY(-50%);
+    display: block;
+    height: 100%;
+    width: 100%;
     overflow: visible;
   }
 
