@@ -62,9 +62,12 @@ const LOOP = 'M300,460 Q40,430 152,302';
       <path class="ha-comet" d={PIPE} pathLength="1000"></path>
 
       {
-        /* the request wire — drawn at runtime from the Patient journey button down to
-          the pipe entrance, then faded; its `d` is computed from live layout */
+        /* the wire from the Patient journey button to the pipe entrance — its `d` is
+          computed from live layout at load/resize. The faint track anchors the pipe
+          to the button at all times; the bright layer draws on play, then settles
+          into the same purple as the drawn pipe. */
       }
+      <path class="ha-lead-track"></path>
       <path class="ha-lead"></path>
 
       {/* the refill loop back to the visit */}
@@ -131,6 +134,9 @@ const LOOP = 'M300,460 Q40,430 152,302';
   }
 
   /* ---- pipeline --------------------------------------------------------- */
+  /* NOTE: no vector-effect here on purpose — non-scaling-stroke makes Chromium
+     compute dashes in screen px, which desyncs dash-driven draws from
+     geometry-derived timings (the "line trails the pops" bug). */
   .ha-track,
   .ha-trail,
   .ha-comet,
@@ -138,16 +144,15 @@ const LOOP = 'M300,460 Q40,430 152,302';
     fill: none;
     stroke-linecap: round;
     stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
   }
   .ha-track {
     stroke: var(--pl-purple-400);
-    stroke-width: 2;
+    stroke-width: 1.25;
     opacity: 0.16;
   }
   .ha-trail {
     stroke: var(--pl-purple-500);
-    stroke-width: 2;
+    stroke-width: 1.25;
     opacity: 0.55;
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000; /* drawn by scroll */
@@ -155,7 +160,7 @@ const LOOP = 'M300,460 Q40,430 152,302';
   }
   .ha-comet {
     stroke: var(--pl-teal-500);
-    stroke-width: 3;
+    stroke-width: 2;
     opacity: 0.9;
     /* A 30/1000 lit window. At offset 30 the window sits BEFORE the path start, so
        nothing is lit while idle; animating 30 → -970 keeps the window's head locked
@@ -164,16 +169,23 @@ const LOOP = 'M300,460 Q40,430 152,302';
     stroke-dashoffset: 30;
     will-change: stroke-dashoffset;
   }
+  .ha-lead-track {
+    fill: none;
+    stroke: var(--pl-purple-400);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    opacity: 0.16; /* the always-on anchor to the button */
+  }
   .ha-lead {
     fill: none;
     stroke: var(--pl-teal-500);
     stroke-width: 2;
     stroke-linecap: round;
-    opacity: 0; /* drawn + faded per play by the script */
+    opacity: 0; /* drawn on play; settles purple afterwards */
   }
   .ha-loop-path {
     stroke: var(--pl-teal-500);
-    stroke-width: 1.5;
+    stroke-width: 1;
     stroke-dasharray: 5 7;
     opacity: 0; /* fades in when the refill loop runs */
   }
@@ -378,13 +390,16 @@ const LOOP = 'M300,460 Q40,430 152,302';
         LOOP_AT + 1.5,
       );
 
-      // The request wire: computed fresh each play from the button's live position
-      // (mapped into SVG user coords), so it survives any viewport or layout change.
-      // It draws button → pipe entrance in the beat before the pipe starts, then fades.
+      // The wire from the button to the pipe entrance. Its path is computed from the
+      // button's live position (mapped into SVG user coords) at load and on resize, so
+      // the pipe is visibly anchored to the button at ALL times via the faint track.
+      // On play, the bright layer draws along it, then settles into the pipe's purple.
       const lead = q('.ha-lead') as SVGPathElement | null;
+      const leadTrack = q('.ha-lead-track') as SVGPathElement | null;
       const svg = art.querySelector('svg') as SVGSVGElement | null;
-      const fireWire = () => {
-        if (!lead || !svg || !runBtn) return;
+
+      const layoutWire = () => {
+        if (!lead || !leadTrack || !svg || !runBtn) return;
         const ctm = svg.getScreenCTM();
         if (!ctm) return;
         const inv = ctm.inverse();
@@ -392,11 +407,30 @@ const LOOP = 'M300,460 Q40,430 152,302';
         const p = new DOMPoint(r.left + r.width / 2, r.bottom - 4).matrixTransform(inv);
         const d = `M${p.x.toFixed(1)},${p.y.toFixed(1)} C${p.x.toFixed(1)},${(p.y + 70).toFixed(1)} 500,-80 500,16`;
         lead.setAttribute('d', d);
+        leadTrack.setAttribute('d', d);
+      };
+      layoutWire();
+      let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(layoutWire, 150);
+      });
+
+      const fireWire = () => {
+        if (!lead) return;
+        layoutWire(); // fresh coords in case anything moved since load
         const len = lead.getTotalLength();
         gsap.killTweensOf(lead);
-        gsap.set(lead, { strokeDasharray: len, strokeDashoffset: len, opacity: 0.8 });
+        gsap.set(lead, {
+          stroke: 'var(--pl-teal-500)',
+          strokeDasharray: len,
+          strokeDashoffset: len,
+          opacity: 0.85,
+        });
         gsap.to(lead, { strokeDashoffset: 0, duration: 0.5, ease: 'power1.in' });
-        gsap.to(lead, { opacity: 0, duration: 0.5, delay: 0.7 });
+        // Settle: the wire joins the drawn pipe instead of vanishing.
+        gsap.set(lead, { stroke: 'var(--pl-purple-500)', delay: 0.9 });
+        gsap.to(lead, { opacity: 0.5, duration: 0.5, delay: 0.9 });
       };
 
       let played = false;
@@ -447,6 +481,21 @@ const LOOP = 'M300,460 Q40,430 152,302';
       });
       gsap.set('.ha-event-rx', { opacity: 0.9 });
       gsap.set('.ha-event-loop', { opacity: 0.7 });
+      // Anchor the completed diagram to the button, statically.
+      const leadStill = q('.ha-lead') as SVGPathElement | null;
+      const trackStill = q('.ha-lead-track') as SVGPathElement | null;
+      const svgStill = art.querySelector('svg') as SVGSVGElement | null;
+      if (leadStill && trackStill && svgStill && runBtn) {
+        const ctm = svgStill.getScreenCTM();
+        if (ctm) {
+          const r = runBtn.getBoundingClientRect();
+          const p = new DOMPoint(r.left + r.width / 2, r.bottom - 4).matrixTransform(ctm.inverse());
+          const d = `M${p.x.toFixed(1)},${p.y.toFixed(1)} C${p.x.toFixed(1)},${(p.y + 70).toFixed(1)} 500,-80 500,16`;
+          leadStill.setAttribute('d', d);
+          trackStill.setAttribute('d', d);
+          gsap.set(leadStill, { stroke: 'var(--pl-purple-500)', opacity: 0.45 });
+        }
+      }
       runBtn?.addEventListener('click', () => {
         (art as HTMLElement).scrollIntoView({ block: 'center' });
       });
