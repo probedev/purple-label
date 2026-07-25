@@ -151,8 +151,11 @@ const LOOP = 'M300,460 Q40,430 152,302';
     stroke: var(--pl-teal-500);
     stroke-width: 3;
     opacity: 0.9;
-    stroke-dasharray: 30 970; /* a 30/1000 lit window — the traveling front */
-    stroke-dashoffset: 0;
+    /* A 30/1000 lit window. At offset 30 the window sits BEFORE the path start, so
+       nothing is lit while idle; animating 30 → -970 keeps the window's head locked
+       to the trail's draw front, so node pops land exactly when the line arrives. */
+    stroke-dasharray: 30 970;
+    stroke-dashoffset: 30;
     will-change: stroke-dashoffset;
   }
   .ha-loop-path {
@@ -272,7 +275,7 @@ const LOOP = 'M300,460 Q40,430 152,302';
         DRAW_AT,
       ).fromTo(
         '.ha-comet',
-        { strokeDashoffset: 0, opacity: 0.9 },
+        { strokeDashoffset: 30, opacity: 0.9 },
         { strokeDashoffset: -970, duration: DRAW_DUR, ease: 'none' },
         DRAW_AT,
       );
@@ -292,11 +295,11 @@ const LOOP = 'M300,460 Q40,430 152,302';
           { scale: 1 },
           {
             keyframes: [
-              { scale: 1.3, duration: 0.15, ease: 'power2.out' },
-              { scale: 1, duration: 0.25, ease: 'power2.in' },
+              { scale: 1.15, duration: 0.12, ease: 'power1.out' },
+              { scale: 1, duration: 0.22, ease: 'power1.in' },
             ],
             transformOrigin: 'center',
-            duration: 0.4,
+            duration: 0.34,
           },
           at,
         );
@@ -345,8 +348,8 @@ const LOOP = 'M300,460 Q40,430 152,302';
           { scale: 1 },
           {
             keyframes: [
-              { scale: 1.3, duration: 0.15, ease: 'power2.out' },
-              { scale: 1, duration: 0.25, ease: 'power2.in' },
+              { scale: 1.15, duration: 0.12, ease: 'power1.out' },
+              { scale: 1, duration: 0.22, ease: 'power1.in' },
             ],
             transformOrigin: 'center',
           },
