@@ -227,10 +227,23 @@ const homeFaqs = [
           Medication at pass-through pricing, zero markup. Build it with your agents, or have our team
           run it for you.
         </p>
+        {
+          /* The POST button IS the demo: it fires the saga below and glides the page
+            down in sync (see HeroArt). "Start building" (docs) lives on in the
+            two-ways section; the journey button is the hero's developer hook now. */
+        }
         <div class="mt-8 flex flex-wrap items-center gap-4">
           <Button variant="primary" href="/contact">Book a consult</Button>
-          <Button variant="secondary" href="/pricing">See pricing</Button>
-          <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
+          <Button
+            variant="secondary"
+            type="button"
+            id="run-journey"
+            aria-label="Run the patient journey demo"
+          >
+            <Icon name="lucide:play" class="icon size-4 text-purple-600" />
+            <span class="font-mono">POST /v1/orders</span>
+          </Button>
+          <Button variant="link-arrow" href="/pricing">See pricing</Button>
         </div>
         {
           /* No free-floating separator dots — they strand at line ends when this wraps
@@ -257,7 +270,7 @@ const homeFaqs = [
       /* The saga — same section, no seam; it rises toward the headline block so the
         POST chip sits just under the copy and the pipeline carries the eye down. */
     }
-    <div class="mx-auto -mb-6 mt-2 max-w-5xl md:-mb-14 md:-mt-10">
+    <div class="mx-auto -mb-6 mt-0 max-w-5xl md:-mb-14 md:-mt-4">
       <HeroArt />
     </div>
   </Section>
