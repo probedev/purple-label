@@ -61,6 +61,12 @@ const LOOP = 'M300,460 Q40,430 152,302';
       <path class="ha-trail" d={PIPE} pathLength="1000"></path>
       <path class="ha-comet" d={PIPE} pathLength="1000"></path>
 
+      {
+        /* the request wire — drawn at runtime from the Patient journey button down to
+          the pipe entrance, then faded; its `d` is computed from live layout */
+      }
+      <path class="ha-lead"></path>
+
       {/* the refill loop back to the visit */}
       <path class="ha-loop-path" d={LOOP}></path>
       <circle class="ha-loop-dot" r="4"></circle>
@@ -158,6 +164,13 @@ const LOOP = 'M300,460 Q40,430 152,302';
     stroke-dashoffset: 30;
     will-change: stroke-dashoffset;
   }
+  .ha-lead {
+    fill: none;
+    stroke: var(--pl-teal-500);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0; /* drawn + faded per play by the script */
+  }
   .ha-loop-path {
     stroke: var(--pl-teal-500);
     stroke-width: 1.5;
@@ -235,7 +248,7 @@ const LOOP = 'M300,460 Q40,430 152,302';
   ];
   const EVENT_NODES = ['qualify', 'pay', 'visit', 'rx', 'deliver'];
 
-  const DRAW_AT = 0.2;
+  const DRAW_AT = 0.55; // the request wire from the button lands first
   const DRAW_DUR = 6;
   const LOOP_AT = DRAW_AT + DRAW_DUR + 0.3;
 
@@ -365,9 +378,31 @@ const LOOP = 'M300,460 Q40,430 152,302';
         LOOP_AT + 1.5,
       );
 
+      // The request wire: computed fresh each play from the button's live position
+      // (mapped into SVG user coords), so it survives any viewport or layout change.
+      // It draws button → pipe entrance in the beat before the pipe starts, then fades.
+      const lead = q('.ha-lead') as SVGPathElement | null;
+      const svg = art.querySelector('svg') as SVGSVGElement | null;
+      const fireWire = () => {
+        if (!lead || !svg || !runBtn) return;
+        const ctm = svg.getScreenCTM();
+        if (!ctm) return;
+        const inv = ctm.inverse();
+        const r = runBtn.getBoundingClientRect();
+        const p = new DOMPoint(r.left + r.width / 2, r.bottom - 4).matrixTransform(inv);
+        const d = `M${p.x.toFixed(1)},${p.y.toFixed(1)} C${p.x.toFixed(1)},${(p.y + 70).toFixed(1)} 500,-80 500,16`;
+        lead.setAttribute('d', d);
+        const len = lead.getTotalLength();
+        gsap.killTweensOf(lead);
+        gsap.set(lead, { strokeDasharray: len, strokeDashoffset: len, opacity: 0.8 });
+        gsap.to(lead, { strokeDashoffset: 0, duration: 0.5, ease: 'power1.in' });
+        gsap.to(lead, { opacity: 0, duration: 0.5, delay: 0.7 });
+      };
+
       let played = false;
       const play = () => {
         played = true;
+        fireWire();
         tl.restart();
       };
 
