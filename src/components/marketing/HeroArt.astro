@@ -1,57 +1,57 @@
 ---
 /**
- * HeroArt — the patient saga as a living flow diagram (per Gregg 2026-07-23, replacing
- * the pill-pile gag: same muted palette and non-distracting energy, but targeted — it
- * shows the value, a complex patient journey simplified behind one API call).
+ * HeroArt — the patient saga as a scroll-driven descent (per Gregg 2026-07-24: "the
+ * animation starting higher up and drawing the user down to complete the journey").
  *
- * One cycle: a `POST /v1/orders` chip fires → a comet draws the serpentine pipeline
- * through the seven journey steps (qualify → pay → verify → visit → rx → deliver →
- * follow-up) → each node pops and emits its real platform event name (the same set
- * /architecture and /developers publish) → the refill loop arcs back to the visit with
- * `order.titrated` → the whole thing fades and repeats. The ECG jag from the old hero
- * lives on inside the pipe between visit and rx.
+ * The `POST /v1/orders` chip sits at the top right — directly under the hero CTAs —
+ * and the pipeline descends in a tall serpentine. The comet's progress is scrubbed to
+ * scroll (GSAP ScrollTrigger), so the reader completes the journey by scrolling: nodes
+ * pop and their canonical platform events accumulate on the way down, the refill loop
+ * arcs back up with `order.titrated`, and a `status: REFILL_DUE` chip bookends the
+ * POST at the end. Scrolling back up reverses it. The old ECG jag lives on inside the
+ * pipe between visit and rx.
  *
- * Every color traces to design tokens (re-themes with light/dark). GSAP-driven, gated on
- * prefers-reduced-motion (which shows the completed pipeline as a still diagram).
- * Renders as a centered block that fills its parent's height (per Gregg 2026-07-24 the
- * diagram is its own full-width band below the split hero, no longer masked behind copy).
+ * Node timings are not hand-tuned: the script samples the path to find each node's
+ * fraction of the total length, so geometry edits can't desync the pops. All colors
+ * trace to design tokens (re-themes with light/dark). prefers-reduced-motion renders
+ * the completed journey as a still diagram.
  */
 
 // Journey nodes ON the pipeline path below — cx/cy must sit on the path's segments.
-// `t` = seconds after draw start when the comet front reaches the node (computed from
-// each node's share of the path's total length; keep in sync if the path changes).
 const NODES = [
-  { id: 'qualify', label: '01 qualify', cx: 100, cy: 70, t: 0.36 },
-  { id: 'pay', label: '02 pay', cx: 280, cy: 70, t: 1.42 },
-  { id: 'verify', label: '03 verify id', cx: 440, cy: 70, t: 2.37 },
-  { id: 'visit', label: '04 visit', cx: 440, cy: 200, t: 3.66 },
-  { id: 'rx', label: '05 rx', cx: 300, cy: 200, t: 4.83 },
-  { id: 'deliver', label: '06 deliver', cx: 140, cy: 200, t: 5.77 },
-  { id: 'follow', label: '07 follow-up', cx: 260, cy: 330, t: 7.76 },
+  { id: 'qualify', label: '01 qualify', cx: 420, cy: 120 },
+  { id: 'pay', label: '02 pay', cx: 280, cy: 120 },
+  { id: 'verify', label: '03 verify id', cx: 140, cy: 120 },
+  { id: 'visit', label: '04 visit', cx: 160, cy: 290 },
+  { id: 'rx', label: '05 rx', cx: 320, cy: 290 },
+  { id: 'deliver', label: '06 deliver', cx: 440, cy: 290 },
+  { id: 'follow', label: '07 follow-up', cx: 300, cy: 460 },
 ];
 
-// The event chips that pop as the comet passes — the platform's canonical event names.
+// Event chips that light up as the comet passes — the platform's canonical event names.
+// They stay lit once fired, so the journey accumulates an event log as you descend.
 const EVENTS = [
-  { node: 'qualify', text: 'patient.qualified', x: 100, y: 48 },
-  { node: 'pay', text: 'payment.captured', x: 280, y: 48 },
-  { node: 'visit', text: 'visit.completed', x: 440, y: 176 },
-  { node: 'rx', text: 'rx.prescribed', x: 300, y: 178 },
-  { node: 'deliver', text: 'shipment.updated', x: 140, y: 178 },
+  { node: 'qualify', text: 'patient.qualified', x: 420, y: 96 },
+  { node: 'pay', text: 'payment.captured', x: 280, y: 96 },
+  { node: 'visit', text: 'visit.completed', x: 160, y: 266 },
+  { node: 'rx', text: 'rx.prescribed', x: 320, y: 264 },
+  { node: 'deliver', text: 'shipment.updated', x: 440, y: 264 },
 ];
 
-// Serpentine pipeline: row 1 rightward, down, row 2 leftward (with the ECG jag),
-// down, row 3 rightward to the follow-up. pathLength=1000 normalizes dash math.
+// Tall serpentine, top-right to bottom: down from the POST chip, row 1 right-to-left,
+// down the left edge, row 2 left-to-right (with the ECG jag), down the right edge,
+// row 3 back to the follow-up. pathLength=1000 normalizes dash math.
 const PIPE =
-  'M40,70 H460 Q500,70 500,110 V160 Q500,200 460,200 H408 l-10,-24 l-10,40 l-8,-16 H120 Q80,200 80,240 V290 Q80,330 120,330 H300';
+  'M500,44 V90 Q500,120 470,120 H110 Q80,120 80,150 V260 Q80,290 110,290 H198 l10,-24 l10,40 l8,-16 H470 Q500,290 500,320 V430 Q500,460 470,460 H260';
 
-// The refill loop: follow-up arcs back up to the visit node.
-const LOOP = 'M260,330 Q600,318 448,212';
+// The refill loop: follow-up arcs back up the left side to the visit node.
+const LOOP = 'M300,460 Q40,430 152,302';
 ---
 
 <div class="hero-art" aria-hidden="true">
-  <svg class="ha-flow" viewBox="0 0 640 400" fill="none" preserveAspectRatio="xMidYMid meet">
+  <svg class="ha-flow" viewBox="0 0 640 535" fill="none" preserveAspectRatio="xMidYMid meet">
     <g class="ha-cycle">
-      {/* the pipe: faint track, drawn trail, and the traveling comet */}
+      {/* the pipe: faint track, scroll-drawn trail, and the traveling comet */}
       <path class="ha-track" d={PIPE} pathLength="1000"></path>
       <path class="ha-trail" d={PIPE} pathLength="1000"></path>
       <path class="ha-comet" d={PIPE} pathLength="1000"></path>
@@ -59,14 +59,20 @@ const LOOP = 'M260,330 Q600,318 448,212';
       {/* the refill loop back to the visit */}
       <path class="ha-loop-path" d={LOOP}></path>
       <circle class="ha-loop-dot" r="4"></circle>
-      <text class="ha-mono ha-event ha-event-loop" x="480" y="298" text-anchor="middle"
+      <text class="ha-mono ha-event ha-event-loop" x="120" y="400" text-anchor="middle"
         >order.titrated</text
       >
 
-      {/* the API call that starts it all */}
+      {/* the API call that starts it all — up top, under the hero CTAs */}
       <g class="ha-post">
-        <rect x="20" y="8" width="152" height="26" rx="7"></rect>
-        <text class="ha-mono ha-post-text" x="30" y="25">POST /v1/orders</text>
+        <rect x="430" y="8" width="152" height="26" rx="7"></rect>
+        <text class="ha-mono ha-post-text" x="440" y="25">POST /v1/orders</text>
+      </g>
+
+      {/* the journey's answer — the status read, at the bottom */}
+      <g class="ha-status">
+        <rect x="330" y="488" width="172" height="26" rx="7"></rect>
+        <text class="ha-mono ha-status-text" x="340" y="505">status: REFILL_DUE</text>
       </g>
 
       {/* journey nodes + their always-on step labels */}
@@ -81,7 +87,7 @@ const LOOP = 'M260,330 Q600,318 448,212';
         ))
       }
 
-      {/* event chips that pop as the comet passes */}
+      {/* event chips that accumulate as the comet passes */}
       {
         EVENTS.map((e) => (
           <text class={`ha-mono ha-event ha-event-${e.node}`} x={e.x} y={e.y} text-anchor="middle">
@@ -94,8 +100,8 @@ const LOOP = 'M260,330 Q600,318 448,212';
 </div>
 
 <style>
-  /* A centered block that sizes to its container's width at the diagram's own 640:400
-     aspect ratio — the diagram is the hero image now. */
+  /* A centered block that sizes to its container's width at the diagram's own 640:535
+     aspect ratio — a tall-but-dense descent, not a background. */
   .hero-art {
     position: relative;
     width: 100%;
@@ -129,7 +135,7 @@ const LOOP = 'M260,330 Q600,318 448,212';
     stroke-width: 2;
     opacity: 0.55;
     stroke-dasharray: 1000;
-    stroke-dashoffset: 1000; /* drawn on by GSAP */
+    stroke-dashoffset: 1000; /* drawn by scroll */
     will-change: stroke-dashoffset;
   }
   .ha-comet {
@@ -164,67 +170,96 @@ const LOOP = 'M260,330 Q600,318 448,212';
     font-family: var(--font-mono);
   }
   .ha-step {
-    font-size: 11px;
+    font-size: 12px;
     fill: var(--pl-ink-400);
     opacity: 0.75;
   }
   .ha-event {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     fill: var(--pl-teal-600);
-    opacity: 0; /* popped by GSAP as the comet passes */
+    opacity: 0; /* lit as the comet passes; stays lit */
   }
-  .ha-post rect {
+  .ha-post rect,
+  .ha-status rect {
     fill: var(--pl-surface);
     stroke: var(--pl-line);
     stroke-width: 1;
   }
   .ha-post-text {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     fill: var(--pl-purple-600);
   }
+  .ha-status-text {
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--pl-teal-600);
+  }
   .ha-post {
-    opacity: 0; /* faded in at cycle start */
+    opacity: 0; /* fades in at the very start of the scrub */
+  }
+  .ha-status {
+    opacity: 0; /* the journey's final beat */
   }
 </style>
 
 <script>
   import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
   const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const art = document.querySelector('.hero-art');
 
-  // Seconds after draw start when the comet front reaches each node — keep in sync
-  // with NODES in the template (same numbers, duplicated because template values
-  // don't reach the client script).
-  const NODE_TIMES: Array<[string, number]> = [
-    ['qualify', 0.36],
-    ['pay', 1.42],
-    ['verify', 2.37],
-    ['visit', 3.66],
-    ['rx', 4.83],
-    ['deliver', 5.77],
-    ['follow', 7.76],
+  // Same ids/coords as NODES in the template (duplicated — template values don't reach
+  // the client script). Times are NOT hand-tuned: each node's moment is found by
+  // sampling the path for the closest point.
+  const NODE_COORDS: Array<[string, number, number]> = [
+    ['qualify', 420, 120],
+    ['pay', 280, 120],
+    ['verify', 140, 120],
+    ['visit', 160, 290],
+    ['rx', 320, 290],
+    ['deliver', 440, 290],
+    ['follow', 300, 460],
   ];
   const EVENT_NODES = ['qualify', 'pay', 'visit', 'rx', 'deliver'];
 
-  const DRAW_AT = 0.6; // the POST chip lands first, then the pipe draws
-  const DRAW_DUR = 8;
-  const LOOP_AT = DRAW_AT + DRAW_DUR + 0.4; // the refill loop, after the pipe completes
+  const DRAW_AT = 0.3; // timeline units (scrubbed, so these are proportions of scroll)
+  const DRAW_DUR = 10;
+  const LOOP_AT = DRAW_AT + DRAW_DUR + 0.2;
 
   if (art) {
     const q = (sel: string) => art.querySelector(sel);
     const nodeEl = (id: string) => q(`.ha-node-${id}`);
+    const trail = q('.ha-trail') as SVGPathElement | null;
 
-    if (motionOk) {
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.9 });
+    /** Fraction (0–1) of the pipe's length nearest to a point — no hand-tuned timings. */
+    const fracAt = (cx: number, cy: number): number => {
+      if (!trail) return 0;
+      const total = trail.getTotalLength();
+      const SAMPLES = 600;
+      let best = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i <= SAMPLES; i++) {
+        const pt = trail.getPointAtLength((total * i) / SAMPLES);
+        const d = (pt.x - cx) ** 2 + (pt.y - cy) ** 2;
+        if (d < bestDist) {
+          bestDist = d;
+          best = i / SAMPLES;
+        }
+      }
+      return best;
+    };
 
-      // 1) The API call lands.
-      tl.fromTo('.ha-post', { opacity: 0, y: 6 }, { opacity: 0.9, y: 0, duration: 0.5 }, 0);
+    if (motionOk && trail) {
+      gsap.registerPlugin(ScrollTrigger);
+      const tl = gsap.timeline({ paused: true });
 
-      // 2) The pipe draws while the comet rides its front (both ease:none so the
-      //    node timings below stay exact).
+      // 1) The API call lands as the diagram enters the viewport.
+      tl.fromTo('.ha-post', { opacity: 0, y: 6 }, { opacity: 0.9, y: 0, duration: 0.4 }, 0);
+
+      // 2) The pipe draws with the scroll; the comet rides its front.
       tl.fromTo(
         '.ha-trail',
         { strokeDashoffset: 1000 },
@@ -236,27 +271,26 @@ const LOOP = 'M260,330 Q600,318 448,212';
         { strokeDashoffset: -970, duration: DRAW_DUR, ease: 'none' },
         DRAW_AT,
       );
-      tl.to('.ha-comet', { opacity: 0, duration: 0.35 }, DRAW_AT + DRAW_DUR);
+      tl.to('.ha-comet', { opacity: 0, duration: 0.3 }, DRAW_AT + DRAW_DUR);
 
-      // 3) Nodes pop as the front arrives; the real event names float up and fade.
-      // Fills switch via set() (GSAP can't interpolate var() colors) — the scale pop
-      // carries the motion. The t=0 set() restores the resting fill on every loop.
-      NODE_TIMES.forEach(([id, t]) => {
+      // 3) Nodes pop as the front arrives; events light and STAY lit — the journey
+      //    accumulates its event log as the reader descends. Fills switch via set()
+      //    (GSAP can't interpolate var() colors); set() reverses cleanly under scrub.
+      NODE_COORDS.forEach(([id, cx, cy]) => {
         const el = nodeEl(id);
         if (!el) return;
-        const at = DRAW_AT + t;
-        tl.set(el, { fill: 'var(--pl-paper)', stroke: 'var(--pl-purple-400)' }, 0);
+        const at = DRAW_AT + fracAt(cx, cy) * DRAW_DUR;
         tl.set(el, { fill: 'var(--pl-purple-500)', stroke: 'var(--pl-purple-500)' }, at);
         tl.fromTo(
           el,
           { scale: 1 },
           {
             keyframes: [
-              { scale: 1.55, duration: 0.18, ease: 'power2.out' },
-              { scale: 1, duration: 0.3, ease: 'power2.in' },
+              { scale: 1.6, duration: 0.15, ease: 'power2.out' },
+              { scale: 1, duration: 0.25, ease: 'power2.in' },
             ],
             transformOrigin: 'center',
-            duration: 0.48,
+            duration: 0.4,
           },
           at,
         );
@@ -264,42 +298,42 @@ const LOOP = 'M260,330 Q600,318 448,212';
           tl.fromTo(
             `.ha-event-${id}`,
             { opacity: 0, y: 8 },
-            { opacity: 0.95, y: 0, duration: 0.3 },
+            { opacity: 0.95, y: 0, duration: 0.35 },
             at + 0.05,
-          ).to(`.ha-event-${id}`, { opacity: 0, duration: 0.5 }, at + 2.1);
+          );
         }
       });
 
-      // 4) The refill loop: the dashed arc appears, a dot rides it back to the visit
-      //    node, order.titrated pops, and the visit re-fires — care is a cycle.
+      // 4) The refill loop: the dashed arc appears, a dot rides it back up to the
+      //    visit node, order.titrated lights — care is a cycle.
       const arc = q('.ha-loop-path') as SVGPathElement | null;
       const dot = q('.ha-loop-dot');
       if (arc && dot) {
         const len = arc.getTotalLength();
         const prog = { p: 0 };
-        tl.fromTo('.ha-loop-path', { opacity: 0 }, { opacity: 0.55, duration: 0.5 }, LOOP_AT);
-        tl.fromTo(dot, { opacity: 0 }, { opacity: 0.95, duration: 0.2 }, LOOP_AT + 0.3);
+        tl.fromTo('.ha-loop-path', { opacity: 0 }, { opacity: 0.55, duration: 0.4 }, LOOP_AT);
+        tl.fromTo(dot, { opacity: 0 }, { opacity: 0.95, duration: 0.15 }, LOOP_AT + 0.2);
         tl.fromTo(
           prog,
           { p: 0 },
           {
             p: 1,
-            duration: 1.8,
-            ease: 'power1.inOut',
+            duration: 1.2,
+            ease: 'none',
             onUpdate() {
               const pt = arc.getPointAtLength(prog.p * len);
               gsap.set(dot, { attr: { cx: pt.x, cy: pt.y } });
             },
           },
-          LOOP_AT + 0.3,
+          LOOP_AT + 0.2,
         );
-        tl.to(dot, { opacity: 0, duration: 0.25 }, LOOP_AT + 2.1);
+        tl.to(dot, { opacity: 0, duration: 0.2 }, LOOP_AT + 1.4);
         tl.fromTo(
           '.ha-event-loop',
           { opacity: 0, y: 8 },
           { opacity: 0.9, y: 0, duration: 0.3 },
-          LOOP_AT + 0.9,
-        ).to('.ha-event-loop', { opacity: 0, duration: 0.5 }, LOOP_AT + 2.6);
+          LOOP_AT + 0.7,
+        );
         const visit = nodeEl('visit');
         if (visit) {
           tl.fromTo(
@@ -307,26 +341,40 @@ const LOOP = 'M260,330 Q600,318 448,212';
             { scale: 1 },
             {
               keyframes: [
-                { scale: 1.55, duration: 0.18, ease: 'power2.out' },
-                { scale: 1, duration: 0.3, ease: 'power2.in' },
+                { scale: 1.6, duration: 0.15, ease: 'power2.out' },
+                { scale: 1, duration: 0.25, ease: 'power2.in' },
               ],
             },
-            LOOP_AT + 2.0,
+            LOOP_AT + 1.3,
           );
         }
       }
 
-      // 5) Hold the completed journey a beat, then fade the cycle out and repeat.
-      tl.set('.ha-cycle', { opacity: 1 }, 0);
-      tl.to('.ha-cycle', { opacity: 0, duration: 0.7 }, LOOP_AT + 3.4);
+      // 5) The bookend: the status read answers the POST.
+      tl.fromTo(
+        '.ha-status',
+        { opacity: 0, y: 6 },
+        { opacity: 0.95, y: 0, duration: 0.4 },
+        LOOP_AT + 1.6,
+      );
+
+      // Scrub the whole thing to scroll: the reader completes the journey by
+      // descending, and scrolling back up rewinds it.
+      ScrollTrigger.create({
+        animation: tl,
+        trigger: art,
+        start: 'top 82%',
+        end: 'bottom 45%',
+        scrub: 0.6,
+      });
     } else {
-      // Reduced motion: the completed pipeline as a still diagram — pipe drawn, nodes
-      // lit, refill loop visible, two event chips shown so the diagram reads as alive.
+      // Reduced motion: the completed journey as a still diagram.
       gsap.set('.ha-trail', { strokeDashoffset: 0, opacity: 0.45 });
       gsap.set('.ha-comet', { opacity: 0 });
       gsap.set('.ha-post', { opacity: 0.85 });
+      gsap.set('.ha-status', { opacity: 0.85 });
       gsap.set('.ha-loop-path', { opacity: 0.45 });
-      NODE_TIMES.forEach(([id]) => {
+      NODE_COORDS.forEach(([id]) => {
         const el = nodeEl(id);
         if (el) gsap.set(el, { fill: 'var(--pl-purple-500)', stroke: 'var(--pl-purple-500)' });
       });
