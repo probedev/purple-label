@@ -208,6 +208,10 @@ const panelModules = (planeId: string) => [
     color: var(--pl-purple-700);
   }
 
+  :global(:root[data-theme='dark']) .health-loop .hl-tab[aria-selected='true'] {
+    color: var(--pl-purple-500);
+  }
+
   /* Panels stack when JS is off; JS adds .js-ready to collapse to one at a time. */
   .health-loop.js-ready .hl-panel-inactive {
     display: none;

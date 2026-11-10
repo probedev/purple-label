@@ -1,39 +1,61 @@
 ---
 /**
- * MemberAppMock — the signature visual of the Nov 2026 refresh: a branded member "health
- * home" (score, health areas, biomarkers, protocol, order status) rendered inside a
- * `yourbrand.com` browser frame. It sells the white-label thesis in one glance: the same
- * platform, re-skinned per brand.
+ * MemberAppMock — the signature visual of the Nov 2026 refresh: a branded member app inside
+ * a `yourbrand.com` browser frame. It sells the white-label thesis in one glance — the same
+ * platform, used three different ways by three different brands.
  *
- * Theming: the mock brand's colors are CONTENT (fictional illustrative brands from
- * src/lib/solutions.ts, or the visitor's own input on /preview), not site design tokens, so
- * they ride in as CSS custom properties (--mb-primary / --mb-tint) on the root element and
- * are consumed only by this component's scoped CSS. Every neutral, radius, and type size
- * still comes from the design system.
+ * Screens (MockBrandTheme.screen — Gregg 2026-11-10: each rotating brand should highlight a
+ * different set of functionality, split by track):
+ *   health — health & fitness track: health score, wearable sync, biomarkers.
+ *   glp1   — GLP-1 weight-loss track: program week, weight progress, dose titration,
+ *            next dose, auto-refill, care-team message.
+ *   orders — peptide track: one order end to end — placed → ID verified → clinician
+ *            approved → compounded → cold-chain shipped → delivered.
+ *   trt    — TRT track: the hormone panel TRT is monitored on (total/free testosterone,
+ *            estradiol, hematocrit, PSA) baseline → week 8, the next lab kit, and the
+ *            vial-and-supplies shipment.
  *
- * Scripting hooks: [data-mb-name], [data-mb-mark], [data-mb-domain] text nodes and the
- * root's style vars are what /preview and the hero cycler rewrite. Pass `cycle` with a list
- * of brands to rotate them every few seconds (skipped under prefers-reduced-motion).
+ * Pass `brands` (2+) to stack slides in one grid cell (so every slide is exactly the same
+ * size) and crossfade between them, with clickable dots; or a single `brand` for a static
+ * mock. Auto-rotation pauses on hover/focus and is off under prefers-reduced-motion.
  *
- * All data is illustrative and labeled as such — never real member data.
+ * Theming: mock-brand colors are CONTENT (fictional brands from src/lib/solutions.ts, or the
+ * visitor's input on /preview), not site tokens — they ride in as --mb-primary / --mb-tint on
+ * each slide and are consumed only by this component's scoped CSS. Neutrals, radii, and type
+ * all come from the design system. All data is illustrative and labeled as such.
  */
 import { Icon } from 'astro-icon/components';
-import type { MockBrandTheme } from '../../lib/solutions';
+import type { MockBrandTheme, MockScreen } from '../../lib/solutions';
 
 interface Props {
-  brand: MockBrandTheme;
-  /** Rotate through these brands (hero use). */
-  cycle?: MockBrandTheme[];
-  /** Compact hides the biomarker table (for tight layouts). */
+  brand?: MockBrandTheme;
+  /** Two or more brands → rotating, same-size slides (hero use). */
+  brands?: MockBrandTheme[];
+  /** Compact trims the health screen's biomarker table (tight layouts). */
   compact?: boolean;
   id?: string;
   class?: string;
 }
 
-const { brand, cycle, compact = false, id, class: className = '' } = Astro.props;
-const domain = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.com';
-const style = `--mb-primary:${brand.primary};--mb-tint:${brand.tint}`;
+const { brand, brands, compact = false, id, class: className = '' } = Astro.props;
+const slides = brands && brands.length > 0 ? brands : brand ? [brand] : [];
+const rotating = slides.length > 1;
 
+const domain = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.com';
+const styleOf = (b: MockBrandTheme) => `--mb-primary:${b.primary};--mb-tint:${b.tint}`;
+const screenOf = (b: MockBrandTheme): MockScreen => b.screen ?? 'health';
+
+const TRACK: Record<MockScreen, { label: string; chip: string }> = {
+  health: { label: 'Health & fitness — score, wearables, and biomarkers', chip: 'Results ready' },
+  glp1: { label: 'GLP-1 weight loss — dosing, progress, and refills', chip: 'Week 12' },
+  orders: {
+    label: 'Peptides — one order, from ID check to cold-chain delivery',
+    chip: 'Order on its way',
+  },
+  trt: { label: 'TRT — monitoring labs, dosing, and vial delivery', chip: 'Labs back' },
+};
+
+// ── health ──
 const areas = [
   { label: 'Heart', grade: 'A' },
   { label: 'Metabolic', grade: 'B+' },
@@ -42,201 +64,529 @@ const areas = [
   { label: 'Nutrients', grade: 'C+' },
   { label: 'Sleep', grade: 'B' },
 ];
-
+const wearables = [
+  { icon: 'moon', label: 'Sleep', value: '7h 42m' },
+  { icon: 'activity', label: 'HRV', value: '64 ms' },
+  { icon: 'heart-pulse', label: 'Resting HR', value: '52' },
+  { icon: 'footprints', label: 'Steps', value: '9,812' },
+];
 const markers = [
   { name: 'ApoB', value: '78 mg/dL', status: 'optimal' },
   { name: 'HbA1c', value: '5.4 %', status: 'optimal' },
   { name: 'Free testosterone', value: '9.1 ng/dL', status: 'watch' },
   { name: 'Vitamin D', value: '24 ng/mL', status: 'low' },
 ] as const;
-
 const statusLabel = { optimal: 'Optimal', watch: 'Watch', low: 'Below range' } as const;
-
-const actions = [
-  { icon: 'sun', text: '15 min of morning daylight' },
-  { icon: 'pill', text: 'Vitamin D3 with breakfast' },
-  { icon: 'calendar-check', text: 'Retest hormones in 8 weeks' },
-];
-
 const score = 82;
 const circumference = 2 * Math.PI * 28;
 const dash = (score / 100) * circumference;
+
+// ── glp1 ── weight trend over 12 weeks (illustrative), drawn into a 240×64 box.
+const weights = [214, 212.6, 211, 209.2, 207.9, 205.8, 204.1, 202.7, 200.9, 199.2, 197.4, 195.6];
+const wMax = Math.max(...weights);
+const wMin = Math.min(...weights);
+const spark = weights
+  .map((w, i) => {
+    const x = (i / (weights.length - 1)) * 236 + 2;
+    const y = ((wMax - w) / (wMax - wMin)) * 56 + 4;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  })
+  .join(' ');
+const titration = 5;
+const titrationStep = 3;
+
+// ── orders ──
+const timeline = [
+  { icon: 'shopping-bag', label: 'Order placed', meta: 'Nov 3', state: 'done' },
+  { icon: 'id-card', label: 'Identity verified', meta: 'Nov 3', state: 'done' },
+  { icon: 'user-check', label: 'Approved by your clinician', meta: 'Nov 4', state: 'done' },
+  {
+    icon: 'flask-conical',
+    label: 'Compounded by a licensed pharmacy',
+    meta: 'Nov 5',
+    state: 'done',
+  },
+  {
+    icon: 'snowflake',
+    label: 'Shipped cold-chain',
+    meta: 'Insulated · temperature-monitored',
+    state: 'done',
+  },
+  { icon: 'truck', label: 'Out for delivery', meta: 'Today by 8 pm', state: 'current' },
+  { icon: 'package-check', label: 'Delivered', meta: '', state: 'next' },
+] as const;
+
+// ── trt ── baseline vs. week-8 monitoring panel (illustrative).
+const trtLabs = [
+  { name: 'Total testosterone', base: '312', now: '684', unit: 'ng/dL', status: 'optimal' },
+  { name: 'Free testosterone', base: '6.1', now: '14.8', unit: 'ng/dL', status: 'optimal' },
+  { name: 'Estradiol', base: '22', now: '41', unit: 'pg/mL', status: 'watch' },
+  { name: 'Hematocrit', base: '44.1', now: '47.2', unit: '%', status: 'optimal' },
+  { name: 'PSA', base: '0.7', now: '0.8', unit: 'ng/mL', status: 'optimal' },
+] as const;
+const trtStatus = { optimal: 'In range', watch: 'Watch' } as const;
+const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
 ---
 
 <figure
   id={id}
   class:list={['member-app', className]}
-  style={style}
   data-member-app
-  data-cycle={cycle ? JSON.stringify(cycle) : undefined}
+  data-rotating={rotating ? '' : undefined}
 >
-  <div class="overflow-hidden rounded-xl border border-line bg-surface shadow-md">
-    {/* Browser chrome */}
-    <div class="flex items-center gap-3 border-b border-line bg-surface-sunken px-4 py-2.5">
-      <span class="flex gap-1.5" aria-hidden="true">
-        <span class="size-2.5 rounded-full bg-line"></span>
-        <span class="size-2.5 rounded-full bg-line"></span>
-        <span class="size-2.5 rounded-full bg-line"></span>
-      </span>
-      <span
-        class="flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-surface px-3 py-1 font-mono text-xs text-ink-400"
-      >
-        <Icon name="lucide:lock" class="icon size-3 shrink-0" />
-        <span class="truncate">app.<span data-mb-domain>{domain(brand.name)}</span></span>
-      </span>
-    </div>
-
-    <div class="p-4 sm:p-6">
-      {/* App header */}
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex min-w-0 items-center gap-2.5">
-          <span
-            class="mb-mark grid size-8 shrink-0 place-items-center rounded-md text-sm font-bold"
+  <div class="mb-stack grid">
+    {
+      slides.map((b, i) => {
+        const screen = screenOf(b);
+        return (
+          <div
+            class:list={['mb-slide col-start-1 row-start-1', i === 0 && 'is-active']}
+            style={styleOf(b)}
+            data-mb-slide={i}
+            data-track={TRACK[screen].label}
+            aria-hidden={i === 0 ? undefined : 'true'}
           >
-            <span data-mb-mark>{brand.mark}</span>
-          </span>
-          <span class="truncate font-display text-base font-semibold text-ink-900" data-mb-name
-            >{brand.name}</span
-          >
-        </div>
-        <span class="mb-chip rounded-full px-2.5 py-1 text-xs font-semibold">Results ready</span>
-      </div>
-
-      {/* Score — full-width row: ring + number left, health-area grades right */}
-      <div class="mt-5 rounded-lg border border-line p-4">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-          <div class="flex shrink-0 items-center gap-4">
-            <svg viewBox="0 0 64 64" class="size-20 shrink-0 -rotate-90" aria-hidden="true">
-              <circle cx="32" cy="32" r="28" fill="none" class="mb-ring-track" stroke-width="6"
-              ></circle>
-              <circle
-                cx="32"
-                cy="32"
-                r="28"
-                fill="none"
-                class="mb-ring"
-                stroke-width="6"
-                stroke-linecap="round"
-                stroke-dasharray={`${dash} ${circumference}`}></circle>
-            </svg>
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
-                <span data-mb-name-short>{brand.name.split(' ')[0]}</span> Score
-              </p>
-              <p class="font-display text-h2 text-ink-900">{score}</p>
-              <p class="text-xs text-ink-400">+6 since last panel</p>
-            </div>
-          </div>
-          <ul class="grid flex-1 grid-cols-2 gap-1.5">
-            {
-              areas.map((a) => (
-                <li class="flex items-center justify-between gap-2 rounded-md bg-surface-sunken px-2.5 py-1.5">
-                  <span class="text-xs text-ink-500">{a.label}</span>
-                  <span class="text-sm font-semibold text-ink-900">{a.grade}</span>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </div>
-
-      {/* Protocol + order */}
-      <div class="mt-4 grid gap-4 md:grid-cols-5">
-        <div class="rounded-lg border border-line p-4 md:col-span-3">
-          <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
-            Today’s protocol
-          </p>
-          <ul class="mt-3 flex flex-col gap-2">
-            {
-              actions.map((a) => (
-                <li class="flex items-center gap-2.5 text-sm text-ink-700">
-                  <span class="mb-tint grid size-7 shrink-0 place-items-center rounded-md">
-                    <Icon name={`lucide:${a.icon}`} class="icon size-4" />
+            <div class="h-full overflow-hidden rounded-xl border border-line bg-surface shadow-md">
+              {/* Browser chrome */}
+              <div class="flex items-center gap-3 border-b border-line bg-surface-sunken px-4 py-2.5">
+                <span class="flex gap-1.5" aria-hidden="true">
+                  <span class="size-2.5 rounded-full bg-line" />
+                  <span class="size-2.5 rounded-full bg-line" />
+                  <span class="size-2.5 rounded-full bg-line" />
+                </span>
+                <span class="flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-surface px-3 py-1 font-mono text-xs text-ink-400">
+                  <Icon name="lucide:lock" class="icon size-3 shrink-0" />
+                  <span class="truncate">
+                    app.<span data-mb-domain>{domain(b.name)}</span>
                   </span>
-                  {a.text}
-                </li>
-              ))
-            }
-          </ul>
-          <p class="mt-3 flex items-center gap-1.5 text-xs text-ink-400">
-            <Icon name="lucide:user-check" class="icon size-3.5" />
-            Reviewed by your care team
-          </p>
-        </div>
-        <div
-          class="flex flex-col justify-between gap-3 rounded-lg border border-line p-4 md:col-span-2"
-        >
-          <div class="flex items-start gap-3">
-            <Icon name="lucide:package-check" class="icon mt-0.5 size-5 shrink-0 text-success" />
-            <div>
-              <p class="text-sm font-semibold text-ink-900">Your refill has shipped</p>
-              <p class="mt-0.5 text-xs text-ink-400">Arrives Thursday</p>
-            </div>
-          </div>
-          <span class="mb-button self-start rounded-md px-3 py-1.5 text-xs font-semibold"
-            >Track order</span
-          >
-        </div>
-      </div>
+                </span>
+              </div>
 
-      {
-        !compact && (
-          <div class="mt-4 rounded-lg border border-line">
-            <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
-              <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
-                Biomarkers
-              </p>
-              <p class="text-xs text-ink-400">84 analyzed</p>
-            </div>
-            <ul class="divide-y divide-line">
-              {markers.map((m) => (
-                <li class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
-                  <span class="text-ink-700">{m.name}</span>
-                  <span class="flex items-center gap-3">
-                    <span class="font-mono text-xs text-ink-500">{m.value}</span>
-                    <span
-                      class:list={['mb-status rounded-full px-2 py-0.5 text-xs', `is-${m.status}`]}
-                    >
-                      {statusLabel[m.status]}
+              <div class="p-4 sm:p-6">
+                {/* App header */}
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex min-w-0 items-center gap-2.5">
+                    <span class="mb-mark grid size-8 shrink-0 place-items-center rounded-md text-sm font-bold">
+                      <span data-mb-mark>{b.mark}</span>
                     </span>
+                    <span
+                      class="truncate font-display text-base font-semibold text-ink-900"
+                      data-mb-name
+                    >
+                      {b.name}
+                    </span>
+                  </div>
+                  <span class="mb-chip shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold">
+                    {TRACK[screen].chip}
                   </span>
-                </li>
-              ))}
-            </ul>
+                </div>
+
+                {screen === 'health' && (
+                  <>
+                    {/* Score + health areas */}
+                    <div class="mt-5 rounded-lg border border-line p-4">
+                      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                        <div class="flex shrink-0 items-center gap-4">
+                          <svg
+                            viewBox="0 0 64 64"
+                            class="size-20 shrink-0 -rotate-90"
+                            aria-hidden="true"
+                          >
+                            <circle
+                              cx="32"
+                              cy="32"
+                              r="28"
+                              fill="none"
+                              class="mb-ring-track"
+                              stroke-width="6"
+                            />
+                            <circle
+                              cx="32"
+                              cy="32"
+                              r="28"
+                              fill="none"
+                              class="mb-ring"
+                              stroke-width="6"
+                              stroke-linecap="round"
+                              stroke-dasharray={`${dash} ${circumference}`}
+                            />
+                          </svg>
+                          <div>
+                            <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                              <span data-mb-name-short>{b.name.split(' ')[0]}</span> Score
+                            </p>
+                            <p class="font-display text-h2 text-ink-900">{score}</p>
+                            <p class="text-xs text-ink-400">+6 since last panel</p>
+                          </div>
+                        </div>
+                        <ul class="grid flex-1 grid-cols-2 gap-1.5">
+                          {areas.map((a) => (
+                            <li class="flex items-center justify-between gap-2 rounded-md bg-surface-sunken px-2.5 py-1.5">
+                              <span class="text-xs text-ink-500">{a.label}</span>
+                              <span class="text-sm font-semibold text-ink-900">{a.grade}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* Wearables */}
+                    <div class="mt-4 rounded-lg border border-line p-4">
+                      <div class="flex items-center justify-between gap-3">
+                        <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                          Synced from your ring
+                        </p>
+                        <p class="text-xs text-ink-400">Today, 6:12 am</p>
+                      </div>
+                      <ul class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        {wearables.map((w) => (
+                          <li class="flex items-center gap-2.5">
+                            <span class="mb-tint grid size-8 shrink-0 place-items-center rounded-md">
+                              <Icon name={`lucide:${w.icon}`} class="icon size-4" />
+                            </span>
+                            <span>
+                              <span class="block text-xs text-ink-400">{w.label}</span>
+                              <span class="block text-sm font-semibold text-ink-900">
+                                {w.value}
+                              </span>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Biomarkers */}
+                    <div class="mt-4 rounded-lg border border-line">
+                      <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
+                        <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                          Biomarkers
+                        </p>
+                        <p class="text-xs text-ink-400">84 analyzed</p>
+                      </div>
+                      <ul class="divide-y divide-line">
+                        {(compact ? markers.slice(0, 2) : markers).map((m) => (
+                          <li class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
+                            <span class="text-ink-700">{m.name}</span>
+                            <span class="flex items-center gap-3">
+                              <span class="font-mono text-xs text-ink-500">{m.value}</span>
+                              <span
+                                class:list={[
+                                  'mb-status rounded-full px-2 py-0.5 text-xs',
+                                  `is-${m.status}`,
+                                ]}
+                              >
+                                {statusLabel[m.status]}
+                              </span>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                {screen === 'glp1' && (
+                  <>
+                    {/* Progress */}
+                    <div class="mt-5 rounded-lg border border-line p-4">
+                      <div class="flex items-start justify-between gap-4">
+                        <div>
+                          <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                            Your progress
+                          </p>
+                          <p class="mt-1 font-display text-h2 text-ink-900">−18.4 lb</p>
+                          <p class="text-xs text-ink-400">since you started · 12 weeks</p>
+                        </div>
+                        <span class="mb-chip rounded-full px-2.5 py-1 text-xs font-semibold">
+                          On track
+                        </span>
+                      </div>
+                      <svg
+                        viewBox="0 0 240 64"
+                        preserveAspectRatio="none"
+                        class="mt-4 h-16 w-full"
+                        aria-hidden="true"
+                      >
+                        <polyline
+                          points={spark}
+                          fill="none"
+                          class="mb-line"
+                          stroke-width="2.5"
+                          vector-effect="non-scaling-stroke"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                      <p class="mt-1 flex items-center gap-1.5 text-xs text-ink-400">
+                        <Icon name="lucide:scale" class="icon size-3.5" />
+                        Weigh-ins synced from your smart scale
+                      </p>
+                    </div>
+
+                    <div class="mt-4 grid gap-4 md:grid-cols-2">
+                      {/* Dose */}
+                      <div class="rounded-lg border border-line p-4">
+                        <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                          Your dose
+                        </p>
+                        <p class="mt-2 text-sm font-semibold text-ink-900">1.0 mg · weekly</p>
+                        <div class="mt-3 flex gap-1" aria-hidden="true">
+                          {Array.from({ length: titration }, (_, i) => (
+                            <span
+                              class:list={[
+                                'h-1.5 flex-1 rounded-full',
+                                i < titrationStep ? 'mb-fill' : 'bg-surface-sunken',
+                              ]}
+                            />
+                          ))}
+                        </div>
+                        <p class="mt-2 text-xs text-ink-400">
+                          Titration step {titrationStep} of {titration}
+                        </p>
+                        <p class="mt-3 flex items-center gap-1.5 text-xs text-ink-500">
+                          <Icon name="lucide:syringe" class="icon size-3.5" />
+                          Next dose Thursday
+                        </p>
+                      </div>
+                      {/* Refill */}
+                      <div class="flex flex-col justify-between gap-3 rounded-lg border border-line p-4">
+                        <div>
+                          <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                            Next refill
+                          </p>
+                          <p class="mt-2 text-sm font-semibold text-ink-900">Ships Nov 18</p>
+                          <p class="mt-0.5 text-xs text-ink-400">Auto-renews · 4-week supply</p>
+                        </div>
+                        <span class="mb-button self-start rounded-md px-3 py-1.5 text-xs font-semibold">
+                          Manage plan
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Care team */}
+                    <div class="mt-4 flex items-start gap-3 rounded-lg border border-line p-4">
+                      <span class="mb-tint grid size-8 shrink-0 place-items-center rounded-full">
+                        <Icon name="lucide:stethoscope" class="icon size-4" />
+                      </span>
+                      <div class="min-w-0">
+                        <p class="text-xs text-ink-400">Your clinician · 2h ago</p>
+                        <p class="mt-1 text-sm text-ink-700">
+                          Great progress this month. We’ll hold at 1.0 mg and check in again after
+                          your next refill.
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {screen === 'orders' && (
+                  <>
+                    <div class="mt-5 flex items-center justify-between gap-3 rounded-lg border border-line p-4">
+                      <div class="min-w-0">
+                        <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                          Order #PL-20418
+                        </p>
+                        <p class="mt-1 text-sm font-semibold text-ink-900">
+                          Peptide protocol · 30-day supply
+                        </p>
+                      </div>
+                      <span class="mb-button shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold">
+                        Track
+                      </span>
+                    </div>
+                    <ol class="mt-4 rounded-lg border border-line px-4 py-3">
+                      {timeline.map((t, i) => (
+                        <li class="relative flex items-start gap-3 py-1.5">
+                          {i < timeline.length - 1 && (
+                            <span
+                              class:list={[
+                                'absolute left-3.5 top-9 h-full w-px -translate-x-1/2',
+                                t.state === 'done' ? 'mb-fill' : 'bg-line',
+                              ]}
+                              aria-hidden="true"
+                            />
+                          )}
+                          <span
+                            class:list={[
+                              'relative grid size-7 shrink-0 place-items-center rounded-full',
+                              t.state === 'done' && 'mb-tint',
+                              t.state === 'current' && 'mb-mark',
+                              t.state === 'next' && 'border border-line bg-surface text-ink-300',
+                            ]}
+                          >
+                            <Icon name={`lucide:${t.icon}`} class="icon size-3.5" />
+                          </span>
+                          <span class="min-w-0 pt-0.5">
+                            <span
+                              class:list={[
+                                'block text-sm',
+                                t.state === 'next' ? 'text-ink-400' : 'font-semibold text-ink-900',
+                              ]}
+                            >
+                              {t.label}
+                            </span>
+                            {t.meta && <span class="block text-xs text-ink-400">{t.meta}</span>}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                    <p class="mt-3 flex items-center gap-1.5 text-xs text-ink-400">
+                      <Icon name="lucide:calendar-clock" class="icon size-3.5" />
+                      Refill due Dec 3 — we’ll remind you a week before
+                    </p>
+                  </>
+                )}
+
+                {screen === 'trt' && (
+                  <>
+                    {/* Monitoring panel */}
+                    <div class="mt-5 rounded-lg border border-line">
+                      <div class="flex items-center justify-between gap-3 border-b border-line px-4 py-2.5">
+                        <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                          Your TRT labs
+                        </p>
+                        <p class="text-xs text-ink-400">Baseline → week 8</p>
+                      </div>
+                      <ul class="divide-y divide-line">
+                        {trtLabs.map((l) => (
+                          <li class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
+                            <span class="min-w-0 truncate text-ink-700">{l.name}</span>
+                            <span class="flex shrink-0 items-center gap-3">
+                              <span class="font-mono text-xs text-ink-400">
+                                {l.base} → <span class="text-ink-900">{l.now}</span> {l.unit}
+                              </span>
+                              <span
+                                class:list={[
+                                  'mb-status rounded-full px-2 py-0.5 text-xs',
+                                  `is-${l.status}`,
+                                ]}
+                              >
+                                {trtStatus[l.status]}
+                              </span>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p class="flex items-center gap-1.5 border-t border-line px-4 py-2.5 text-xs text-ink-400">
+                        <Icon name="lucide:user-check" class="icon size-3.5" />
+                        Reviewed by your clinician · dose unchanged
+                      </p>
+                    </div>
+
+                    <div class="mt-4 grid gap-4 md:grid-cols-5">
+                      {/* Vial shipment */}
+                      <div class="rounded-lg border border-line p-4 md:col-span-3">
+                        <div class="flex items-start justify-between gap-3">
+                          <div>
+                            <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                              Your shipment
+                            </p>
+                            <p class="mt-1 text-sm font-semibold text-ink-900">
+                              Shipped · arrives Friday
+                            </p>
+                          </div>
+                          <Icon
+                            name="lucide:package-check"
+                            class="icon size-5 shrink-0 text-success"
+                          />
+                        </div>
+                        <ul class="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5">
+                          {trtKit.map((k) => (
+                            <li class="flex items-center gap-1.5 text-xs text-ink-500">
+                              <Icon
+                                name="lucide:check"
+                                class="icon size-3.5 shrink-0 text-success"
+                              />
+                              {k}
+                            </li>
+                          ))}
+                        </ul>
+                        <p class="mt-3 text-xs text-ink-400">
+                          Discreet, tamper-evident packaging · signature on delivery
+                        </p>
+                      </div>
+                      {/* Next lab */}
+                      <div class="flex flex-col justify-between gap-3 rounded-lg border border-line p-4 md:col-span-2">
+                        <div>
+                          <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                            Next lab
+                          </p>
+                          <p class="mt-1 text-sm font-semibold text-ink-900">Week 12 panel</p>
+                          <p class="mt-0.5 text-xs text-ink-400">At-home kit ships Dec 1</p>
+                        </div>
+                        <span class="mb-button self-start rounded-md px-3 py-1.5 text-xs font-semibold">
+                          Book a draw
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-        )
-      }
-    </div>
+        );
+      })
+    }
   </div>
-  <figcaption class="mt-3 text-center text-xs text-ink-300">
-    Illustrative member experience — fictional brand and sample data.
+
+  <figcaption class="mt-3 flex flex-col items-center gap-2 text-center">
+    {
+      rotating && (
+        <span class="flex items-center gap-2" role="group" aria-label="Example brands">
+          {slides.map((b, i) => (
+            <button
+              type="button"
+              class:list={['mb-dot', i === 0 && 'is-active']}
+              data-mb-dot={i}
+              aria-label={`Show ${b.name}`}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            />
+          ))}
+        </span>
+      )
+    }
+    <span class="text-xs font-medium text-ink-500" data-mb-track
+      >{rotating ? TRACK[screenOf(slides[0])].label : ''}</span
+    >
+    <span class="text-xs text-ink-300"
+      >Illustrative member experience — fictional brands and sample data.</span
+    >
   </figcaption>
 </figure>
 
 <style>
   /* Brand colors are mock-brand content (see header comment); neutrals stay tokens. */
-  .member-app {
+  .member-app .mb-slide {
     --mb-primary: var(--pl-purple-600);
     --mb-tint: var(--pl-purple-50);
+
+    transition:
+      opacity 0.5s ease,
+      visibility 0.5s ease;
+  }
+
+  .member-app[data-rotating] .mb-slide:not(.is-active) {
+    opacity: 0;
+    visibility: hidden;
   }
 
   .member-app :where(.mb-mark, .mb-button) {
     background: var(--mb-primary);
     color: #fff;
-    transition: background-color 0.4s ease;
   }
 
   .member-app :where(.mb-chip, .mb-tint) {
     background: var(--mb-tint);
     color: var(--mb-primary);
-    transition:
-      background-color 0.4s ease,
-      color 0.4s ease;
   }
 
-  .member-app .mb-ring {
+  .member-app .mb-fill {
+    background: var(--mb-primary);
+  }
+
+  .member-app .mb-ring,
+  .member-app .mb-line {
     stroke: var(--mb-primary);
-    transition: stroke 0.4s ease;
   }
 
   .member-app .mb-ring-track {
@@ -258,6 +608,33 @@ const dash = (score / 100) * circumference;
     color: var(--pl-danger);
   }
 
+  .member-app .mb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--pl-line);
+    transition:
+      width 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .member-app .mb-dot.is-active {
+    width: 22px;
+    background: var(--pl-purple-500);
+  }
+
+  .member-app .mb-dot:focus-visible {
+    outline: 2px solid var(--pl-purple-500);
+    outline-offset: 2px;
+  }
+
+  /* /preview re-skins live — keep that change smooth. */
+  .member-app[data-live] :where(.mb-mark, .mb-button, .mb-chip, .mb-tint, .mb-fill) {
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
   /* In dark mode the mock brand tint would glare; mix it toward the surface. */
   :global(:root[data-theme='dark']) .member-app :where(.mb-chip, .mb-tint) {
     background: color-mix(in srgb, var(--mb-primary) 22%, var(--pl-surface));
@@ -265,8 +642,9 @@ const dash = (score / 100) * circumference;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .member-app * {
-      transition: none !important;
+    .member-app .mb-slide,
+    .member-app .mb-dot {
+      transition: none;
     }
   }
 </style>
@@ -276,10 +654,13 @@ const dash = (score / 100) * circumference;
 
   const domainOf = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.com';
 
-  /** Re-skin one mock in place. Exported on window for /preview. */
+  /** Re-skin every slide of one mock in place. Exposed on window for /preview. */
   function applyBrand(root: HTMLElement, b: MockBrandTheme) {
-    root.style.setProperty('--mb-primary', b.primary);
-    root.style.setProperty('--mb-tint', b.tint);
+    root.setAttribute('data-live', '');
+    root.querySelectorAll<HTMLElement>('[data-mb-slide]').forEach((slide) => {
+      slide.style.setProperty('--mb-primary', b.primary);
+      slide.style.setProperty('--mb-tint', b.tint);
+    });
     root.querySelectorAll('[data-mb-name]').forEach((n) => (n.textContent = b.name));
     root
       .querySelectorAll('[data-mb-name-short]')
@@ -287,25 +668,48 @@ const dash = (score / 100) * circumference;
     root.querySelectorAll('[data-mb-mark]').forEach((n) => (n.textContent = b.mark));
     root.querySelectorAll('[data-mb-domain]').forEach((n) => (n.textContent = domainOf(b.name)));
   }
-
   (window as unknown as { plApplyBrand: typeof applyBrand }).plApplyBrand = applyBrand;
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  document.querySelectorAll<HTMLElement>('[data-member-app][data-cycle]').forEach((root) => {
-    if (reduce) return;
-    const brands = JSON.parse(root.dataset.cycle ?? '[]') as MockBrandTheme[];
-    if (brands.length < 2) return;
-    let i = 0;
+
+  document.querySelectorAll<HTMLElement>('[data-member-app][data-rotating]').forEach((root) => {
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-mb-slide]')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-mb-dot]')];
+    const track = root.querySelector('[data-mb-track]');
+    let current = 0;
     let timer = 0;
-    const start = () => {
-      timer = window.setInterval(() => {
-        i = (i + 1) % brands.length;
-        applyBrand(root, brands[i]);
-      }, 3600);
+
+    const show = (i: number) => {
+      current = (i + slides.length) % slides.length;
+      slides.forEach((s, j) => {
+        const on = j === current;
+        s.classList.toggle('is-active', on);
+        if (on) s.removeAttribute('aria-hidden');
+        else s.setAttribute('aria-hidden', 'true');
+      });
+      dots.forEach((d, j) => {
+        d.classList.toggle('is-active', j === current);
+        d.setAttribute('aria-pressed', String(j === current));
+      });
+      if (track) track.textContent = slides[current].dataset.track ?? '';
     };
-    // Pause while hovered so a reader can study one brand.
-    root.addEventListener('mouseenter', () => window.clearInterval(timer));
+
+    const stop = () => window.clearInterval(timer);
+    const start = () => {
+      if (reduce) return;
+      stop();
+      timer = window.setInterval(() => show(current + 1), 5000);
+    };
+
+    dots.forEach((d, i) =>
+      d.addEventListener('click', () => {
+        show(i);
+        start();
+      }),
+    );
+    root.addEventListener('mouseenter', stop);
     root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
     start();
   });
 </script>

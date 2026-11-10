@@ -113,6 +113,12 @@
   --pl-ink-300: #6a6480;
   --pl-line: #271f38;
   --pl-warning-50: #2a1d0a; /* dark amber surface — optional-step tint */
+  /* Purple tints become deep plum wells on dark (Nov 2026: tinted surfaces stayed pastel
+     while ink flipped light, hiding headings). 300+ stay put — the always-dark footer uses
+     purple-300 as a light hover color. */
+  --pl-purple-50: #1d1430;
+  --pl-purple-100: #261a3f;
+  --pl-purple-200: #3a2760;
   /* Purple brightens slightly to hold contrast on dark */
   --pl-purple-500: #a78bfa;
   --pl-purple-600: #8b5cf6;

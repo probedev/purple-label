@@ -10,6 +10,16 @@
  * properties on the mock only.
  */
 
+/**
+ * Which member-app screen a mock brand shows (Gregg 2026-11-10: each rotating brand
+ * highlights a different track of the same toolset).
+ *   health — health & fitness: score, wearables, biomarkers
+ *   glp1   — GLP-1 weight loss: progress, dose titration, refills, care team
+ *   orders — peptides: one order from ID check to cold-chain delivery
+ *   trt    — TRT: hormone lab panel baseline → follow-up, next lab, vial shipment
+ */
+export type MockScreen = 'health' | 'glp1' | 'orders' | 'trt';
+
 export interface MockBrandTheme {
   /** Fictional brand name shown in the member-app mock. */
   name: string;
@@ -19,6 +29,8 @@ export interface MockBrandTheme {
   tint: string;
   /** Short wordmark initials for the mock logo tile. */
   mark: string;
+  /** Member-app screen to show (defaults to 'health'). */
+  screen?: MockScreen;
 }
 
 export interface Solution {
@@ -76,7 +88,13 @@ export const SOLUTIONS: Solution[] = [
     programs: ['weight-loss', 'trt', 'hrt', 'mens-health', 'womens-health'],
     launchStory:
       'A weight-loss brand adds a baseline metabolic panel at signup, connects members’ scales and CGMs, scores their progress, and adjusts protocols — and titration — as results come in.',
-    example: { name: 'Northline Health', primary: '#2563eb', tint: '#e8effd', mark: 'N' },
+    example: {
+      name: 'Northline Health',
+      primary: '#2563eb',
+      tint: '#e8effd',
+      mark: 'N',
+      screen: 'glp1',
+    },
     faqs: [
       {
         q: 'Can we keep our existing storefront?',
@@ -162,7 +180,13 @@ export const SOLUTIONS: Solution[] = [
     programs: ['peptides', 'hrt', 'trt', 'weight-loss', 'hair-skin'],
     launchStory:
       'A longevity clinic launches a digital membership tier — quarterly at-home labs, a clinician-reviewed protocol, peptide and hormone programs, and messaging — for patients nationwide.',
-    example: { name: 'Lumen Longevity', primary: '#0f766e', tint: '#e1f2ef', mark: 'L' },
+    example: {
+      name: 'Lumen Longevity',
+      primary: '#0f766e',
+      tint: '#e1f2ef',
+      mark: 'L',
+      screen: 'orders',
+    },
     faqs: [
       {
         q: 'Can our own providers deliver care?',
@@ -318,7 +342,7 @@ export const SOLUTIONS: Solution[] = [
     programs: ['weight-loss', 'trt', 'hrt', 'peptides'],
     launchStory:
       'A 503A compounder launches a branded weight-loss and hormone brand — intake, clinician review, labs, and refills — fulfilling its own prescriptions.',
-    example: { name: 'Keystone Rx', primary: '#7c3aed', tint: '#f0e9fd', mark: 'K' },
+    example: { name: 'Keystone Rx', primary: '#7c3aed', tint: '#f0e9fd', mark: 'K', screen: 'trt' },
     faqs: [
       {
         q: 'Can we fulfill our own prescriptions?',
@@ -330,9 +354,22 @@ export const SOLUTIONS: Solution[] = [
 
 export const solutionBySlug = (slug: string) => SOLUTIONS.find((s) => s.slug === slug);
 
-/** Default mock brand for the home hero cycle. */
+/** Illustrative TRT brand for the hero rotation (men's health track). */
+export const TRT_MOCK_BRAND: MockBrandTheme = {
+  name: 'Ironwood Men’s Health',
+  primary: '#334155',
+  tint: '#e9edf2',
+  mark: 'I',
+  screen: 'trt',
+};
+
+/**
+ * The home hero rotation: four illustrative brands, four tracks, one toolset —
+ * health & fitness, GLP-1 weight loss, peptides, and TRT.
+ */
 export const HERO_MOCK_BRANDS: MockBrandTheme[] = [
-  SOLUTIONS[1].example,
-  SOLUTIONS[2].example,
-  SOLUTIONS[0].example,
+  SOLUTIONS[1].example, // Peak Fitness Health — health
+  SOLUTIONS[0].example, // Northline Health — glp1
+  SOLUTIONS[2].example, // Lumen Longevity — orders (peptides)
+  TRT_MOCK_BRAND, // Ironwood Men's Health — trt
 ];

@@ -214,7 +214,7 @@ const homeFaqs = [
         </ul>
       </div>
       <div class="lg:col-span-6">
-        <MemberAppMock brand={HERO_MOCK_BRANDS[0]} cycle={HERO_MOCK_BRANDS} />
+        <MemberAppMock brands={HERO_MOCK_BRANDS} />
       </div>
     </div>
   </Section>
@@ -331,7 +331,7 @@ const homeFaqs = [
                   scope="col"
                   class:list={[
                     'p-4 font-display text-sm font-semibold',
-                    i === 2 ? 'bg-purple-50 text-purple-700' : 'text-ink-700',
+                    i === 2 ? 'bg-purple-50 text-purple-700 dark:text-purple-500' : 'text-ink-700',
                   ]}
                 >
                   {c}
@@ -351,7 +351,9 @@ const homeFaqs = [
                   <td
                     class:list={[
                       'p-4',
-                      i === 2 ? 'bg-purple-50 font-semibold text-purple-700' : 'text-ink-500',
+                      i === 2
+                        ? 'bg-purple-50 font-semibold text-purple-700 dark:text-purple-500'
+                        : 'text-ink-500',
                     ]}
                   >
                     {cell === '✓' ? (
@@ -398,7 +400,11 @@ const homeFaqs = [
         </ul>
       </div>
       <div class="rounded-lg border border-purple-200 bg-purple-50 p-6 sm:p-8">
-        <p class="text-xs font-semibold uppercase tracking-eyebrow text-purple-700">We run</p>
+        <p
+          class="text-xs font-semibold uppercase tracking-eyebrow text-purple-700 dark:text-purple-500"
+        >
+          We run
+        </p>
         <ul class="mt-5 flex flex-col gap-3">
           {
             weRun.map((t) => (
