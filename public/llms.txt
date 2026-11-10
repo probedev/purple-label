@@ -1,0 +1,20 @@
+# Purple Label MD
+
+> The branded digital health care experience. Purple Label MD is a white-label health platform: brands launch a complete consumer health experience — labs and biomarkers, wearables, a longitudinal health record, insights and a branded health score, clinician-reviewed protocols, licensed clinicians and e-prescribing, 503A/503B pharmacy fulfillment, a branded member app, payments, and operations — under their own name. Independent licensed clinicians make every clinical decision; the brand owns the member relationship and data.
+
+## Start here
+- [Home](https://purplelabelmd.com/): what the platform is and who it is for
+- [Platform](https://purplelabelmd.com/platform): the health loop — Know, Understand, Act, Own it
+- [Solutions](https://purplelabelmd.com/solutions): DTC health brands, gyms, clinics and med spas, employers, creators, wellness brands, pharmacies
+- [Care programs](https://purplelabelmd.com/programs): weight loss, TRT, HRT, men's and women's health, peptides, hair and skin, labs
+- [Pricing](https://purplelabelmd.com/pricing): Platform, Managed, and Enterprise
+- [Managed](https://purplelabelmd.com/managed): we build and run it for you
+
+## Developers
+- [Developer platform](https://purplelabelmd.com/developers): API, webhooks, front-end options, agent tooling
+- [Documentation](https://docs.purplelabelmd.com): guides and the full API reference
+- [Architecture](https://purplelabelmd.com/architecture): the durable member journey
+
+## Trust
+- [Privacy & Security](https://purplelabelmd.com/security)
+- [LegitScript](https://purplelabelmd.com/legitscript)

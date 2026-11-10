@@ -1,0 +1,63 @@
+---
+/**
+ * Solutions hub `/solutions` — every audience that can launch a branded digital health care
+ * experience on Purple Label, plus the two launch models (Nov 2026 refresh).
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+import { SOLUTIONS } from '../../lib/solutions';
+import { CTA } from '../../lib/nav';
+---
+
+<PageLayout
+  title="Solutions — a white-label health platform for every audience"
+  description="Gyms, clinics, employers, creators, wellness brands, pharmacies, and DTC health brands launch a complete digital health care experience under their own name on Purple Label."
+  path="/solutions"
+>
+  <Section size="lg">
+    <Eyebrow>Solutions</Eyebrow>
+    <h1 class="mt-4 max-w-4xl font-display text-display text-ink-900">
+      Your members already trust you with their health.
+    </h1>
+    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+      They already buy labs, prescriptions, and wellness care — just not from you. Purple Label lets
+      any brand with a real relationship to its members deliver the whole health experience itself.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      <Button variant="secondary" href={CTA.preview.href}>{CTA.preview.label}</Button>
+    </div>
+  </Section>
+
+  <Section surface="surface" bordered>
+    <SectionHeader eyebrow="By audience" title="Find your starting point." />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        SOLUTIONS.map((s) => (
+          <Card icon={s.icon} title={s.audience} href={`/solutions/${s.slug}`}>
+            {s.headline}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section>
+    <SectionHeader eyebrow="By how you launch" title="Build it, or have it run for you." />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <Card icon="code" title="Build on the platform" href="/developers">
+        Your team and agents on our API, webhooks, and site kit.
+      </Card>
+      <Card icon="headset" title="Managed" href="/managed">
+        Our team builds, launches, and operates it for you.
+      </Card>
+      <Card icon="building" title="Enterprise" href="/pricing#enterprise">
+        Dedicated infrastructure, per-tenant keys, and data residency.
+      </Card>
+    </div>
+  </Section>
+</PageLayout>

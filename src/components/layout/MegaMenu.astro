@@ -3,20 +3,35 @@
  * MegaMenu — one desktop nav group (§5.3), shadcn-style detail dropdown. Trigger links to
  * the group overview; the panel reveals on hover and on keyboard focus-within (200ms fade +
  * rise). Each item is icon + title + one-line description; a footer link returns the overview.
- * Groups with >6 items render a wider 3-column panel (e.g. Rx).
+ *
+ * Nov 2026: groups with `sections` render labeled columns (Platform = the four Health Loop
+ * planes; Solutions = audience + launch model). Panels are positioned against the <nav>
+ * (the <li> is static), centered under the whole bar — so the wide Platform panel and the
+ * right-hand Developers panel both stay inside the viewport.
  */
 import { Icon } from 'astro-icon/components';
-import type { NavGroup } from '../../lib/nav';
+import type { NavGroup, NavItem } from '../../lib/nav';
 
 interface Props {
   group: NavGroup;
 }
 const { group } = Astro.props;
 const triggerHref = group.href ?? group.items[0]?.href ?? '#';
-const wide = group.items.length > 6;
+const sections = group.sections;
+const cols = sections ? sections.length : group.items.length > 6 ? 3 : 2;
+const width: Record<number, string> = { 2: 'w-180', 3: 'w-200', 4: 'w-252' };
+const gridCols: Record<number, string> = {
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+  4: 'grid-cols-4',
+};
+const itemLink =
+  'flex items-start gap-3 rounded-md p-3 transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500';
+type Item = NavItem;
+const isExternal = (i: Item) => i.href.startsWith('http');
 ---
 
-<li class="group relative">
+<li class="group">
   <a
     href={triggerHref}
     class="inline-flex h-11 items-center gap-1 rounded-md px-3 text-sm font-semibold text-ink-700 transition-colors duration-150 hover:text-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
@@ -31,34 +46,69 @@ const wide = group.items.length > 6;
 
   <div
     class:list={[
-      'invisible absolute left-0 top-full z-40 translate-y-1 pt-2 opacity-0 transition duration-200 ease-out group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100',
-      wide ? 'w-180' : 'w-144',
+      'invisible absolute left-1/2 top-full z-40 -translate-x-1/2 translate-y-1 pt-2 opacity-0 transition duration-200 ease-out group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100',
+      width[cols] ?? 'w-180',
     ]}
   >
     <div class="rounded-lg border border-line bg-surface p-2 shadow-md">
-      <ul class:list={['grid grid-cols-1 gap-1', wide ? 'sm:grid-cols-3' : 'sm:grid-cols-2']}>
-        {
-          group.items.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class="flex items-start gap-3 rounded-md p-3 transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
-              >
-                {item.icon && (
-                  <Icon
-                    name={`lucide:${item.icon}`}
-                    class="icon mt-0.5 size-5 shrink-0 text-purple-600"
-                  />
-                )}
-                <span class="min-w-0">
-                  <span class="block text-sm font-semibold text-ink-900">{item.label}</span>
-                  {item.desc && <span class="mt-0.5 block text-xs text-ink-400">{item.desc}</span>}
-                </span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      {
+        sections ? (
+          <div class:list={['grid gap-1', gridCols[cols]]}>
+            {sections.map((section) => (
+              <div class="min-w-0">
+                <p class="px-3 pb-1 pt-3 text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                  {section.label}
+                </p>
+                <ul class="flex flex-col gap-0.5">
+                  {section.items.map((item) => (
+                    <li>
+                      <a href={item.href} class={itemLink}>
+                        {item.icon && (
+                          <Icon
+                            name={`lucide:${item.icon}`}
+                            class="icon mt-0.5 size-5 shrink-0 text-purple-600"
+                          />
+                        )}
+                        <span class="min-w-0">
+                          <span class="block text-sm font-semibold text-ink-900">{item.label}</span>
+                          {item.desc && (
+                            <span class="mt-0.5 block text-xs text-ink-400">{item.desc}</span>
+                          )}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ul class:list={['grid gap-1', gridCols[cols]]}>
+            {group.items.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class={itemLink}
+                  {...(isExternal(item) ? { rel: 'noopener' } : {})}
+                >
+                  {item.icon && (
+                    <Icon
+                      name={`lucide:${item.icon}`}
+                      class="icon mt-0.5 size-5 shrink-0 text-purple-600"
+                    />
+                  )}
+                  <span class="min-w-0">
+                    <span class="block text-sm font-semibold text-ink-900">{item.label}</span>
+                    {item.desc && (
+                      <span class="mt-0.5 block text-xs text-ink-400">{item.desc}</span>
+                    )}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
       {
         group.href && (
           <div class="mt-1 border-t border-line pt-1">
@@ -66,7 +116,7 @@ const wide = group.items.length > 6;
               href={group.href}
               class="flex items-center justify-between rounded-md p-3 text-sm font-semibold text-purple-600 transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
             >
-              <span>Explore {group.label}</span>
+              <span>{group.hrefLabel ?? `Explore ${group.label}`}</span>
               <Icon name="lucide:arrow-right" class="icon size-4" />
             </a>
           </div>

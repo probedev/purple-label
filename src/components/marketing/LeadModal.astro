@@ -2,7 +2,7 @@
 /**
  * LeadModal — the site-wide lead-capture popup (per Gregg 2026-07-21: the Rimo-style
  * dialog, not a below-the-fold form). A native <dialog> wrapping LeadCapture; a global
- * click listener promotes every link to /contact ("Book a consult", "Talk to sales",
+ * click listener promotes every link to /contact ("Book a demo", "Talk to sales",
  * the mobile sticky bar) into opening this modal instead. Plain and modified clicks
  * without JS still navigate to /contact, which renders the same card inline —
  * PageLayout skips this component there so ids stay unique.
@@ -14,7 +14,7 @@ import { Icon } from 'astro-icon/components';
 <dialog
   id="lead-modal"
   class="m-auto max-h-dvh w-full max-w-xl overflow-y-auto bg-transparent p-4 backdrop:bg-ink-900/60 backdrop:backdrop-blur-sm"
-  aria-label="Book a consult"
+  aria-label="Book a demo"
 >
   <div class="relative">
     <button

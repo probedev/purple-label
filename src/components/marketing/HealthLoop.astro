@@ -1,0 +1,288 @@
+---
+/**
+ * HealthLoop — the product system in one picture (Nov 2026 refresh plan
+ * §2.2): KNOW → UNDERSTAND → ACT around a ring, the member's brand at the center, OWN IT as
+ * the foundation underneath. Left: the SVG loop with a travelling pulse. Right: the planes as
+ * a tab list whose active panel lists that plane's modules (links to /platform/*).
+ *
+ * The active plane auto-advances every few seconds until the reader hovers, focuses, or
+ * clicks a plane — then it stays put. prefers-reduced-motion: no pulse, no auto-advance.
+ * Without JS every panel renders expanded (the list is still fully navigable).
+ */
+import { Icon } from 'astro-icon/components';
+import { PLANES, modulesInPlane, OWN_EXTRAS } from '../../lib/modules';
+
+interface Props {
+  /** Center label — the brand the loop belongs to. */
+  centerLabel?: string;
+  id?: string;
+}
+const { centerLabel = 'Your brand', id = 'health-loop' } = Astro.props;
+
+const loopPlanes = PLANES.filter((p) => p.id !== 'own');
+const own = PLANES.find((p) => p.id === 'own')!;
+
+// Node positions on the ring (viewBox 0 0 400 400, r = 150, center 200,200):
+// Know at top, Understand lower-right, Act lower-left (clockwise thirds).
+const R = 150;
+const pos = loopPlanes.map((_, i) => {
+  const a = -Math.PI / 2 + (i * 2 * Math.PI) / loopPlanes.length;
+  return { x: 200 + R * Math.cos(a), y: 200 + R * Math.sin(a) };
+});
+
+const panelModules = (planeId: string) => [
+  ...modulesInPlane(planeId as 'know').map((m) => ({
+    name: m.name,
+    href: `/platform/${m.slug}`,
+    icon: m.icon,
+    body: m.navDesc,
+  })),
+  ...(planeId === 'own'
+    ? OWN_EXTRAS.map((x) => ({ name: x.name, href: x.href, icon: x.icon, body: x.navDesc }))
+    : []),
+];
+---
+
+<div id={id} class="health-loop grid items-center gap-10 lg:grid-cols-12" data-health-loop>
+  {/* The ring */}
+  <div class="mx-auto w-full max-w-md lg:col-span-5">
+    <svg viewBox="0 0 400 400" class="w-full" role="img" aria-labelledby={`${id}-title`}>
+      <title id={`${id}-title`}>
+        The health loop: know, understand, and act — around your brand, retested and repeated.
+      </title>
+      <circle cx="200" cy="200" r={R} class="hl-track" fill="none" stroke-width="2"></circle>
+      <circle
+        cx="200"
+        cy="200"
+        r={R}
+        class="hl-pulse"
+        fill="none"
+        stroke-width="3"
+        stroke-linecap="round"
+        pathLength="100"
+        stroke-dasharray="12 88"></circle>
+      {/* Retest hint, outside the ring between Act and Know */}
+      <text x="22" y="92" class="hl-caption" text-anchor="start">↺ retest</text>
+      <text x="22" y="106" class="hl-caption" text-anchor="start">&amp; track</text>
+
+      {/* Center: the brand */}
+      <circle cx="200" cy="200" r="64" class="hl-center"></circle>
+      <text x="200" y="196" text-anchor="middle" class="hl-center-label">{centerLabel}</text>
+      <text x="200" y="216" text-anchor="middle" class="hl-caption">the member is yours</text>
+
+      {
+        loopPlanes.map((p, i) => (
+          <g class="hl-node" data-plane-node={p.id}>
+            <circle cx={pos[i].x} cy={pos[i].y} r="34" class="hl-node-bg" />
+            <text x={pos[i].x} y={pos[i].y + 5} text-anchor="middle" class="hl-node-label">
+              {p.label}
+            </text>
+          </g>
+        ))
+      }
+    </svg>
+    <p class="mt-2 text-center text-sm text-ink-400">
+      <Icon
+        name="lucide:layers"
+        class="icon mr-1 inline size-4 align-text-bottom text-purple-600"
+      />
+      All on the <span class="font-semibold text-ink-700">{own.label}</span> foundation — brand, payments,
+      operations, and privacy.
+    </p>
+  </div>
+
+  {/* The planes */}
+  <div class="lg:col-span-7">
+    <div class="flex flex-wrap gap-2" role="tablist" aria-label="Platform planes">
+      {
+        PLANES.map((p, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`${id}-tab-${p.id}`}
+            aria-controls={`${id}-panel-${p.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-plane-tab={p.id}
+            class="hl-tab inline-flex h-11 items-center gap-2 rounded-md border border-line px-4 text-sm font-semibold text-ink-700 transition-colors duration-150 hover:border-purple-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+          >
+            <Icon name={`lucide:${p.icon}`} class="icon size-4 text-purple-600" />
+            {p.label}
+          </button>
+        ))
+      }
+    </div>
+    {
+      PLANES.map((p, i) => (
+        <div
+          role="tabpanel"
+          id={`${id}-panel-${p.id}`}
+          aria-labelledby={`${id}-tab-${p.id}`}
+          data-plane-panel={p.id}
+          class:list={['hl-panel mt-6', i !== 0 && 'hl-panel-inactive']}
+        >
+          <h3 class="font-display text-h3 text-ink-900">{p.verb}</h3>
+          <p class="mt-2 max-w-prose text-body text-ink-500">{p.summary}</p>
+          <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+            {panelModules(p.id).map((m) => (
+              <li>
+                <a
+                  href={m.href}
+                  class="flex h-full items-start gap-3 rounded-lg border border-line bg-surface p-4 transition duration-150 ease-out hover:border-purple-200 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                >
+                  <Icon
+                    name={`lucide:${m.icon}`}
+                    class="icon mt-0.5 size-5 shrink-0 text-purple-600"
+                  />
+                  <span>
+                    <span class="block text-sm font-semibold text-ink-900">{m.name}</span>
+                    <span class="mt-0.5 block text-sm text-ink-500">{m.body}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .health-loop .hl-track {
+    stroke: var(--pl-line);
+  }
+
+  .health-loop .hl-pulse {
+    stroke: var(--pl-purple-500);
+    animation: hl-orbit 9s linear infinite;
+  }
+
+  .health-loop .hl-center {
+    fill: var(--pl-purple-50);
+    stroke: var(--pl-purple-200);
+  }
+
+  .health-loop .hl-center-label {
+    fill: var(--pl-ink-900);
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .health-loop .hl-caption {
+    fill: var(--pl-ink-400);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .health-loop .hl-node-bg {
+    fill: var(--pl-surface);
+    stroke: var(--pl-line);
+    stroke-width: 2;
+    transition:
+      fill 0.2s ease,
+      stroke 0.2s ease;
+  }
+
+  .health-loop .hl-node-label {
+    fill: var(--pl-ink-700);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    transition: fill 0.2s ease;
+  }
+
+  .health-loop .hl-node.is-active .hl-node-bg {
+    fill: var(--pl-purple-600);
+    stroke: var(--pl-purple-600);
+  }
+
+  .health-loop .hl-node.is-active .hl-node-label {
+    fill: #fff;
+  }
+
+  .health-loop .hl-tab[aria-selected='true'] {
+    border-color: var(--pl-purple-300);
+    background: var(--pl-purple-50);
+    color: var(--pl-purple-700);
+  }
+
+  /* Panels stack when JS is off; JS adds .js-ready to collapse to one at a time. */
+  .health-loop.js-ready .hl-panel-inactive {
+    display: none;
+  }
+
+  @keyframes hl-orbit {
+    from {
+      stroke-dashoffset: 100;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .health-loop .hl-pulse {
+      animation: none;
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-health-loop]').forEach((root) => {
+    root.classList.add('js-ready');
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-plane-tab]')];
+    const ids = tabs.map((t) => t.dataset.planeTab!);
+    let current = 0;
+    let auto = 0;
+
+    const select = (i: number, focus = false) => {
+      current = (i + ids.length) % ids.length;
+      const id = ids[current];
+      tabs.forEach((t, j) => {
+        const on = j === current;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      });
+      root.querySelectorAll<HTMLElement>('[data-plane-panel]').forEach((p) => {
+        p.classList.toggle('hl-panel-inactive', p.dataset.planePanel !== id);
+      });
+      root.querySelectorAll<SVGGElement>('[data-plane-node]').forEach((n) => {
+        n.classList.toggle('is-active', n.dataset.planeNode === id);
+      });
+    };
+
+    const stop = () => window.clearInterval(auto);
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => {
+        stop();
+        select(i);
+      });
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          stop();
+          select(current + (e.key === 'ArrowRight' ? 1 : -1), true);
+        }
+      });
+    });
+    root.addEventListener('focusin', stop);
+    root.addEventListener('pointerenter', stop);
+
+    select(0);
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // Only start cycling once the loop is actually on screen.
+      const io = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          auto = window.setInterval(() => select(current + 1), 4200);
+          io.disconnect();
+        }
+      });
+      io.observe(root);
+    }
+  });
+</script>

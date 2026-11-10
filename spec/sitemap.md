@@ -1,3 +1,5 @@
+> **SUPERSEDED (2026-11-10)** by `the Nov 2026 refresh plan` (IA) and `src/lib/{nav,modules,solutions}.ts` (live source).
+
 > **SUPERSEDED (2026-07-21).** This document predates the current site (no /programs,
 > /managed, /architecture, /legitscript, /about, /legal/*; still lists /solutions). The live
 > IA's source of truth is `src/lib/nav.ts`; the claims registry is `src/lib/stats.ts`; the

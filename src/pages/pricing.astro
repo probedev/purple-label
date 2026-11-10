@@ -20,25 +20,25 @@ const tiers = [
     name: 'Platform',
     badge: 'Multi-tenant',
     tagline: 'The full platform, multi-tenant.',
-    audience: 'For developers and teams building agent-run telemedicine.',
+    audience: 'For teams building their own branded health experience.',
     points: [
-      'Every module — intake, visits, e-prescribing, pharmacy, payments, analytics',
-      'Developer docs, API, and the agent pack (MCP connectors at launch)',
-      'The durable order pipeline, built and operated for you',
+      'The whole health loop — labs, wearables, insights, protocols, care, pharmacy, payments',
+      'Developer docs, API, webhooks, site kit, and agent tooling',
+      'The branded member app and operations console',
       'HIPAA-compliant, encrypted infrastructure — behind the same cleared reviews',
       'Pass-through Rx pricing — our cost is your cost, no markup',
     ],
     start:
       'Sandbox access and API keys start with your consult; sign a BAA and onboard to go live.',
-    primary: { label: 'Start building', href: DOCS_URL },
-    secondary: { label: 'Book a consult', href: '/contact' },
+    primary: { label: 'Read the docs', href: DOCS_URL },
+    secondary: { label: 'Book a demo', href: '/contact' },
     featured: true,
   },
   {
     name: 'Managed',
     badge: 'Done-for-you',
     tagline: 'We build, run, and grow it for you.',
-    audience: 'For operators who want a branded telehealth business without writing code.',
+    audience: 'For brands that want a health business without building one.',
     points: [
       'We build, staff, and configure your branded store end to end',
       'Licensed providers, pharmacy, and compliance handled for you',
@@ -47,7 +47,7 @@ const tiers = [
       'Revenue share — we only do well when you do',
     ],
     start: 'A high-touch launch with our team — typically live in about 30 days.',
-    primary: { label: 'Book a consult', href: '/contact' },
+    primary: { label: 'Book a demo', href: '/contact' },
     secondary: { label: 'Explore Managed', href: '/managed' },
     featured: true,
   },
@@ -64,7 +64,7 @@ const tiers = [
       'Everything in Platform, on the same audited foundation',
     ],
     start: 'Scoped to your compliance and procurement requirements.',
-    primary: { label: 'Book a consult', href: '/contact' },
+    primary: { label: 'Book a demo', href: '/contact' },
     secondary: null,
     featured: false,
   },
@@ -73,7 +73,7 @@ const tiers = [
 const matrix = [
   { label: 'Every platform module', platform: true, managed: true, enterprise: true },
   {
-    label: 'Developer docs, API, agent pack (MCP at launch)',
+    label: 'Developer docs, API, webhooks, and site kit',
     platform: true,
     managed: true,
     enterprise: true,
@@ -114,7 +114,7 @@ const matrix = [
 
 <PageLayout
   title="Pricing — Platform, Enterprise, and Managed plans"
-  description="Three ways to build on Purple Label MD. Platform: the full multi-tenant stack with developer docs, API, and pass-through Rx pricing. Enterprise: a dedicated data silo, per-tenant encryption keys, residency, and data portability. Managed: we build and operate your branded telehealth business for you — on the same audited foundation."
+  description="Three ways to build on Purple Label MD. Platform: the full multi-tenant stack with developer docs, API, and pass-through Rx pricing. Enterprise: a dedicated data silo, per-tenant encryption keys, residency, and data portability. Managed: we build and operate your branded health business for you — on the same audited foundation."
   path="/pricing"
 >
   {
@@ -134,8 +134,9 @@ const matrix = [
       {
         tiers.map((t) => (
           <div
+            id={t.name.toLowerCase()}
             class:list={[
-              'flex flex-col rounded-lg border bg-surface p-8',
+              'flex scroll-mt-24 flex-col rounded-lg border bg-surface p-8',
               t.featured ? 'border-purple-300' : 'border-line',
             ]}
           >
@@ -277,8 +278,8 @@ const matrix = [
       title="Build on the Platform, scale on a dedicated silo, or have us run it."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href={DOCS_URL}>Start building</Button>
+      <Button variant="primary" href="/contact">Book a demo</Button>
+      <Button variant="secondary" href={DOCS_URL}>Read the docs</Button>
     </div>
   </Section>
 </PageLayout>

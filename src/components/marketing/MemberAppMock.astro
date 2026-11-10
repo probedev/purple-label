@@ -1,0 +1,311 @@
+---
+/**
+ * MemberAppMock — the signature visual of the Nov 2026 refresh: a branded member "health
+ * home" (score, health areas, biomarkers, protocol, order status) rendered inside a
+ * `yourbrand.com` browser frame. It sells the white-label thesis in one glance: the same
+ * platform, re-skinned per brand.
+ *
+ * Theming: the mock brand's colors are CONTENT (fictional illustrative brands from
+ * src/lib/solutions.ts, or the visitor's own input on /preview), not site design tokens, so
+ * they ride in as CSS custom properties (--mb-primary / --mb-tint) on the root element and
+ * are consumed only by this component's scoped CSS. Every neutral, radius, and type size
+ * still comes from the design system.
+ *
+ * Scripting hooks: [data-mb-name], [data-mb-mark], [data-mb-domain] text nodes and the
+ * root's style vars are what /preview and the hero cycler rewrite. Pass `cycle` with a list
+ * of brands to rotate them every few seconds (skipped under prefers-reduced-motion).
+ *
+ * All data is illustrative and labeled as such — never real member data.
+ */
+import { Icon } from 'astro-icon/components';
+import type { MockBrandTheme } from '../../lib/solutions';
+
+interface Props {
+  brand: MockBrandTheme;
+  /** Rotate through these brands (hero use). */
+  cycle?: MockBrandTheme[];
+  /** Compact hides the biomarker table (for tight layouts). */
+  compact?: boolean;
+  id?: string;
+  class?: string;
+}
+
+const { brand, cycle, compact = false, id, class: className = '' } = Astro.props;
+const domain = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.com';
+const style = `--mb-primary:${brand.primary};--mb-tint:${brand.tint}`;
+
+const areas = [
+  { label: 'Heart', grade: 'A' },
+  { label: 'Metabolic', grade: 'B+' },
+  { label: 'Hormones', grade: 'B' },
+  { label: 'Inflammation', grade: 'A-' },
+  { label: 'Nutrients', grade: 'C+' },
+  { label: 'Sleep', grade: 'B' },
+];
+
+const markers = [
+  { name: 'ApoB', value: '78 mg/dL', status: 'optimal' },
+  { name: 'HbA1c', value: '5.4 %', status: 'optimal' },
+  { name: 'Free testosterone', value: '9.1 ng/dL', status: 'watch' },
+  { name: 'Vitamin D', value: '24 ng/mL', status: 'low' },
+] as const;
+
+const statusLabel = { optimal: 'Optimal', watch: 'Watch', low: 'Below range' } as const;
+
+const actions = [
+  { icon: 'sun', text: '15 min of morning daylight' },
+  { icon: 'pill', text: 'Vitamin D3 with breakfast' },
+  { icon: 'calendar-check', text: 'Retest hormones in 8 weeks' },
+];
+
+const score = 82;
+const circumference = 2 * Math.PI * 28;
+const dash = (score / 100) * circumference;
+---
+
+<figure
+  id={id}
+  class:list={['member-app', className]}
+  style={style}
+  data-member-app
+  data-cycle={cycle ? JSON.stringify(cycle) : undefined}
+>
+  <div class="overflow-hidden rounded-xl border border-line bg-surface shadow-md">
+    {/* Browser chrome */}
+    <div class="flex items-center gap-3 border-b border-line bg-surface-sunken px-4 py-2.5">
+      <span class="flex gap-1.5" aria-hidden="true">
+        <span class="size-2.5 rounded-full bg-line"></span>
+        <span class="size-2.5 rounded-full bg-line"></span>
+        <span class="size-2.5 rounded-full bg-line"></span>
+      </span>
+      <span
+        class="flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-surface px-3 py-1 font-mono text-xs text-ink-400"
+      >
+        <Icon name="lucide:lock" class="icon size-3 shrink-0" />
+        <span class="truncate">app.<span data-mb-domain>{domain(brand.name)}</span></span>
+      </span>
+    </div>
+
+    <div class="p-4 sm:p-6">
+      {/* App header */}
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex min-w-0 items-center gap-2.5">
+          <span
+            class="mb-mark grid size-8 shrink-0 place-items-center rounded-md text-sm font-bold"
+          >
+            <span data-mb-mark>{brand.mark}</span>
+          </span>
+          <span class="truncate font-display text-base font-semibold text-ink-900" data-mb-name
+            >{brand.name}</span
+          >
+        </div>
+        <span class="mb-chip rounded-full px-2.5 py-1 text-xs font-semibold">Results ready</span>
+      </div>
+
+      {/* Score — full-width row: ring + number left, health-area grades right */}
+      <div class="mt-5 rounded-lg border border-line p-4">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <div class="flex shrink-0 items-center gap-4">
+            <svg viewBox="0 0 64 64" class="size-20 shrink-0 -rotate-90" aria-hidden="true">
+              <circle cx="32" cy="32" r="28" fill="none" class="mb-ring-track" stroke-width="6"
+              ></circle>
+              <circle
+                cx="32"
+                cy="32"
+                r="28"
+                fill="none"
+                class="mb-ring"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-dasharray={`${dash} ${circumference}`}></circle>
+            </svg>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                <span data-mb-name-short>{brand.name.split(' ')[0]}</span> Score
+              </p>
+              <p class="font-display text-h2 text-ink-900">{score}</p>
+              <p class="text-xs text-ink-400">+6 since last panel</p>
+            </div>
+          </div>
+          <ul class="grid flex-1 grid-cols-2 gap-1.5">
+            {
+              areas.map((a) => (
+                <li class="flex items-center justify-between gap-2 rounded-md bg-surface-sunken px-2.5 py-1.5">
+                  <span class="text-xs text-ink-500">{a.label}</span>
+                  <span class="text-sm font-semibold text-ink-900">{a.grade}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      {/* Protocol + order */}
+      <div class="mt-4 grid gap-4 md:grid-cols-5">
+        <div class="rounded-lg border border-line p-4 md:col-span-3">
+          <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+            Today’s protocol
+          </p>
+          <ul class="mt-3 flex flex-col gap-2">
+            {
+              actions.map((a) => (
+                <li class="flex items-center gap-2.5 text-sm text-ink-700">
+                  <span class="mb-tint grid size-7 shrink-0 place-items-center rounded-md">
+                    <Icon name={`lucide:${a.icon}`} class="icon size-4" />
+                  </span>
+                  {a.text}
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-3 flex items-center gap-1.5 text-xs text-ink-400">
+            <Icon name="lucide:user-check" class="icon size-3.5" />
+            Reviewed by your care team
+          </p>
+        </div>
+        <div
+          class="flex flex-col justify-between gap-3 rounded-lg border border-line p-4 md:col-span-2"
+        >
+          <div class="flex items-start gap-3">
+            <Icon name="lucide:package-check" class="icon mt-0.5 size-5 shrink-0 text-success" />
+            <div>
+              <p class="text-sm font-semibold text-ink-900">Your refill has shipped</p>
+              <p class="mt-0.5 text-xs text-ink-400">Arrives Thursday</p>
+            </div>
+          </div>
+          <span class="mb-button self-start rounded-md px-3 py-1.5 text-xs font-semibold"
+            >Track order</span
+          >
+        </div>
+      </div>
+
+      {
+        !compact && (
+          <div class="mt-4 rounded-lg border border-line">
+            <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
+              <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                Biomarkers
+              </p>
+              <p class="text-xs text-ink-400">84 analyzed</p>
+            </div>
+            <ul class="divide-y divide-line">
+              {markers.map((m) => (
+                <li class="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
+                  <span class="text-ink-700">{m.name}</span>
+                  <span class="flex items-center gap-3">
+                    <span class="font-mono text-xs text-ink-500">{m.value}</span>
+                    <span
+                      class:list={['mb-status rounded-full px-2 py-0.5 text-xs', `is-${m.status}`]}
+                    >
+                      {statusLabel[m.status]}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </div>
+  <figcaption class="mt-3 text-center text-xs text-ink-300">
+    Illustrative member experience — fictional brand and sample data.
+  </figcaption>
+</figure>
+
+<style>
+  /* Brand colors are mock-brand content (see header comment); neutrals stay tokens. */
+  .member-app {
+    --mb-primary: var(--pl-purple-600);
+    --mb-tint: var(--pl-purple-50);
+  }
+
+  .member-app :where(.mb-mark, .mb-button) {
+    background: var(--mb-primary);
+    color: #fff;
+    transition: background-color 0.4s ease;
+  }
+
+  .member-app :where(.mb-chip, .mb-tint) {
+    background: var(--mb-tint);
+    color: var(--mb-primary);
+    transition:
+      background-color 0.4s ease,
+      color 0.4s ease;
+  }
+
+  .member-app .mb-ring {
+    stroke: var(--mb-primary);
+    transition: stroke 0.4s ease;
+  }
+
+  .member-app .mb-ring-track {
+    stroke: var(--pl-surface-sunken);
+  }
+
+  .member-app .mb-status.is-optimal {
+    background: var(--pl-surface-sunken);
+    color: var(--pl-success);
+  }
+
+  .member-app .mb-status.is-watch {
+    background: var(--pl-warning-50);
+    color: var(--pl-warning);
+  }
+
+  .member-app .mb-status.is-low {
+    background: var(--pl-warning-50);
+    color: var(--pl-danger);
+  }
+
+  /* In dark mode the mock brand tint would glare; mix it toward the surface. */
+  :global(:root[data-theme='dark']) .member-app :where(.mb-chip, .mb-tint) {
+    background: color-mix(in srgb, var(--mb-primary) 22%, var(--pl-surface));
+    color: var(--pl-ink-900);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .member-app * {
+      transition: none !important;
+    }
+  }
+</style>
+
+<script>
+  import type { MockBrandTheme } from '../../lib/solutions';
+
+  const domainOf = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.com';
+
+  /** Re-skin one mock in place. Exported on window for /preview. */
+  function applyBrand(root: HTMLElement, b: MockBrandTheme) {
+    root.style.setProperty('--mb-primary', b.primary);
+    root.style.setProperty('--mb-tint', b.tint);
+    root.querySelectorAll('[data-mb-name]').forEach((n) => (n.textContent = b.name));
+    root
+      .querySelectorAll('[data-mb-name-short]')
+      .forEach((n) => (n.textContent = b.name.split(' ')[0] || b.name));
+    root.querySelectorAll('[data-mb-mark]').forEach((n) => (n.textContent = b.mark));
+    root.querySelectorAll('[data-mb-domain]').forEach((n) => (n.textContent = domainOf(b.name)));
+  }
+
+  (window as unknown as { plApplyBrand: typeof applyBrand }).plApplyBrand = applyBrand;
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-member-app][data-cycle]').forEach((root) => {
+    if (reduce) return;
+    const brands = JSON.parse(root.dataset.cycle ?? '[]') as MockBrandTheme[];
+    if (brands.length < 2) return;
+    let i = 0;
+    let timer = 0;
+    const start = () => {
+      timer = window.setInterval(() => {
+        i = (i + 1) % brands.length;
+        applyBrand(root, brands[i]);
+      }, 3600);
+    };
+    // Pause while hovered so a reader can study one brand.
+    root.addEventListener('mouseenter', () => window.clearInterval(timer));
+    root.addEventListener('mouseleave', start);
+    start();
+  });
+</script>

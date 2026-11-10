@@ -1,0 +1,226 @@
+---
+/**
+ * Platform module page `/platform/[slug]` — one template for every module in
+ * src/lib/modules.ts (Nov 2026 refresh plan §4.3). Replaces the
+ * hand-built per-module pages so all eleven stay consistent: hero → member view vs. brand
+ * controls (the consumer-centric + white-label split) → capabilities → where it sits in the
+ * loop → API strip → FAQ → CTA.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+import FAQ from '../../components/primitives/FAQ.astro';
+import MemberAppMock from '../../components/marketing/MemberAppMock.astro';
+import { Icon } from 'astro-icon/components';
+import { MODULES, PLANES, moduleBySlug, type PlatformModule } from '../../lib/modules';
+import { HERO_MOCK_BRANDS } from '../../lib/solutions';
+import { faqJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { DOCS_URL, CTA } from '../../lib/nav';
+
+export function getStaticPaths() {
+  return MODULES.map((module) => ({ params: { slug: module.slug }, props: { module } }));
+}
+
+interface Props {
+  module: PlatformModule;
+}
+const { module: m } = Astro.props;
+const plane = PLANES.find((p) => p.id === m.plane)!;
+const path = `/platform/${m.slug}`;
+const connected = m.connects.map((s) => moduleBySlug(s)).filter(Boolean) as PlatformModule[];
+
+// Modules whose member view is best shown as the app itself.
+const showsApp = ['member-app', 'insights', 'protocols', 'labs'].includes(m.slug);
+
+// Device ecosystems (folded from WLMD) — names as text chips with a trademark note, cleared
+// for use by Gregg 2026-11-10; logos only once brand-use permission is confirmed.
+const devices =
+  m.slug === 'wearables'
+    ? [
+        'Apple Health',
+        'Oura',
+        'Fitbit',
+        'Garmin',
+        'Whoop',
+        'Dexcom',
+        'Withings',
+        'Google Health Connect',
+        'Polar',
+        'Samsung Health',
+      ]
+    : [];
+---
+
+<PageLayout
+  title={m.metaTitle}
+  description={m.metaDescription}
+  path={path}
+  jsonLd={[
+    faqJsonLd(m.faqs),
+    breadcrumbJsonLd([
+      ['Platform', '/platform'],
+      [m.name, path],
+    ]),
+  ]}
+>
+  {/* Hero */}
+  <Section size="lg">
+    <div class:list={['grid gap-12', showsApp && 'lg:grid-cols-12 lg:items-center']}>
+      <div class:list={[showsApp && 'lg:col-span-6']}>
+        <Eyebrow>{`${plane.label} · ${m.name}`}</Eyebrow>
+        <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">{m.headline}</h1>
+        <p class="mt-6 max-w-prose text-body-lg text-ink-500">{m.lead}</p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+          <Button variant="secondary" href={CTA.preview.href}>{CTA.preview.label}</Button>
+        </div>
+      </div>
+      {
+        showsApp && (
+          <div class="lg:col-span-6">
+            <MemberAppMock brand={HERO_MOCK_BRANDS[0]} compact={m.slug !== 'labs'} />
+          </div>
+        )
+      }
+    </div>
+  </Section>
+
+  {/* Member view vs. brand controls */}
+  <Section surface="surface" bordered>
+    <div class="grid gap-6 md:grid-cols-2">
+      {
+        [m.memberView, m.brandControls].map((col, i) => (
+          <div class="rounded-lg border border-line bg-paper p-6 sm:p-8">
+            <div class="flex items-center gap-2">
+              <Icon
+                name={i === 0 ? 'lucide:heart-handshake' : 'lucide:sliders-horizontal'}
+                class="icon size-5 text-purple-600"
+              />
+              <h2 class="font-display text-h4 text-ink-900">{col.title}</h2>
+            </div>
+            <ul class="mt-5 flex flex-col gap-3">
+              {col.points.map((pt) => (
+                <li class="flex items-start gap-2.5 text-body text-ink-500">
+                  <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-success" />
+                  {pt}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Capabilities */}
+  <Section>
+    <SectionHeader
+      eyebrow="Under the hood"
+      title={`What’s inside ${m.name}.`}
+      lead="Built once, shared by every brand on the platform — and configured to be yours."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        m.features.map((f) => (
+          <Card icon={f.icon} title={f.title}>
+            {f.body}
+          </Card>
+        ))
+      }
+    </div>
+    {
+      devices.length > 0 && (
+        <div class="mt-10">
+          <ul class="flex flex-wrap items-center gap-x-3 gap-y-2" aria-label="Device ecosystems">
+            <li class="text-xs uppercase tracking-eyebrow text-ink-400">Connects with</li>
+            {devices.map((d) => (
+              <li class="rounded-md border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink-500">
+                {d}
+              </li>
+            ))}
+          </ul>
+          <p class="mt-4 text-xs text-ink-300">
+            All trademarks are the property of their respective owners. Listing indicates data
+            compatibility, not endorsement.
+          </p>
+        </div>
+      )
+    }
+  </Section>
+
+  {/* Where it sits in the loop */}
+  <Section surface="sunken" bordered>
+    <SectionHeader
+      eyebrow="Part of the health loop"
+      title="One record, one member, one brand."
+      lead={`${m.name} shares identity, data, and compliance with every other module — no integration tax between your own building blocks.`}
+    />
+    <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        connected.map((c) => {
+          const cp = PLANES.find((p) => p.id === c.plane)!;
+          return (
+            <a
+              href={`/platform/${c.slug}`}
+              class="flex flex-col rounded-lg border border-line bg-surface p-5 transition duration-150 ease-out hover:border-purple-200 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+            >
+              <span class="text-xs uppercase tracking-eyebrow text-ink-400">{cp.label}</span>
+              <span class="mt-2 flex items-center gap-2 text-sm font-semibold text-ink-900">
+                <Icon name={`lucide:${c.icon}`} class="icon size-4 text-purple-600" />
+                {c.name}
+              </span>
+              <span class="mt-1 text-sm text-ink-500">{c.navDesc}</span>
+            </a>
+          );
+        })
+      }
+    </div>
+    <div class="mt-8">
+      <Button variant="link-arrow" href="/platform">See the whole platform</Button>
+    </div>
+  </Section>
+
+  {/* Developer strip */}
+  <Section size="sm">
+    <div
+      class="flex flex-col gap-6 rounded-lg border border-line bg-surface p-6 sm:p-8 md:flex-row md:items-center md:justify-between"
+    >
+      <div class="flex items-start gap-4">
+        <Icon name="lucide:code" class="icon mt-1 size-6 shrink-0 text-purple-600" />
+        <div>
+          <h2 class="font-display text-h4 text-ink-900">Run it on any front end.</h2>
+          <p class="mt-2 max-w-prose text-body text-ink-500">
+            {m.name} is part of one contract-first API with signed webhooks — use our branded experience,
+            our site kit, or build your own on top.
+          </p>
+        </div>
+      </div>
+      <div class="flex shrink-0 flex-wrap gap-3">
+        <Button variant="secondary" href={DOCS_URL}>Read the docs</Button>
+      </div>
+    </div>
+  </Section>
+
+  {/* FAQ */}
+  <Section surface="surface" bordered>
+    <SectionHeader align="center" eyebrow="Questions, answered" title={`${m.name}, in brief.`} />
+    <FAQ class="mt-12" items={m.faqs} />
+  </Section>
+
+  {/* Closing CTA */}
+  <Section>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="See it running under your brand."
+      lead="A walkthrough of the member experience, the console, and the modules you need — with your brand on it."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      <Button variant="secondary" href={CTA.preview.href}>{CTA.preview.label}</Button>
+    </div>
+  </Section>
+</PageLayout>

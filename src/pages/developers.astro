@@ -1,8 +1,13 @@
 ---
 /**
- * Developers `/developers` — the programmable spine (sitemap.md §10, content.md §10).
- * Anchored sections (#api-reference, #agent-ready-docs, #mcp-servers, #prompt-library,
- * #webhooks, #integrations) match the Developers mega-menu in lib/nav.ts.
+ * Developers `/developers` — Nov 2026 refresh (plan §4.6). Mirrors the
+ * public docs at docs.purplelabelmd.com at marketing altitude: one contract-first API,
+ * signed reference-only webhooks, three ways to build a front end, and the agent tooling
+ * (agent-ready docs, MCP, prompt library) kept as forward-looking sections per the refresh
+ * defaults. Anchors (#api, #webhooks, #front-ends, #agents) match the Developers menu.
+ *
+ * The patient-journey diagram (HeroArt) moved here from the old home hero; its button
+ * plays the journey and its chips use the real journey.*.v1 event names.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
@@ -10,317 +15,291 @@ import SectionHeader from '../components/primitives/SectionHeader.astro';
 import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
-import Badge from '../components/primitives/Badge.astro';
+import HeroArt from '../components/marketing/HeroArt.astro';
 import { Icon } from 'astro-icon/components';
-import { DOCS_URL } from '../lib/nav';
+import { DOCS_URL, CTA } from '../lib/nav';
 
-const pillars = [
-  { label: 'API reference', href: '#api-reference' },
-  { label: 'Agent-ready docs', href: '#agent-ready-docs' },
-  { label: 'MCP servers', href: '#mcp-servers' },
-  { label: 'Prompt library', href: '#prompt-library' },
+const surfaces = [
+  {
+    icon: 'clipboard-list',
+    title: 'Intake',
+    body: 'Server-driven, one-question-at-a-time intake: resolve a journey, submit answers, and let the platform own sequence, branching, and completion.',
+  },
+  {
+    icon: 'credit-card',
+    title: 'Checkout & orders',
+    body: 'Create hosted checkout sessions, read payment status, and reconcile every order.',
+  },
+  {
+    icon: 'route',
+    title: 'Journey status',
+    body: 'One stable public status vocabulary — from received and in review to shipped, delivered, and refill due.',
+  },
+  {
+    icon: 'palette',
+    title: 'Brand configuration',
+    body: 'Brand identity, sign-in and member domains, and browser origins — managed with your own key.',
+  },
+  {
+    icon: 'package',
+    title: 'Offerings & pricing',
+    body: 'Enable offerings, set prices, publish screening questions, and read exactly what still blocks each one from selling.',
+  },
+  {
+    icon: 'rocket',
+    title: 'Onboarding',
+    body: 'Track every step from contract to go-live, programmatically.',
+  },
 ];
 
-const docBullets = [
-  'Machine-readable and example-rich — every endpoint shows a working call.',
-  'Addressable: each resource, field, and error has a stable URL your agents can cite.',
-  'Written to be consumed by an agent first, skimmed by a human second.',
-];
-// G7 tense discipline: MCP is an at-launch capability — future-framed, no
-// present-tense mechanics.
-const mcpBullets = [
-  'Your agents will connect to the platform over the Model Context Protocol at launch.',
-  'No scraping docs, no bespoke glue code — the tools will be typed and discoverable.',
-  'Scoped to the same tokens and environments as the REST API.',
-];
-const promptBullets = [
-  'A curated, customizable prompt for building and operating each module.',
-  'Your agents’ starting playbook — fork it, tailor it to your brand, version it.',
-  'Covers intake assembly, visit triage, fulfillment ops, reporting, and more.',
+const guarantees = [
+  {
+    icon: 'key-round',
+    title: 'Tenancy from the key',
+    body: 'Your tenant is resolved from your credentials, never the request body. Another tenant’s resources answer 404 — indistinguishable from not existing.',
+  },
+  {
+    icon: 'repeat',
+    title: 'Idempotent where money moves',
+    body: 'Idempotency keys on checkout and pricing writes: a replay returns the original result; a different body is a conflict, never a second charge.',
+  },
+  {
+    icon: 'triangle-alert',
+    title: 'Typed errors',
+    body: 'RFC 7807 problem details with stable, documented types your code can branch on.',
+  },
+  {
+    icon: 'git-compare',
+    title: 'Contract-first',
+    body: 'The docs are generated from the same contracts the platform runs on, and the changelog is generated from contract diffs.',
+  },
+  {
+    icon: 'globe-lock',
+    title: 'Browser-safe keys',
+    body: 'A secret server key for your back end, and a read-only publishable key scoped to one brand for the browser.',
+  },
+  {
+    icon: 'flask-conical',
+    title: 'A real test environment',
+    body: 'Build end to end against a full test environment with an interactive playground, then go live at launch.',
+  },
 ];
 
-// E16 — the contract guarantees, not generic API marketing.
-const apiGuarantees = [
-  'Published rate limits — no guessing what the platform will tolerate.',
-  'Idempotency keys on mutating calls, with documented 409 conflict semantics.',
-  'Cursor pagination and one consistent error envelope across every module.',
-  'Versioned endpoints and events — semver, with a published changelog.',
+const events = [
+  'journey.intake.submitted.v1',
+  'journey.eligibility.evaluated.v1',
+  'journey.identity.verified.v1',
+  'journey.case.opened.v1',
+  'journey.visit.completed.v1',
+  'journey.payment.succeeded.v1',
+  'journey.rx.transmitted.v1',
+  'journey.shipment.shipped.v1',
+  'journey.shipment.delivered.v1',
+  'onboarding.step.completed.v1',
 ];
 
-// E17 — the entry-link story (a real contract), not an invented endpoint shape.
-const apiSample = `# A branded entry link — offering, prefill,
-# and promo context carried into hosted intake
-https://start.yourbrand.com/glp-1
-  ?offering=weight-management
-  &promo=SPRING24
-  &prefill=<signed token>
+const frontEnds = [
+  {
+    icon: 'layout-template',
+    title: 'The site kit',
+    body: 'Fork a production-ready storefront wired to the platform, then make it yours.',
+  },
+  {
+    icon: 'wand-sparkles',
+    title: 'AI-built storefronts',
+    body: 'Connect a storefront built with an AI site builder using our guide and reusable prompt.',
+  },
+  {
+    icon: 'code',
+    title: 'Fully headless',
+    body: 'Call the API from any stack — web, mobile, or your existing app.',
+  },
+];
 
-# The journey comes back to you as events
-GET /v1/orders/ord_9f3a.../status
+const agents = [
+  {
+    icon: 'book-open',
+    title: 'Agent-ready docs',
+    body: 'Machine-readable docs with a curated index, so an agent working only from the docs can build a complete integration.',
+  },
+  {
+    icon: 'plug',
+    title: 'MCP servers',
+    body: 'Connect your agents to the platform over the Model Context Protocol — role-scoped, audited, and read-first.',
+  },
+  {
+    icon: 'sparkles',
+    title: 'Prompt library',
+    body: 'Customizable prompts for building and operating each module — a starting playbook your agents tailor.',
+  },
+];
+
+const sample = `POST /v1/payments/checkout-sessions
+Authorization: Bearer pk_test_…
+X-Brand-Id: brd_northline
+Idempotency-Key: 7c1e…
+
+201 Created
+{ "url": "https://app.northline.com/checkout/…" }
+
+GET /v1/journeys/jny_8k2c…/status
 200 OK
-{ "status": "VISIT_SCHEDULED", "version": 3 }`;
-
-const webhookSample = `POST https://yourbrand.com/webhooks
-X-PL-Signature: t=1789041600,v1=5f8a1c9e...
-{
-  "event": "visit.completed",
-  "data": {
-    "visit_id": "vst_3p9d...",
-    "patient_id": "pat_77a1..."
-  }
-}`;
+{ "public_status": "IN_REVIEW", "status_version": "v1" }`;
 ---
 
 <PageLayout
-  title="Developers — build and run telemedicine with your own agents"
-  description="Purple Label MD is programmable end to end. API reference, agent-ready docs, MCP servers, a prompt library, and webhooks so your AI agents can stand up, operate, and extend a telemedicine business."
+  title="Developers — build your health experience on the Purple Label API"
+  description="One contract-first API for intake, checkout, journey status, brand configuration, and offerings — with signed webhooks, typed errors, idempotency, a test environment, and agent-ready docs."
   path="/developers"
 >
   {/* Hero */}
   <Section size="lg">
-    <Eyebrow>Developers</Eyebrow>
-    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      Build and run telemedicine with your own agents.
-    </h1>
-    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Everything in Purple Label MD is programmable. Point your AI agents at our API, agent-ready
-      docs, and agent pack, and they can stand up intake, visits, prescribing, pharmacy, payments,
-      and analytics — then operate and extend it. This is the spine of the platform, not a side door
-      — the same API our own storefronts and internal agents run on.
-    </p>
-    <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Request API access</Button>
-      <Button variant="secondary" href={DOCS_URL}>Read the docs</Button>
-      <Button variant="link-arrow" href="#api-reference">Jump to the API</Button>
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <Eyebrow>Developer platform</Eyebrow>
+        <h1 class="mt-4 font-display text-display text-ink-900">
+          Build the experience.{' '}
+          <span class="text-purple-600">We run the medicine underneath.</span>
+        </h1>
+      </div>
+      <div class="lg:col-span-5 lg:pt-3">
+        <p class="text-body-lg text-ink-500">
+          One contract-first API and signed webhooks for every step of the member journey. Bring any
+          front end — our site kit, an AI-built storefront, or your own app — on a platform your
+          team and your agents can drive end to end.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <Button variant="primary" href={DOCS_URL}>Read the docs</Button>
+          <Button variant="secondary" type="button" id="run-journey">
+            <Icon name="lucide:play" class="icon size-4 text-purple-600" />
+            Run a journey
+          </Button>
+        </div>
+      </div>
     </div>
-    <p class="mt-4 text-sm text-ink-400">
-      We provision sandbox tenants and API keys with your consult.
-    </p>
-    <div class="mt-8 flex flex-wrap gap-3">
+    <div class="mx-auto -mb-6 mt-4 max-w-5xl md:-mb-14">
+      <HeroArt />
+    </div>
+  </Section>
+
+  {/* API */}
+  <Section id="api" surface="surface" bordered>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-start">
+      <div>
+        <SectionHeader
+          eyebrow="The API"
+          title="One API for the whole member journey."
+          lead="Versioned under /v1, documented from the contracts the platform implements, and testable end to end."
+        />
+        <div class="mt-8">
+          <Button variant="link-arrow" href={DOCS_URL}>Open the API reference</Button>
+        </div>
+      </div>
+      <pre
+        class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{sample}</code></pre>
+    </div>
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {
-        pillars.map((p) => (
-          <a
-            href={p.href}
-            class="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-xs font-semibold text-ink-700 transition-colors duration-150 hover:border-purple-200 hover:text-purple-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
-          >
-            <Icon name="lucide:arrow-down-right" class="icon size-3.5 text-purple-600" />
-            {p.label}
-          </a>
+        surfaces.map((s) => (
+          <Card icon={s.icon} title={s.title}>
+            {s.body}
+          </Card>
         ))
       }
     </div>
   </Section>
 
-  {/* API reference */}
-  <Section id="api-reference" surface="surface" bordered>
-    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
-      <div>
-        <SectionHeader
-          eyebrow="API reference"
-          title="One programmable surface for every module."
-          lead="REST endpoints for intake, visits, prescribing, pharmacy, payments, and analytics — with the contract guarantees that make a regulated platform safe to automate against."
-        />
-        <ul class="mt-6 space-y-3 text-body text-ink-500">
-          {
-            apiGuarantees.map((g) => (
-              <li class="flex gap-3">
-                <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-                {g}
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-      <div>
-        <pre
-          class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{apiSample}</code></pre>
-        <p class="mt-3 text-sm text-ink-400">
-          Illustrative — the live reference lives at <a
-            href={DOCS_URL}
-            class="font-semibold text-purple-600 transition-colors duration-150 hover:text-purple-700"
-            >docs.purplelabelmd.com</a
-          >. We provision sandboxes with your consult.
-        </p>
-      </div>
-    </div>
-  </Section>
-
-  {/* Agent-ready docs */}
-  <Section id="agent-ready-docs">
-    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
-      <div>
-        <SectionHeader
-          eyebrow="Agent-ready docs"
-          title="Documentation your agents can act on."
-          lead="Docs structured for AI agents to consume and execute against — not a PDF your team has to translate."
-        />
-        <div class="mt-6">
-          <Button variant="link-arrow" href={DOCS_URL}>Read the docs</Button>
-        </div>
-      </div>
-      <Card icon="terminal" title="Built for machine consumption">
-        <ul class="mt-2 space-y-3">
-          {
-            docBullets.map((b) => (
-              <li class="flex gap-3">
-                <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-                {b}
-              </li>
-            ))
-          }
-        </ul>
-      </Card>
-    </div>
-  </Section>
-
-  {/* MCP servers */}
-  <Section id="mcp-servers" surface="surface" bordered>
-    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
-      <Card icon="server" title="Connect agents directly">
-        <ul class="mt-2 space-y-3">
-          {
-            mcpBullets.map((b) => (
-              <li class="flex gap-3">
-                <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-                {b}
-              </li>
-            ))
-          }
-        </ul>
-      </Card>
-      <div>
-        <SectionHeader
-          eyebrow="MCP servers"
-          title="Your agents, plugged straight into the platform."
-          lead="Connect over the Model Context Protocol and skip the integration layer entirely. Ships at launch."
-        />
-        <div class="mt-6">
-          <Badge tone="success" icon="badge-check">Available at launch</Badge>
-        </div>
-      </div>
-    </div>
-  </Section>
-
-  {/* Prompt library */}
-  <Section id="prompt-library">
-    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
-      <div>
-        <SectionHeader
-          eyebrow="Prompt library"
-          title="A starting playbook for every module."
-          lead="Curated, customizable prompts that get your agents productive on day one, with MCP connectors following at launch — a playbook first, then a socket."
-        />
-        <div class="mt-6">
-          <Badge tone="success" icon="badge-check">Available at launch</Badge>
-        </div>
-      </div>
-      <Card icon="sparkles" title="Fork, tailor, version">
-        <ul class="mt-2 space-y-3">
-          {
-            promptBullets.map((b) => (
-              <li class="flex gap-3">
-                <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-                {b}
-              </li>
-            ))
-          }
-        </ul>
-      </Card>
+  {/* Guarantees */}
+  <Section>
+    <SectionHeader
+      eyebrow="Built to build on"
+      title="The guarantees that make health safe to automate."
+      lead="Regulated money and medicine leave no room for “usually works”."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        guarantees.map((g) => (
+          <Card icon={g.icon} title={g.title}>
+            {g.body}
+          </Card>
+        ))
+      }
     </div>
   </Section>
 
   {/* Webhooks */}
-  <Section id="webhooks" surface="surface" bordered>
-    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
-      <div>
+  <Section id="webhooks" surface="sunken" bordered>
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-5">
         <SectionHeader
           eyebrow="Webhooks & events"
-          title="Automate everything else."
-          lead="Subscribe to platform events and let your agents and systems react in real time — with the delivery guarantees that let you stop worrying about missed events."
+          title="Every step, as a signed event."
+          lead="Subscribe to journey and onboarding events. Deliveries are HMAC-signed and carry references, never health data — read the details back with your key. Failed deliveries retry automatically, and you can test-fire any registration."
         />
-        <ul class="mt-6 space-y-3 text-body text-ink-500">
-          <li class="flex gap-3">
-            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-            HMAC-signed deliveries, with key rotation.
-          </li>
-          <li class="flex gap-3">
-            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-            Retries with backoff, a dead-letter queue, and replay.
-          </li>
-          <li class="flex gap-3">
-            <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-teal-500" />
-            Per-client subscriptions, in thin or full payload modes.
-          </li>
-        </ul>
-        <p class="mt-6 text-body text-ink-500">
-          Events include <code class="font-mono text-sm text-ink-700">patient.qualified</code>,
-          <code class="font-mono text-sm text-ink-700">order.created</code>,
-          <code class="font-mono text-sm text-ink-700">visit.completed</code>,
-          <code class="font-mono text-sm text-ink-700">rx.prescribed</code>, and
-          <code class="font-mono text-sm text-ink-700">shipment.updated</code>.
-        </p>
       </div>
-      <div>
-        <pre
-          class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{webhookSample}</code></pre>
-        <p class="mt-3 text-sm text-ink-400">Illustrative payload.</p>
+      <div class="lg:col-span-7">
+        <ul class="grid gap-2 sm:grid-cols-2">
+          {
+            events.map((e) => (
+              <li class="flex items-center gap-2 rounded-md border border-line bg-surface px-3 py-2 font-mono text-sm text-ink-700">
+                <Icon name="lucide:webhook" class="icon size-4 shrink-0 text-purple-600" />
+                {e}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-3 text-sm text-ink-400">A selection — the full catalog lives in the docs.</p>
       </div>
     </div>
   </Section>
 
-  {/* Environments / tokens / versioning */}
-  <Section>
+  {/* Front ends */}
+  <Section id="front-ends">
     <SectionHeader
-      eyebrow="Built to build on"
-      title="Environments, tokens, and versioning."
-      lead="The boring guarantees that make a platform safe to automate against."
+      eyebrow="Your front end"
+      title="Three ways to put your brand on it."
+      lead="Checkout and identity run on hardened, hosted steps; everything else is yours to design."
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
-      <Card icon="layers" title="Sandbox & production">
-        Develop and test against a full sandbox tenant — provisioned with your consult — then
-        promote to production with the same calls.
-      </Card>
-      <Card icon="key" title="Scoped tokens">
-        Issue least-privilege tokens per environment, per agent, per integration.
-      </Card>
-      <Card icon="git-branch" title="Versioned API">
-        Pinned versions and a published changelog, so upgrades never surprise your agents.
-      </Card>
+      {
+        frontEnds.map((f) => (
+          <Card icon={f.icon} title={f.title}>
+            {f.body}
+          </Card>
+        ))
+      }
     </div>
   </Section>
 
-  {/* Integrations teaser */}
-  <Section id="integrations" surface="sunken" bordered>
-    <div class="grid gap-6 md:grid-cols-3">
-      <Card icon="plug" title="Connect the rest of your stack" href="#webhooks">
-        Pharmacies, providers, labs, analytics, and CRMs — wired through the same API and webhooks
-        your agents already use.
-      </Card>
-      <Card
-        icon="badge-check"
-        title="On infrastructure that's cleared the reviews"
-        href="/security"
-      >
-        Build on a HIPAA-compliant data layer with end-to-end encryption, behind cleared HIPAA,
-        state pharmacy-board, and payment-processor reviews.
-      </Card>
-      <Card icon="git-merge" title="See under the hood" href="/architecture">
-        The patient journey and the durable order saga your agents drive — the architecture behind
-        every call.
-      </Card>
+  {/* Agents */}
+  <Section id="agents" surface="surface" bordered>
+    <SectionHeader
+      eyebrow="Agents & MCP"
+      title="A platform your AI agents can build on, too."
+      lead="The same contracts that make the API predictable make it legible to agents."
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        agents.map((a) => (
+          <Card icon={a.icon} title={a.title}>
+            {a.body}
+          </Card>
+        ))
+      }
     </div>
   </Section>
 
-  {/* Closing CTA */}
-  <Section surface="surface" bordered>
+  {/* CTA */}
+  <Section>
     <SectionHeader
       align="center"
       eyebrow="Get started"
-      title="Point your agents at the platform and build."
+      title="Start in the test environment."
+      lead="Keys are issued when you onboard. Build end to end against the test environment, then go live at launch."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Request API access</Button>
-      <Button variant="secondary" href="/contact">Talk to sales</Button>
+      <Button variant="primary" href={DOCS_URL}>Read the docs</Button>
+      <Button variant="secondary" href={CTA.consult.href}>{CTA.consult.label}</Button>
     </div>
   </Section>
 </PageLayout>

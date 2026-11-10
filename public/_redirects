@@ -1,0 +1,4 @@
+# Nov 2026 refresh — renamed platform modules (refresh plan §3.2)
+/platform/patients   /platform/health-record   301
+/platform/visits     /platform/clinical-care   301
+/platform/analytics  /platform/operations      301

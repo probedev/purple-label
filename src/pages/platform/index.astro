@@ -1,8 +1,8 @@
 ---
 /**
- * Platform `/platform` — the modular toolkit overview (sitemap.md §2, content.md §2).
- * Summarizes all seven modules with deep-links, plus the agent/Developers spine and the
- * inherit-our-scale section.
+ * Platform `/platform` — the Health Loop overview (Nov 2026 refresh plan
+ * §4.2). Hero → the interactive loop → each plane with its modules → one record, one member,
+ * one brand → heritage proof → two ways to run it → CTA. Modules come from src/lib/modules.ts.
  */
 import PageLayout from '../../layouts/PageLayout.astro';
 import Section from '../../components/layout/Section.astro';
@@ -12,155 +12,170 @@ import Button from '../../components/primitives/Button.astro';
 import Card from '../../components/primitives/Card.astro';
 import StatCard from '../../components/primitives/StatCard.astro';
 import Heritage from '../../components/marketing/Heritage.astro';
-import { DOCS_URL } from '../../lib/nav';
-import { STATS, PROOF_LINE } from '../../lib/stats';
+import HealthLoop from '../../components/marketing/HealthLoop.astro';
+import { Icon } from 'astro-icon/components';
+import { PLANES, modulesInPlane, OWN_EXTRAS } from '../../lib/modules';
+import { CTA, DOCS_URL } from '../../lib/nav';
+import { STATS } from '../../lib/stats';
 
-/** StatCard props from a registry entry — no literal stats in this file (G1). */
 const stat = (key: keyof typeof STATS) => ({
   value: STATS[key].value,
   label: STATS[key].label,
   caption: STATS[key].caption,
 });
 
-const modules = [
+const cardsFor = (planeId: (typeof PLANES)[number]['id']) => [
+  ...modulesInPlane(planeId).map((m) => ({
+    icon: m.icon,
+    title: m.name,
+    body: m.cardBody,
+    href: `/platform/${m.slug}`,
+  })),
+  ...(planeId === 'own'
+    ? OWN_EXTRAS.map((x) => ({ icon: x.icon, title: x.name, body: x.cardBody, href: x.href }))
+    : []),
+];
+
+const shared = [
   {
-    icon: 'clipboard-list',
-    title: 'Intake',
-    body: 'Agent- and API-first patient intake with identity verification built in. Assemble condition-aware questionnaires from tested components and prompts.',
-    href: '/platform/intake',
+    icon: 'fingerprint',
+    title: 'One identity',
+    body: 'A member is the same person in intake, labs, the app, the visit, and the shipment.',
   },
   {
-    icon: 'stethoscope',
-    title: 'Visits & E-Prescribing',
-    body: 'Synchronous and async telemedicine visits with certified e-prescribing, routed by a real-time, multi-state provider engine.',
-    href: '/platform/visits',
-  },
-  {
-    icon: 'users',
-    title: 'Patient Management',
-    body: 'One longitudinal record, secure messaging, and care coordination — available as API and events.',
-    href: '/platform/patients',
-  },
-  {
-    icon: 'pill',
-    title: 'Pharmacy & Fulfillment',
-    body: 'A nationwide 503A/503B network with volume pricing passed straight through to you — zero markup — shipping to all 50 states.',
-    href: '/platform/pharmacy-fulfillment',
-  },
-  {
-    icon: 'credit-card',
-    title: 'Payments',
-    body: 'Telehealth merchant accounts, subscriptions, and refunds — callable from your stack.',
-    href: '/platform/payments',
-  },
-  {
-    icon: 'trending-up',
-    title: 'Analytics & Growth',
-    body: 'Cohorts, retention, order economics, conversion, and BI as data and endpoints — not locked dashboards.',
-    href: '/platform/analytics',
+    icon: 'database',
+    title: 'One record',
+    body: 'Every module reads and writes the same longitudinal record — no syncing between your own tools.',
   },
   {
     icon: 'shield-check',
-    title: 'Security & Compliance',
-    body: `A HIPAA-compliant data layer with end-to-end encryption and access governance under every module — with ${PROOF_LINE} behind it.`,
-    href: '/security',
+    title: 'One compliance floor',
+    body: 'The same encryption, audit, and access controls under every module.',
+  },
+  {
+    icon: 'tag',
+    title: 'One brand',
+    body: 'Your name, colors, voice, and domains on every surface a member touches.',
   },
 ];
 ---
 
 <PageLayout
-  title="Platform — run your whole telemedicine business from one platform"
-  description="Run intake, visits, e-prescribing, patient management, pharmacy, payments, analytics, and security from one platform behind your brand — with one source of truth for patients, orders, and clinical data, modular by design and callable from your stack or your agents."
+  title="Platform — one white-label platform for the whole health loop"
+  description="Labs, wearables, intake, a longitudinal record, insights, protocols, licensed clinicians, pharmacy, a branded member app, payments, and operations — one white-label health platform."
   path="/platform"
 >
   {/* Hero */}
   <Section size="lg">
     <Eyebrow>The platform</Eyebrow>
-    <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      Run your whole telemedicine business from one platform.
+    <h1 class="mt-4 max-w-4xl font-display text-display text-ink-900">
+      Everything a modern health experience needs.{' '}
+      <span class="text-purple-600">One platform. Your brand.</span>
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Intake, visits, e-prescribing, pharmacy, payments, and analytics — one platform behind your
-      brand, with one source of truth for patients, orders, and clinical data. Modular by design, so
-      you adopt the modules you need and call them from your stack, with one API for your agents.
+      Most digital health stacks are a storefront bolted to a prescription. Purple Label is the
+      whole loop — knowing each member, understanding their data, acting on it with licensed care,
+      and tracking what changes — built as one system and delivered under your name.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="link-arrow" href={DOCS_URL}>Read the docs</Button>
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      <Button variant="secondary" href={CTA.preview.href}>{CTA.preview.label}</Button>
     </div>
   </Section>
 
-  {/* Modular, not monolithic */}
+  {/* The loop */}
   <Section surface="surface" bordered>
     <SectionHeader
-      eyebrow="Modular, not monolithic"
-      title="Every module is callable. Adopt one, or run the whole engine."
-      lead="Start with Intake alone, or run intake → visit → e-prescribe → fulfill → deliver as one system. Shared identity, data, and compliance across all of it — no integration tax between your own modules."
+      eyebrow="The health loop"
+      title="Know. Understand. Act. Repeat."
+      lead="Every module is a step in the same loop — and every retest starts it again with more context than before."
     />
+    <div class="mt-14">
+      <HealthLoop id="platform-loop" />
+    </div>
   </Section>
 
-  {/* The modules */}
-  <Section>
+  {/* Planes */}
+  {
+    PLANES.map((plane, i) => (
+      <Section surface={i % 2 === 0 ? 'paper' : 'surface'} bordered={i > 0} id={plane.id}>
+        <div class="flex items-center gap-3">
+          <span class="grid size-10 place-items-center rounded-md bg-purple-50">
+            <Icon name={`lucide:${plane.icon}`} class="icon size-5 text-purple-600" />
+          </span>
+          <Eyebrow>{plane.label}</Eyebrow>
+        </div>
+        <h2 class="mt-4 font-display text-h2 text-ink-900">{plane.verb}.</h2>
+        <p class="mt-4 max-w-prose text-body-lg text-ink-500">{plane.summary}</p>
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {cardsFor(plane.id).map((c) => (
+            <Card icon={c.icon} title={c.title} href={c.href}>
+              {c.body}
+            </Card>
+          ))}
+        </div>
+      </Section>
+    ))
+  }
+
+  {/* Shared foundation */}
+  <Section surface="sunken" bordered>
     <SectionHeader
-      eyebrow="The modules"
-      title="Best-of-breed, battle-tested at scale."
-      lead="Each module is production infrastructure that already runs a national telehealth operation."
+      eyebrow="Modular, not stitched"
+      title="Adopt one module or the whole loop — it’s one system either way."
+      lead="Start with care programs and add labs later, or launch the full experience on day one. Everything shares the same foundation, so nothing has to be integrated twice."
     />
-    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {
-        modules.map((m) => (
-          <Card icon={m.icon} title={m.title} href={m.href}>
-            {m.body}
+        shared.map((s) => (
+          <Card icon={s.icon} title={s.title}>
+            {s.body}
           </Card>
         ))
       }
     </div>
   </Section>
 
-  {/* Build on it your way */}
-  <Section surface="sunken" bordered>
-    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
-      <div>
-        <SectionHeader
-          eyebrow="Build on it your way"
-          title="This is how you build on it."
-          lead="Every module is exposed through one programmable surface: API tokens, agent-ready docs, and an agent pack — prompt playbooks now, MCP connectors at launch. Your team or your agents do the assembly; you keep full control."
-        />
-        <div class="mt-8">
-          <Button variant="primary" href="/developers">Explore the developer surface</Button>
-        </div>
-      </div>
-      <Card icon="code" title="One API for your agents">
-        Point your team or your agents at the platform and let them stand up, operate, and extend
-        each module — with a focused console where a human must act.
+  {/* Heritage + scale */}
+  <Section>
+    <Heritage />
+    <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <StatCard {...stat('rxMonthly')} />
+      <StatCard {...stat('providerNetwork')} />
+      <StatCard {...stat('brandsLaunched')} />
+      <StatCard {...stat('legitscriptCerts')} />
+    </div>
+  </Section>
+
+  {/* Two ways */}
+  <Section surface="surface" bordered>
+    <div class="grid gap-6 md:grid-cols-2">
+      <Card icon="code" title="Build on it">
+        A contract-first API, signed webhooks, a site kit, and agent-ready docs — compose the
+        experience your way.
+        <span class="mt-6 block">
+          <Button variant="link-arrow" href={DOCS_URL}>Read the docs</Button>
+        </span>
+      </Card>
+      <Card icon="headset" title="Have us run it">
+        Our team builds, launches, and operates your branded health business on the Managed plan.
+        <span class="mt-6 block">
+          <Button variant="link-arrow" href="/managed">Explore Managed</Button>
+        </span>
       </Card>
     </div>
   </Section>
 
-  {
-    /* Inherit our scale — the heritage×next-gen frame (G2); the old "3 years in
-      production" platform-age claim now lives correctly inside the operators' story. */
-  }
+  {/* CTA */}
   <Section>
-    <Heritage eyebrow="Inherit our scale" />
-    <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-      <StatCard {...stat('rxMonthly')} />
-      <StatCard {...stat('ordersWeekly')} />
-      <StatCard {...stat('brandsLaunched')} />
-      <StatCard {...stat('providerNetwork')} />
-    </div>
-  </Section>
-
-  {/* Closing CTA */}
-  <Section surface="surface" bordered>
     <SectionHeader
       align="center"
       eyebrow="Get started"
-      title="Build telemedicine your agents can run."
+      title="See the whole platform under your brand."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href={DOCS_URL}>Read the docs</Button>
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      <Button variant="secondary" href="/pricing">See pricing</Button>
     </div>
   </Section>
 </PageLayout>

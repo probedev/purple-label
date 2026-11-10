@@ -1,0 +1,189 @@
+---
+/**
+ * Solution page `/solutions/[slug]` — one per audience in src/lib/solutions.ts (Nov 2026
+ * refresh, refresh plan §2.3). Hook → the member app in an illustrative brand for
+ * this audience → why it works → the modules that matter → care programs that fit → how
+ * you launch → FAQ → CTA. Example brands are fictional and labeled.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/layout/Section.astro';
+import SectionHeader from '../../components/primitives/SectionHeader.astro';
+import Eyebrow from '../../components/primitives/Eyebrow.astro';
+import Button from '../../components/primitives/Button.astro';
+import Card from '../../components/primitives/Card.astro';
+import FAQ from '../../components/primitives/FAQ.astro';
+import MemberAppMock from '../../components/marketing/MemberAppMock.astro';
+import { Icon } from 'astro-icon/components';
+import { SOLUTIONS, type Solution } from '../../lib/solutions';
+import { moduleBySlug, PLANES, type PlatformModule } from '../../lib/modules';
+import { PROGRAMS_DATA } from '../../lib/programs';
+import { faqJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { CTA } from '../../lib/nav';
+
+export function getStaticPaths() {
+  return SOLUTIONS.map((solution) => ({ params: { slug: solution.slug }, props: { solution } }));
+}
+
+interface Props {
+  solution: Solution;
+}
+const { solution: s } = Astro.props;
+const path = `/solutions/${s.slug}`;
+const mods = s.modules.map((slug) => moduleBySlug(slug)).filter(Boolean) as PlatformModule[];
+const programs = s.programs
+  .map((slug) => PROGRAMS_DATA.find((p) => p.slug === slug))
+  .filter(Boolean) as typeof PROGRAMS_DATA;
+
+const faqs = [
+  ...s.faqs,
+  {
+    q: 'Who provides the clinical care?',
+    a: 'Independent licensed clinicians, credentialed in all 50 states, make every clinical and prescribing decision. You own the brand and the member relationship.',
+  },
+  {
+    q: 'How fast can we launch?',
+    a: 'On the Managed plan our team takes you from kickoff to live in about a month. Building on the platform yourself moves at your team’s pace.',
+  },
+];
+---
+
+<PageLayout
+  title={s.metaTitle}
+  description={s.metaDescription}
+  path={path}
+  jsonLd={[
+    faqJsonLd(faqs),
+    breadcrumbJsonLd([
+      ['Solutions', '/solutions'],
+      [s.audience, path],
+    ]),
+  ]}
+>
+  {/* Hero */}
+  <Section size="lg">
+    <div class="grid gap-12 lg:grid-cols-12 lg:items-center">
+      <div class="lg:col-span-6">
+        <Eyebrow>{`For ${s.audience.toLowerCase()}`}</Eyebrow>
+        <h1 class="mt-4 font-display text-h1 text-ink-900">{s.headline}</h1>
+        <p class="mt-6 max-w-prose text-body-lg text-ink-500">{s.lead}</p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+          <Button variant="secondary" href={CTA.preview.href}>{CTA.preview.label}</Button>
+        </div>
+      </div>
+      <div class="lg:col-span-6">
+        <MemberAppMock brand={s.example} compact />
+      </div>
+    </div>
+  </Section>
+
+  {/* Why */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="Why it works"
+      title={`Why ${s.audience.toLowerCase()} launch on Purple Label.`}
+    />
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        s.why.map((w) => (
+          <Card icon={w.icon} title={w.title}>
+            {w.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Picture it */}
+  <Section>
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <SectionHeader eyebrow="Picture it" title="What a launch can look like." />
+      </div>
+      <div class="lg:col-span-7">
+        <p class="font-display text-h3 text-ink-700">{s.launchStory}</p>
+        <p class="mt-4 text-xs text-ink-300">Illustrative scenario.</p>
+      </div>
+    </div>
+  </Section>
+
+  {/* Modules */}
+  <Section surface="sunken" bordered>
+    <SectionHeader
+      eyebrow="The modules that matter"
+      title="The parts of the platform you’ll lean on."
+      lead="Every brand gets the whole loop. These are the pieces that do the most work for this audience."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        mods.map((m) => (
+          <Card icon={m.icon} title={m.name} href={`/platform/${m.slug}`}>
+            <span class="mb-2 block text-xs uppercase tracking-eyebrow text-ink-400">
+              {PLANES.find((p) => p.id === m.plane)!.label}
+            </span>
+            {m.cardBody}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Programs */}
+  <Section>
+    <SectionHeader
+      eyebrow="Care programs that fit"
+      title="Start with the care your members already buy."
+    />
+    <div class="mt-10 flex flex-wrap gap-3">
+      {
+        programs.map((p) => (
+          <a
+            href={`/programs/${p.slug}`}
+            class="inline-flex h-11 items-center gap-2 rounded-md border border-line bg-surface px-4 text-sm font-semibold text-ink-700 transition-colors duration-150 hover:border-purple-200 hover:text-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+          >
+            <Icon name={`lucide:${p.icon}`} class="icon size-4 text-purple-600" />
+            {p.title}
+          </a>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* How you launch */}
+  <Section surface="surface" bordered>
+    <div class="grid gap-6 md:grid-cols-2">
+      <Card icon="code" title="Build it on the platform">
+        Your team composes the experience on our API, webhooks, and site kit.
+        <span class="mt-6 block">
+          <Button variant="link-arrow" href="/developers">Developer platform</Button>
+        </span>
+      </Card>
+      <Card icon="headset" title="Have us run it">
+        Our team builds and operates it with you on the Managed plan.
+        <span class="mt-6 block">
+          <Button variant="link-arrow" href="/managed">Explore Managed</Button>
+        </span>
+      </Card>
+    </div>
+  </Section>
+
+  {/* FAQ */}
+  <Section>
+    <SectionHeader align="center" eyebrow="Questions, answered" title="Before you launch." />
+    <FAQ class="mt-12" items={faqs} />
+  </Section>
+
+  {/* CTA */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      align="center"
+      eyebrow="Get started"
+      title="See it with your brand on it."
+      lead="A walkthrough of the member experience and the console, configured for your audience."
+    />
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      <Button variant="secondary" href={CTA.preview.href}>{CTA.preview.label}</Button>
+    </div>
+  </Section>
+</PageLayout>

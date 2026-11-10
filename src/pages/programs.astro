@@ -24,19 +24,19 @@ const economics = [
 ---
 
 <PageLayout
-  title="Rx catalog — pass-through medication pricing, zero markup"
-  description="A full medication catalog at pass-through cost, zero markup — GLP-1 weight loss, men's and women's health, TRT, HRT, ED, hair & skin, peptides, and integrated labs. Complete branded care programs your agents assemble, or our team runs, on a nationwide 503A/503B pharmacy network."
+  title="Care programs — branded, clinician-led programs at pass-through pricing"
+  description="A full medication catalog at pass-through cost, zero markup — GLP-1 weight loss, men's and women's health, TRT, HRT, ED, hair & skin, peptides, and integrated labs. Complete branded care programs — lab-informed and clinician-led — that you build or our team runs, on a nationwide 503A/503B pharmacy network."
   path="/programs"
 >
   {/* Hero */}
   <Section size="lg">
-    <Eyebrow>Rx</Eyebrow>
+    <Eyebrow>Care programs</Eyebrow>
     {
       /* Explicit {' '}: Astro collapses the newline before the span (same bug as the
         home hero's "brandedtelehealth"). */
     }
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      The full Rx catalog — at the{' '}
+      Care programs your members want — at the{' '}
       <span class="text-purple-600">pass-through cost</span>, under your brand.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
@@ -45,7 +45,7 @@ const economics = [
       menu: build it with your agents, or have our team run it.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="primary" href="/contact">Book a demo</Button>
       <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>
@@ -105,7 +105,7 @@ const economics = [
           }
         </ul>
         <div class="mt-8 flex flex-wrap items-center gap-4">
-          <Button variant="primary" href="/contact">Book a consult</Button>
+          <Button variant="primary" href="/contact">Book a demo</Button>
           <Button variant="link-arrow" href="/programs/weight-loss">See the full program</Button>
           <Button variant="link-arrow" href="/glp-1-weight-loss">The GLP-1 launch guide</Button>
         </div>
@@ -169,7 +169,7 @@ const economics = [
       title="Launch your first program — or your full menu."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="primary" href="/contact">Book a demo</Button>
       <Button variant="secondary" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>

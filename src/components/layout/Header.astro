@@ -1,7 +1,8 @@
 ---
 /**
  * Header — sticky, 72px, paper@80% + blur (§5.3). Bottom hairline appears only after
- * scroll > 8px. Logo left · mega-menu center · Dashboard + Book a consult right.
+ * scroll > 8px. Logo left · mega-menu center · Book a demo right. The <nav> is the
+ * positioning context for every mega-menu panel (see MegaMenu).
  * Mobile: full-screen sheet with native <details> accordions (keyboard-accessible, no JS).
  */
 import { Icon } from 'astro-icon/components';
@@ -18,7 +19,7 @@ import { HEADER_GROUPS, HEADER_LINKS, CTA } from '../../lib/nav';
     <Logo />
 
     <!-- Desktop nav -->
-    <nav aria-label="Primary" class="hidden lg:block">
+    <nav aria-label="Primary" class="relative hidden lg:block">
       <ul class="flex items-center gap-1">
         {HEADER_GROUPS.map((group) => <MegaMenu group={group} />)}
         {

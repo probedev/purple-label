@@ -48,13 +48,14 @@ export const HERITAGE = {
  */
 export const RX_ODOMETER = {
   anchorCount: 728_487,
-  anchorDateUtc: Date.UTC(2026, 5, 28),
+  anchorDateUtc: Date.UTC(2026, 10, 10),
   avgPerDay: 60_000,
   label: 'Rx filled on platform',
   caption: "By our operators' platforms to date",
   entity: 'operators-heritage',
-  source: 'Founder anchor 2026-06-28; [GREGG-CONFIRM] figure + label',
-  asOf: '2026-06-28',
+  source:
+    'Founder anchor 2026-06-28 (728,487); re-anchored to 2026-11-10 per Gregg — the 60k/day extrapolation had climbed to ~8.9M',
+  asOf: '2026-11-10',
 } as const;
 
 export const STATS = {

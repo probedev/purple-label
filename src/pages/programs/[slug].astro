@@ -35,13 +35,13 @@ const siblings = PROGRAMS_DATA.filter((p) => p.slug !== program.slug);
 ---
 
 <PageLayout
-  title={`${program.title} — a branded telehealth program your agents run`}
+  title={`${program.title} — a branded care program under your name`}
   description={program.intro}
   path={path}
   jsonLd={[
     faqJsonLd(program.faqs),
     breadcrumbJsonLd([
-      ['Rx', '/programs'],
+      ['Care programs', '/programs'],
       [program.title, path],
     ]),
   ]}
@@ -62,7 +62,7 @@ const siblings = PROGRAMS_DATA.filter((p) => p.slug !== program.slug);
       }
     </ul>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="primary" href="/contact">Book a demo</Button>
       <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>
@@ -198,7 +198,7 @@ const siblings = PROGRAMS_DATA.filter((p) => p.slug !== program.slug);
       title="Stand up this program — or your full menu."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="primary" href="/contact">Book a demo</Button>
       <Button variant="secondary" href={DOCS_URL}>Start building</Button>
     </div>
   </Section>

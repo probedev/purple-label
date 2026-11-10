@@ -1,9 +1,16 @@
 ---
 /**
- * Home `/` — repositioned homepage from spec/content.md §1 (AI-agent-first positioning),
- * with Batch-1 facts woven in: the moat (cleared audits), the reconciled care story,
- * scale-driven drug pricing, and the "3 years in market" proof. Static render; the Phase 2
- * motion engine layers in the hero timeline, pinned flow, and count-up tweens.
+ * Home `/` — Nov 2026 refresh (plan §4.1). Category line (Gregg
+ * 2026-11-10): "The Branded Digital Health Care Experience". The vision: a white-label consumer health
+ * platform — the brand gets the whole consumer health loop — labs, wearables,
+ * insights, protocols, clinicians, Rx, pharmacy — under its own name, and keeps the member.
+ * Telehealth is one layer of the product, not the product.
+ *
+ * Arc: category + branded member app → proof → the shift → the health loop → who builds →
+ * the member is yours (category comparison, no competitor names) → you bring / we run →
+ * two ways to run it → care programs → prescribed from data → privacy → developers → FAQ.
+ *
+ * All numbers route through src/lib/stats.ts (G1). Mock brands are fictional and labeled.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
@@ -12,13 +19,16 @@ import { Icon } from 'astro-icon/components';
 import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
-import Badge from '../components/primitives/Badge.astro';
 import FAQ from '../components/primitives/FAQ.astro';
-import HeroArt from '../components/marketing/HeroArt.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
 import Heritage from '../components/marketing/Heritage.astro';
+import HealthLoop from '../components/marketing/HealthLoop.astro';
+import MemberAppMock from '../components/marketing/MemberAppMock.astro';
 import { organizationJsonLd, softwareApplicationJsonLd, faqJsonLd } from '../lib/seo';
-import { STATS, RX_ODOMETER, PROOF_LINE } from '../lib/stats';
-import { DOCS_URL } from '../lib/nav';
+import { STATS, RX_ODOMETER } from '../lib/stats';
+import { DOCS_URL, CTA } from '../lib/nav';
+import { SOLUTIONS, HERO_MOCK_BRANDS } from '../lib/solutions';
+import { PROGRAMS_DATA } from '../lib/programs';
 
 /** StatCard props from a registry entry — no literal stats in this file (G1). */
 const stat = (key: keyof typeof STATS) => ({
@@ -27,226 +37,167 @@ const stat = (key: keyof typeof STATS) => ({
   caption: STATS[key].caption,
 });
 
-const modules = [
-  {
-    icon: 'clipboard-list',
-    title: 'Intake',
-    body: 'Agent- and API-first patient intake with identity verification built in. Assemble condition-aware questionnaires from tested components and prompts; your agents run them.',
-    href: '/platform/intake',
-  },
-  {
-    icon: 'stethoscope',
-    title: 'Visits & E-Prescribing',
-    body: 'Synchronous and async telemedicine visits with certified e-prescribing, routed by a real-time, multi-state provider engine.',
-    href: '/platform/visits',
-  },
-  {
-    icon: 'users',
-    title: 'Patient Management',
-    body: 'One longitudinal record, secure messaging, and care coordination across every module.',
-    href: '/platform/patients',
-  },
-  {
-    icon: 'pill',
-    title: 'Pharmacy & Fulfillment',
-    body: 'A nationwide 503A/503B network with volume pricing passed straight through to you — zero markup — shipping to all 50 states.',
-    href: '/platform/pharmacy-fulfillment',
-  },
-  {
-    icon: 'credit-card',
-    title: 'Payments',
-    body: 'Telehealth merchant accounts, subscriptions, and refunds — callable from your stack.',
-    href: '/platform/payments',
-  },
-  {
-    icon: 'trending-up',
-    title: 'Analytics & Growth',
-    body: 'Cohorts, retention, order economics, conversion, and BI as data and endpoints — not locked dashboards.',
-    href: '/platform/analytics',
-  },
-];
-
-const audits = ['HIPAA', 'Pharmacy-board', 'Payment-processor'];
-
-// Wearable & device ecosystem (folded from WLMD) — names as text chips; actual brand
-// logos land once brand-use permission is confirmed, like customer logos.
-const devices = [
-  'Apple Health',
-  'Fitbit',
-  'Garmin',
-  'Dexcom',
-  'Withings',
-  'Google Fit',
-  'Polar',
-  'Samsung Health',
-];
-
-// Initial server-rendered value for the live Rx ticker; the hero <script> imports the
-// same registry anchor, so the two can never drift.
 const RX_ANCHOR = RX_ODOMETER.anchorCount;
 
-const programs = [
+// "The member is yours" — category comparison. Column labels are categories, never
+// competitor names (guardrail §6.2).
+const compareCols = ['Rx storefront vendor', 'Consumer health app', 'Your brand on Purple Label'];
+const compareRows: { label: string; cells: [string, string, string] }[] = [
+  { label: 'Whose brand the member sees', cells: ['Yours', 'Theirs', 'Yours'] },
+  { label: 'Who owns the member relationship and data', cells: ['Yours', 'Theirs', 'Yours'] },
+  { label: 'Labs and biomarkers', cells: ['—', '✓', '✓'] },
+  { label: 'Wearables and a longitudinal record', cells: ['—', '✓', '✓'] },
+  { label: 'Personalized, clinician-reviewed protocols', cells: ['—', '✓', '✓'] },
+  { label: 'Licensed clinicians and e-prescribing', cells: ['✓', '✓', '✓'] },
+  { label: '503A/503B pharmacy at pass-through pricing', cells: ['Varies', '—', '✓'] },
+  { label: 'A public API, webhooks, and your own front end', cells: ['Limited', '—', '✓'] },
+  { label: 'Run it yourself, or have it run for you', cells: ['Run for you', '—', 'Both'] },
+];
+
+const youBring = [
+  'Your brand and your audience',
+  'Your retail pricing and product mix',
+  'Your voice, your protocols, your marketing',
+  'The relationship with your members',
+];
+const weRun = [
+  'Labs, devices, and the longitudinal record',
+  'Licensed clinicians in all 50 states',
+  'Pharmacy, packaging, and delivery',
+  'Payments, compliance, and certification support',
+  'The member app, the console, and the API',
+];
+
+const featuredPrograms = ['weight-loss', 'trt', 'womens-health', 'peptides', 'labs', 'hair-skin']
+  .map((slug) => PROGRAMS_DATA.find((p) => p.slug === slug))
+  .filter(Boolean) as typeof PROGRAMS_DATA;
+
+const safety = [
   {
-    icon: 'activity',
-    title: 'Weight loss',
-    body: 'The category driving telehealth demand — GLP-1 and metabolic programs, end to end. Our flagship.',
-  },
-  {
-    icon: 'user',
-    title: "Men's health",
-    body: 'Sexual health, hormones, hair, and wellness under one branded program.',
-  },
-  {
-    icon: 'heart-pulse',
-    title: "Women's health",
-    body: 'Hormones, wellness, and longevity care, fully branded.',
-  },
-  {
-    icon: 'dumbbell',
-    title: 'TRT & HRT',
-    body: 'Testosterone and hormone therapy with labs and titration built in.',
-  },
-  {
-    icon: 'flask-conical',
-    title: 'Peptides',
-    body: 'Recovery and longevity protocols on compliant, compounded supply.',
+    icon: 'clipboard-list',
+    title: 'Governed intake',
+    body: 'Your brand shapes the screening; a physician-governed medical questionnaire marketing can never rewrite.',
   },
   {
     icon: 'microscope',
-    title: 'Labs & diagnostics',
-    body: 'Baseline and monitoring panels, ordered and resulted inside the journey.',
+    title: 'Lab-informed decisions',
+    body: 'Results flow into eligibility and review, so programs like TRT and HRT start from data.',
+  },
+  {
+    icon: 'scale',
+    title: 'Versioned rules',
+    body: 'Eligibility and dose rules run as code — every decision versioned, explainable, and replayable.',
+  },
+  {
+    icon: 'user-check',
+    title: 'Clinicians decide',
+    body: 'Independent licensed clinicians make every clinical and prescribing decision. Always.',
   },
 ];
 
-// Ownership / sovereignty — the brand, patients, and data are the customer's, not ours.
-const ownership = [
+const privacy = [
   {
-    icon: 'tag',
-    title: 'Your brand',
-    body: 'Every patient touchpoint — intake, visits, billing, refills — runs under your name. Patients see your brand, never ours.',
+    icon: 'key-round',
+    title: 'A key for every member',
+    body: 'Health data is encrypted per member. Erasure is provable — destroy the key, the data is gone.',
   },
   {
-    icon: 'users',
-    title: 'Your patients',
-    body: 'The customer relationship is yours to keep. We run the back end; you own the front.',
+    icon: 'building',
+    title: 'Tenant isolation',
+    body: 'Every brand is isolated by design; another tenant’s data doesn’t just stay hidden — it doesn’t exist to them.',
   },
   {
-    icon: 'database',
-    title: 'Your data',
-    body: 'Clear data ownership and a documented chain of custody — exportable on demand. Your data stays yours.',
+    icon: 'eye-off',
+    title: 'PHI stays put',
+    body: 'Events, webhooks, and status reads carry references, never health data.',
+  },
+  {
+    icon: 'scroll-text',
+    title: 'Audit that fails closed',
+    body: 'Every sensitive read is audited — and if the audit can’t be written, the read doesn’t happen.',
   },
 ];
+
+const apiSample = `GET /v1/journeys/jny_8k2c…/status
+X-Brand-Id: brd_northline
+
+200 OK
+{
+  "public_status": "SHIPPED",
+  "status_version": "v1"
+}
+
+→ webhook  journey.shipment.shipped.v1
+   X-Purple-Signature: v1=9f3a…`;
 
 const homeFaqs = [
   {
-    q: 'Do I own my brand, patients, and data?',
-    a: 'Yes — always. The brand, the patients, and the data are yours. Purple Label runs the back end; the customer relationship and the data stay with you.',
+    q: 'What is Purple Label MD?',
+    a: 'A white-label digital health platform. Brands launch a complete consumer health experience — labs, wearables, insights, protocols, licensed clinicians, prescriptions, and pharmacy — under their own name, on one platform.',
+  },
+  {
+    q: 'Is this a telehealth platform?',
+    a: 'Telehealth is one layer of it. Members also get labs and biomarkers, connected devices, a health score, and personalized protocols — the longitudinal experience consumers expect, with care and prescriptions when they need them.',
+  },
+  {
+    q: 'Do I own my brand, members, and data?',
+    a: 'Yes — always. Purple Label runs the platform underneath; the brand, the member relationship, and the data stay with you. We never sell member data.',
   },
   {
     q: 'Am I the doctor?',
-    a: 'No. A licensed provider network, credentialed in all 50 states, handles clinical care and prescribing. You own the brand; licensed providers handle the medicine.',
+    a: 'No. Independent licensed clinicians, credentialed in all 50 states, make every clinical and prescribing decision. You own the brand; licensed providers handle the medicine.',
   },
   {
-    q: 'Is a doctor still involved if AI is doing the work?',
-    a: 'Yes. Agents and AI handle the repeatable work, but a licensed, board-certified clinician reviews every clinical decision, prescription, and lab result.',
+    q: 'Who is it for?',
+    a: 'Anyone with a relationship to their members’ health: DTC health brands, gyms and fitness brands, clinics and med spas, employers and benefits platforms, creators and physicians, wellness brands, and pharmacies.',
   },
   {
-    q: 'What medical programs are supported?',
-    a: "Weight loss (GLP-1), men's and women's health, TRT, HRT, ED, hair & skin, peptides, and integrated labs — plus anything else legal and compliant your agents compose from the same modules.",
-  },
-  {
-    q: 'How does LegitScript certification work?',
-    a: 'As a LegitScript Enterprise Partner, your brand inherits pre-certified infrastructure and a fast-track process across pharmacies, providers, and websites — so you can advertise and process payments from day one.',
-  },
-  {
-    q: 'Who handles medication and fulfillment?',
-    a: 'A nationwide 503A/503B pharmacy network fills and ships to all 50 states — at pass-through pricing, zero markup. Your cost is our cost.',
+    q: 'What care programs are supported?',
+    a: 'Weight loss (GLP-1), TRT, HRT, men’s and women’s health, peptides and longevity, hair and skin, sexual health, and lab-led programs — plus custom formulations with our 503A/503B partners.',
   },
   {
     q: 'Do I build it myself, or is it run for me?',
-    a: 'Either. Build on the platform with your own agents and developers, run a dedicated enterprise deployment, or have our team build and operate it for you on the Managed plan.',
+    a: 'Either. Build on the platform with your team and your agents through the API and site kit, or have our team build and operate it for you on the Managed plan.',
   },
   {
-    q: 'What does it take to launch?',
-    a: 'The modules are already in production — intake, visits, e-prescribing, pharmacy, payments, analytics, and compliance. Your agents compose and operate a branded program on infrastructure that has already cleared HIPAA, pharmacy-board, and payment-processor audits.',
-  },
-  {
-    q: 'How much does it cost to launch?',
-    a: 'A fraction of building your own infrastructure, with flexible models across the tiers — including Managed, where we work on revenue share and only do well when you do. We scope the specifics on your consult.',
-  },
-  {
-    q: 'Can my brand offer lab testing and wearable programs?',
-    a: `Yes — diagnostics with at-home and in-person collection, plus ${STATS.deviceIntegrations.value} wearable and device integrations, all running inside your branded platform.`,
-  },
-  {
-    q: 'Can you make a custom product or a custom-dosed formulation?',
-    a: 'Yes — custom compounded formulations and branded packaging with our 503A/503B partners. Anything legal and compliant, built around your vision.',
+    q: 'How does LegitScript certification work?',
+    a: 'As a LegitScript Enterprise Partner, certification support is built into every launch — so your brand can advertise and process payments with confidence.',
   },
 ];
 ---
 
 <PageLayout
-  title="Purple Label MD — launch and own a branded telehealth business"
-  description="Launch and own a branded telehealth business on proven, audit-cleared infrastructure — providers, pharmacy at pass-through pricing, payments, and compliance. Build it with your own agents and API, or have our team run it for you, done-for-you on revenue share."
+  title="Purple Label MD — the branded digital health care experience"
+  description="Launch a complete consumer health experience under your brand: labs and biomarkers, wearables, insights, protocols, licensed clinicians, prescriptions, and pharmacy — one platform, and the member is yours."
   path="/"
   jsonLd={[organizationJsonLd(), softwareApplicationJsonLd(), faqJsonLd(homeFaqs)]}
 >
-  {
-    /* 1 — Hero: eyebrow across the top, headline left / support + CTAs right
-      (top-aligned), and the saga animation blending up into the same section —
-      one continuous composition that walks the eye from headline to diagram. */
-  }
+  {/* 1 — Hero: category + the branded member app, cycling through illustrative brands. */}
   <Section size="lg">
-    <p
-      class="flex flex-wrap items-baseline gap-x-2 text-xs uppercase tracking-eyebrow text-ink-400"
-    >
-      <span>Rx filled by our operators' platforms to date</span>
-      <span
-        id="rx-counter"
-        class="font-mono text-sm tabular-nums tracking-normal text-purple-600 normal-case"
-        >{RX_ANCHOR.toLocaleString('en-US')}</span
-      >
-    </p>
-
-    <div class="mt-5 grid gap-10 lg:grid-cols-12 lg:gap-14">
-      <div class="lg:col-span-7">
+    <div class="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-14">
+      <div class="lg:col-span-6">
+        <Eyebrow>The white-label health platform</Eyebrow>
         {
-          /* The explicit {' '} matters: Astro collapses the newline before the span,
-            which shipped as "brandedtelehealth" on the live hero. */
+          /* Explicit {' '} — Astro collapses the newline before the span (shipped as
+            "brandedtelehealth" once on the live hero). */
         }
-        <h1 class="font-display text-display text-ink-900">
-          Launch and own a branded{' '}
-          <span class="text-purple-600">telehealth business.</span>
+        <h1 class="mt-5 font-display text-h1 text-ink-900">
+          The branded{' '}
+          <span class="text-purple-600">digital health care experience.</span>
         </h1>
-      </div>
-
-      <div class="lg:col-span-5 lg:pt-3">
-        <p class="max-w-prose text-body-lg text-ink-500">
-          Providers, pharmacy, payments, and compliance — from the team behind{' '}
-          {STATS.brandsLaunched.value} branded telehealth launches, rebuilt API-first for the agent era.
-          Medication at pass-through pricing, zero markup. Build it with your agents, or have our team
-          run it for you.
+        <p class="mt-6 max-w-prose text-body-lg text-ink-500">
+          Labs and biomarkers, wearables, personalized protocols, licensed clinicians,
+          prescriptions, and pharmacy — one consumer-grade health platform, launched under your
+          name. Build on it with your team, or have us run it for you. Either way, the member is
+          yours.
         </p>
-        {
-          /* The POST button IS the demo: it fires the saga below and glides the page
-            down in sync (see HeroArt). "Start building" (docs) lives on in the
-            two-ways section; the journey button is the hero's developer hook now. */
-        }
         <div class="mt-8 flex flex-wrap items-center gap-4">
-          <Button variant="primary" href="/contact">Book a consult</Button>
-          <Button variant="secondary" type="button" id="run-journey">
-            <Icon name="lucide:play" class="icon size-4 text-purple-600" />
-            Patient journey
-          </Button>
-          <Button variant="secondary" href={DOCS_URL}>
-            <Icon name="lucide:code" class="icon size-4 text-purple-600" />
-            Read the docs
+          <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+          <Button variant="secondary" href={CTA.preview.href}>
+            <Icon name="lucide:palette" class="icon size-4 text-purple-600" />
+            {CTA.preview.label}
           </Button>
         </div>
-        {
-          /* No free-floating separator dots — they strand at line ends when this wraps
-            on phones. Each item carries its own icon and wraps as a unit. */
-        }
         <ul class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-400">
           <li class="inline-flex items-center gap-1.5">
             <Icon name="lucide:shield-check" class="icon size-4 shrink-0 text-success" />
@@ -258,112 +209,230 @@ const homeFaqs = [
           </li>
           <li class="inline-flex items-center gap-1.5">
             <Icon name="lucide:check" class="icon size-4 shrink-0 text-success" />
-            50-state network
+            50-state clinician network
           </li>
         </ul>
       </div>
-    </div>
-
-    {
-      /* The saga — same section, no seam; it rises toward the headline block so the
-        POST chip sits just under the copy and the pipeline carries the eye down. */
-    }
-    <div class="mx-auto -mb-6 mt-0 max-w-5xl md:-mb-14 md:-mt-4">
-      <HeroArt />
+      <div class="lg:col-span-6">
+        <MemberAppMock brand={HERO_MOCK_BRANDS[0]} cycle={HERO_MOCK_BRANDS} />
+      </div>
     </div>
   </Section>
 
-  {/* 1.5 — Scale strip, right under the hero (per Gregg 2026-07-23) */}
+  {/* 2 — Scale strip (operators' heritage, registry-driven) */}
   <Section size="sm" surface="surface" bordered>
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
       <StatCard {...stat('rxMonthly')} />
       <StatCard {...stat('providerNetwork')} />
-      <StatCard {...stat('deviceIntegrations')} />
+      <StatCard {...stat('brandsLaunched')} />
       <StatCard {...stat('legitscriptCerts')} />
-      <StatCard {...stat('ordersWeekly')} />
+    </div>
+    <p
+      class="mt-8 flex flex-wrap items-baseline justify-center gap-x-2 text-center text-xs uppercase tracking-eyebrow text-ink-400"
+    >
+      <span>Rx filled by our operators' platforms to date</span>
+      <span
+        id="rx-counter"
+        class="font-mono text-sm tabular-nums tracking-normal text-purple-600 normal-case"
+        >{RX_ANCHOR.toLocaleString('en-US')}</span
+      >
+    </p>
+  </Section>
+
+  {/* 3 — The shift */}
+  <Section>
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <SectionHeader
+          eyebrow="The shift"
+          title="Telehealth sold a prescription. Consumers want a health relationship."
+        />
+      </div>
+      <div class="flex flex-col gap-6 lg:col-span-7">
+        <p class="text-body-lg text-ink-500">
+          The first wave of digital health was a storefront: a questionnaire, a prescription, a
+          refill. Today’s health consumers expect more — their labs, their devices, a score they can
+          move, a plan that adapts, and care when they need it, in one place they trust.
+        </p>
+        <p class="text-body-lg text-ink-500">
+          The consumer apps that deliver it keep the member for themselves. Purple Label gives that
+          whole experience to you — so the gym, the clinic, the creator, the employer, and the
+          health brand your members already trust can be the place they go for their health.
+        </p>
+      </div>
     </div>
   </Section>
 
-  {/* 2 — Proof bar */}
-  <Section size="sm" surface="surface" bordered>
-    <p class="mx-auto max-w-prose text-center text-body text-ink-500">
-      From the operators of a national-scale telehealth machine — {STATS.brandsLaunched.value}
-      branded launches — rebuilt API-first as Purple Label.
-    </p>
-    <p class="mt-6 text-center text-xs uppercase tracking-eyebrow text-ink-400">
-      Trusted by founders like Trucker's Body Shop — more logos as permissions land
-    </p>
+  {/* 4 — The health loop */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="The platform"
+      title="One platform for the whole health loop."
+      lead="Know every member. Understand what their data means. Act on it with real care. Then retest, track, and do it again — all under your brand."
+    />
+    <div class="mt-14">
+      <HealthLoop centerLabel="Your brand" />
+    </div>
   </Section>
 
-  {/* 3 — The thesis */}
+  {/* 5 — Who builds */}
   <Section>
     <SectionHeader
-      eyebrow="Why now"
-      title="One platform, built around your business."
-      lead="For a decade, launching telehealth meant buying a no-code builder, a separate EMR, a prescribing tool, a pharmacy, and a payment processor — then wiring them together and running it all through a dozen dashboards. Purple Label gives you the proven layer underneath instead: a modular platform you can run two ways — build on it with your own team and agents, or have us build and operate it for you."
+      eyebrow="Who builds on Purple Label"
+      title="If your members trust you with their health, this is your platform."
+      lead="Every audience that already influences how people eat, train, recover, and age can now deliver the care itself — under its own name."
     />
-  </Section>
-
-  {/* 3.5 — Heritage × next-gen (the frame that separates proof from product) */}
-  <Section surface="surface" bordered>
-    <Heritage />
-  </Section>
-
-  {/* 4 — The moat */}
-  <Section surface="sunken" bordered>
-    <SectionHeader
-      eyebrow="The moat"
-      title="Production infrastructure that's already passed the audits."
-      lead="Anyone can generate a telehealth site. Almost no one can pass a state pharmacy-board inspection."
-    />
-    <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Competitors spinning up no-code or AI-generated sites hit a wall the moment they try to ship a
-      prescription across state lines, refund a patient, or pass a state pharmacy-board inspection.
-      We've already paid those costs — you launch on infrastructure that has already {PROOF_LINE},
-      on a HIPAA-compliant data layer with end-to-end encryption.
-    </p>
-    <div class="mt-8 flex flex-wrap items-center gap-3">
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {
-        audits.map((a) => (
-          <Badge tone="success" icon="badge-check">
-            {a} — cleared
-          </Badge>
+        SOLUTIONS.map((s) => (
+          <a
+            href={`/solutions/${s.slug}`}
+            class="flex flex-col rounded-lg border border-line bg-surface p-6 transition duration-150 ease-out hover:border-purple-200 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+          >
+            <Icon name={`lucide:${s.icon}`} class="icon size-6 text-purple-600" />
+            <span class="mt-4 font-display text-h4 text-ink-900">{s.audience}</span>
+            <span class="mt-2 flex-1 text-sm text-ink-500">{s.navDesc}</span>
+            <span class="mt-4 font-mono text-xs text-ink-400">e.g. {s.example.name}</span>
+          </a>
         ))
       }
+      <a
+        href="/preview"
+        class="flex flex-col justify-between rounded-lg border border-purple-200 bg-purple-50 p-6 transition duration-150 ease-out hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+      >
+        <Icon name="lucide:palette" class="icon size-6 text-purple-600" />
+        <span class="mt-4 font-display text-h4 text-ink-900">Your brand here</span>
+        <span class="mt-2 flex-1 text-sm text-ink-500"
+          >See the member experience in your name and colors — in seconds.</span
+        >
+        <span class="mt-4 text-sm font-semibold text-purple-600">Try the preview →</span>
+      </a>
     </div>
-    <p class="mt-8 max-w-prose text-body-lg text-ink-700">
-      Underneath, a regulated multi-party pipeline is collapsed into a single durable function —
-      engineered so it won't double-charge, double-prescribe, or strand a patient mid-flow. Your
-      agents drive it with a few API and MCP calls.
+    <p class="mt-4 text-xs text-ink-300">Example brand names are illustrative.</p>
+  </Section>
+
+  {/* 6 — The member is yours */}
+  <Section surface="sunken" bordered>
+    <SectionHeader
+      eyebrow="The member is yours"
+      title="The full consumer health experience — without giving away the member."
+      lead="Storefront vendors give you a prescription funnel. Consumer health apps give you a referral link to their brand. Purple Label gives you the whole experience, and the relationship that comes with it."
+    />
+    <div class="mt-12 overflow-x-auto rounded-lg border border-line bg-surface">
+      <table class="w-full min-w-176 text-left text-sm">
+        <thead>
+          <tr class="border-b border-line">
+            <th scope="col" class="p-4 font-semibold text-ink-400"
+              ><span class="sr-only">Capability</span></th
+            >
+            {
+              compareCols.map((c, i) => (
+                <th
+                  scope="col"
+                  class:list={[
+                    'p-4 font-display text-sm font-semibold',
+                    i === 2 ? 'bg-purple-50 text-purple-700' : 'text-ink-700',
+                  ]}
+                >
+                  {c}
+                </th>
+              ))
+            }
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line">
+          {
+            compareRows.map((r) => (
+              <tr>
+                <th scope="row" class="p-4 font-medium text-ink-700">
+                  {r.label}
+                </th>
+                {r.cells.map((cell, i) => (
+                  <td
+                    class:list={[
+                      'p-4',
+                      i === 2 ? 'bg-purple-50 font-semibold text-purple-700' : 'text-ink-500',
+                    ]}
+                  >
+                    {cell === '✓' ? (
+                      <Icon name="lucide:check" class="icon size-4 text-success" aria-label="Yes" />
+                    ) : cell === '—' ? (
+                      <span aria-label="No" class="text-ink-300">
+                        —
+                      </span>
+                    ) : (
+                      cell
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-4 text-xs text-ink-300">
+      Category comparison based on typical offerings; individual providers vary.
     </p>
-    <p class="mt-8 max-w-prose font-display text-h3 text-ink-900">
-      What took telehealth unicorns years and acquisitions, you get on day one.
-    </p>
-    <div class="mt-6">
-      <Button variant="link-arrow" href="/architecture">See the architecture</Button>
+  </Section>
+
+  {/* 7 — You bring / We run */}
+  <Section>
+    <SectionHeader
+      align="center"
+      eyebrow="Division of labor"
+      title="You bring the brand. We run the rest."
+    />
+    <div class="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
+      <div class="rounded-lg border border-line bg-surface p-6 sm:p-8">
+        <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">You bring</p>
+        <ul class="mt-5 flex flex-col gap-3">
+          {
+            youBring.map((t) => (
+              <li class="flex items-start gap-2.5 text-body text-ink-700">
+                <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-purple-600" />
+                {t}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="rounded-lg border border-purple-200 bg-purple-50 p-6 sm:p-8">
+        <p class="text-xs font-semibold uppercase tracking-eyebrow text-purple-700">We run</p>
+        <ul class="mt-5 flex flex-col gap-3">
+          {
+            weRun.map((t) => (
+              <li class="flex items-start gap-2.5 text-body text-ink-700">
+                <Icon name="lucide:check" class="icon mt-1 size-4 shrink-0 text-success" />
+                {t}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
   </Section>
 
-  {/* 5 — Two ways to launch */}
-  <Section>
+  {/* 8 — Two ways to run it */}
+  <Section surface="surface" bordered>
     <SectionHeader
       eyebrow="Two ways to launch"
       title="Build it yourself, or have us run it."
-      lead="Same proven platform, same cleared reviews, same pass-through drug pricing — you choose how hands-on you want to be."
+      lead="Same platform, same clinicians, same pass-through pharmacy pricing — you choose how hands-on you want to be."
     />
     <div class="mt-12 grid gap-6 md:grid-cols-2">
-      <Card icon="code" title="Build it with agents">
-        Point your team and your AI agents at API tokens, agent-ready docs, branded entry links, and
-        webhooks with signed deliveries — and assemble a branded telehealth business in code. Full
-        control, no glue, no console to outgrow.
+      <Card icon="code" title="Build on the platform">
+        Your team and your AI agents work from a contract-first API, signed webhooks, agent-ready
+        docs, and a site kit — compose exactly the experience you want, on any front end.
         <span class="mt-6 block">
-          <Button variant="link-arrow" href={DOCS_URL}>Start building</Button>
+          <Button variant="link-arrow" href="/developers">Explore the developer platform</Button>
         </span>
       </Card>
       <Card icon="headset" title="We run it for you">
-        Prefer done-for-you? Our team builds, staffs, and operates your branded store — providers,
-        pharmacy, compliance, and marketing handled — typically live in about 30 days, on revenue
-        share.
+        Prefer done-for-you? Our team builds, launches, and operates your branded health business —
+        clinicians, pharmacy, compliance, and growth handled — typically live in {
+          STATS.launchDays.value
+        }.
         <span class="mt-6 block">
           <Button variant="link-arrow" href="/managed">Explore Managed</Button>
         </span>
@@ -371,178 +440,131 @@ const homeFaqs = [
     </div>
   </Section>
 
-  {/* 6 — The modular toolkit */}
-  <Section surface="surface" bordered>
-    <SectionHeader
-      eyebrow="The modular toolkit"
-      title="Best-of-breed modules, battle-tested at scale."
-      lead="Adopt the modules you need and call them from your stack. One source of truth for patients, orders, and clinical data."
-    />
-    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        modules.map((m) => (
-          <Card icon={m.icon} title={m.title} href={m.href}>
-            {m.body}
-          </Card>
-        ))
-      }
-    </div>
-    <div class="mt-6 grid gap-6 md:grid-cols-2">
-      <Card icon="watch" title="Wearables & Monitoring" href="/platform/wearables">
-        {STATS.deviceIntegrations.value} wearable and device integrations — rings, watches, CGMs, scales,
-        and more — stream patient data into the same longitudinal record your programs act on.
-      </Card>
-      <Card icon="shield-check" title="Security & Compliance">
-        A HIPAA-compliant data layer with end-to-end encryption and access governance under every
-        module — behind cleared HIPAA, state pharmacy-board, and payment-processor reviews.
-      </Card>
-    </div>
-    <ul class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2" aria-label="Device integrations">
-      <li class="text-xs uppercase tracking-eyebrow text-ink-400">Syncs with</li>
-      {
-        devices.map((d) => (
-          <li class="rounded-md border border-line bg-paper px-3 py-1.5 text-sm font-medium text-ink-500">
-            {d}
-          </li>
-        ))
-      }
-      <li class="text-sm text-ink-400">…and {STATS.deviceIntegrations.value} in all</li>
-    </ul>
-    <p class="mt-4 text-xs text-ink-300">
-      All trademarks are the property of their respective owners. Listing indicates data
-      compatibility, not endorsement.
-    </p>
-  </Section>
-
-  {/* 6.5 — Rx catalog */}
+  {/* 9 — Care programs */}
   <Section>
     <SectionHeader
-      eyebrow="The Rx catalog"
-      title="Any compliant program, launched under your brand."
-      lead="The same modules compose into complete, branded care programs — already running on the platform at scale, on medication passed straight through at our cost — zero markup. Build one with your agents, or have us run it. Launch one, or a full menu."
+      eyebrow="Care programs"
+      title="Launch the care your members are already looking for."
+      lead="Clinician-led programs that plug into the loop — lab-informed, protocol-driven, and fulfilled at pass-through pricing. Launch one, or a full menu."
     />
     <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {
-        programs.map((p) => (
-          <Card icon={p.icon} title={p.title}>
-            {p.body}
+        featuredPrograms.map((p) => (
+          <Card icon={p.icon} title={p.title} href={`/programs/${p.slug}`}>
+            {p.cardBody}
           </Card>
         ))
       }
     </div>
     <div class="mt-8">
-      <Button variant="link-arrow" href="/programs">See the full Rx catalog</Button>
+      <Button variant="link-arrow" href="/programs">See every care program</Button>
     </div>
   </Section>
 
-  {/* 7 — Why build on Purple Label (the 3 differentiators) */}
-  <Section>
+  {/* 10 — Prescribed from data */}
+  <Section surface="sunken" bordered>
     <SectionHeader
-      eyebrow="Why build on Purple Label"
-      title="You inherit infrastructure that already scaled."
-      lead="How you build is up to you. These are why teams choose us either way."
+      eyebrow="Clinical safety"
+      title="Prescribed from data, not just a questionnaire."
+      lead="The consumer experience is yours to design. The medicine underneath is governed — by rules that run as code and clinicians who make every call."
     />
-    <div class="mt-12 grid gap-6 md:grid-cols-3">
-      <Card icon="server" title="Proven scale, top-tier security">
-        Built by the operators of a national telehealth machine — {STATS.brandsLaunched.value}
-        branded launches, {STATS.rxMonthly.value} prescriptions a month across the partner pharmacy network,
-        {STATS.ordersWeekly.value} orders a week — and {PROOF_LINE}.
-      </Card>
-      <Card icon="circle-dollar-sign" title="Among the lowest medication costs in telehealth">
-        We pass our huge-volume Rx discounts straight through with zero markup — our cost is your
-        cost. Keep the margin, or pass the savings to patients.
-      </Card>
-      <Card icon="headset" title="World-class, US-based care">
-        AI-first support resolves routine volume instantly; complex and clinical issues escalate to
-        US-based human experts.
-      </Card>
-    </div>
-  </Section>
-
-  {/* 8.5 — Ownership / sovereignty */}
-  <Section>
-    <SectionHeader
-      eyebrow="Ownership"
-      title="You own it. We run the rails."
-      lead="Purple Label is infrastructure, not a middleman. The brand, the patients, and the data are yours — run by your team, your agents, or ours, on a back end that already operates at national scale."
-    />
-    <div class="mt-12 grid gap-6 md:grid-cols-3">
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {
-        ownership.map((o) => (
-          <Card icon={o.icon} title={o.title}>
-            {o.body}
+        safety.map((s) => (
+          <Card icon={s.icon} title={s.title}>
+            {s.body}
           </Card>
         ))
       }
     </div>
-    <p class="mt-8 max-w-prose text-body-lg text-ink-500">
-      <span class="font-semibold text-ink-900"
-        >You own the brand; licensed providers handle the medicine.</span
-      > A board-certified network credentialed in all 50 states evaluates, prescribes, and manages clinical
-      care — so you carry the brand, not the clinical license.
-    </p>
   </Section>
 
-  {/* 9 — Security & Developers teasers */}
-  <Section surface="sunken" bordered>
-    <div class="grid gap-6 md:grid-cols-2">
-      <Card icon="shield-check" title="Built for PHI from day one" href="/security">
-        A HIPAA-compliant data layer with end-to-end encryption, MFA, and granular access control —
-        the controls behind cleared HIPAA, state pharmacy-board, and payment-processor reviews.
-      </Card>
-      <Card icon="code" title="Everything is programmable" href="/developers">
-        Point your agents at our API, MCP servers, agent-ready docs, and prompt library and build
-        the rest.
-      </Card>
+  {/* 11 — Heritage */}
+  <Section>
+    <Heritage />
+  </Section>
+
+  {/* 12 — Privacy by architecture */}
+  <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="Privacy by architecture"
+      title="Health data deserves better than a privacy policy."
+      lead="Protection isn’t a promise layered on top — it’s how the platform is built."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        privacy.map((s) => (
+          <Card icon={s.icon} title={s.title}>
+            {s.body}
+          </Card>
+        ))
+      }
+    </div>
+    <div class="mt-8">
+      <Button variant="link-arrow" href="/security">How we protect member data</Button>
     </div>
   </Section>
 
-  {
-    /* 10 — Customer proof: removed per Gregg 2026-07-23 until real Purple Label customer
-       stories exist. The Steenblik/Trucker's Body Shop quote (verbatim from WLMD's live
-       site) lives in git history — restore it here when examples are ready. */
-  }
-
-  {/* 10.5 — FAQ */}
+  {/* 13 — Built to build on */}
   <Section>
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <SectionHeader
+          eyebrow="Developer platform"
+          title="Every part of the experience is programmable."
+          lead="One contract-first API for intake, checkout, brand configuration, offerings, and journey status — with signed webhooks for every step. Docs generated from the same contracts the platform runs on."
+        />
+        <div class="mt-8 flex flex-wrap gap-4">
+          <Button variant="secondary" href={DOCS_URL}>Read the docs</Button>
+          <Button variant="link-arrow" href="/developers">Developer platform</Button>
+        </div>
+      </div>
+      <div>
+        <pre
+          class="overflow-x-auto rounded-lg border border-line bg-surface-sunken p-6 font-mono text-sm text-ink-700"><code>{apiSample}</code></pre>
+      </div>
+    </div>
+  </Section>
+
+  {/* 14 — FAQ */}
+  <Section surface="surface" bordered>
     <SectionHeader
       align="center"
       eyebrow="Questions, answered"
-      title="The essentials, before you build."
+      title="The essentials, before you launch."
     />
     <FAQ class="mt-12" items={homeFaqs} />
   </Section>
 
-  {/* 11 — Closing CTA */}
-  <Section surface="surface" bordered>
+  {/* 15 — Closing CTA */}
+  <Section>
     <SectionHeader
       align="center"
       eyebrow="Get started"
-      title="Launch a branded telehealth business — on infrastructure that's already proven."
+      title="Give your members a health experience with your name on it."
+      lead="See the member app, the console, and the care programs — with your brand on all of it."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
-      <Button variant="secondary" href="/pricing">See pricing</Button>
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
+      <Button variant="secondary" href={CTA.preview.href}>{CTA.preview.label}</Button>
     </div>
   </Section>
 </PageLayout>
 
 <script>
   /*
-   * Live "prescriptions filled" ticker. Seeds from a time-anchored base (so it keeps
-   * climbing across reloads/sessions), then ticks up in irregular bursts for a live feel:
-   * variable interval (~0.9–3.2s) and variable step (+1/+2/+3), far faster than a flat rate.
+   * Live "prescriptions filled" ticker (operators' heritage — RX_ODOMETER in stats.ts).
+   * Seeds from a time-anchored base, then ticks up in irregular bursts.
    */
-  const ANCHOR_MS = Date.UTC(2026, 5, 28);
-  const ANCHOR_COUNT = 728_487;
-  const AVG_PER_DAY = 60_000; // seeds the base across sessions (≈ the live tick average)
+  import { RX_ODOMETER } from '../lib/stats';
 
   const counter = document.getElementById('rx-counter');
   if (counter) {
     const fmt = new Intl.NumberFormat('en-US');
-    let count = ANCHOR_COUNT + Math.floor(((Date.now() - ANCHOR_MS) / 86_400_000) * AVG_PER_DAY);
+    let count =
+      RX_ODOMETER.anchorCount +
+      Math.floor(((Date.now() - RX_ODOMETER.anchorDateUtc) / 86_400_000) * RX_ODOMETER.avgPerDay);
     counter.textContent = fmt.format(count);
-
     const step = () => {
       const r = Math.random();
       return r > 0.9 ? 3 : r > 0.65 ? 2 : 1;

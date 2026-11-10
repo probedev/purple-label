@@ -29,3 +29,7 @@ pnpm-debug.log*
 
 # internal reference material (WLMD site capture / fold-in source — not site source)
 input/
+
+# Internal research & strategy (pricing terms, client/vendor names, competitive plan) —
+# never commit to this public repo. Lives locally only.
+spec/teardown-2026-11/

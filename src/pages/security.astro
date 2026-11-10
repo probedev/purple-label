@@ -2,8 +2,12 @@
 /**
  * Security & Compliance `/security` — the trust page (sitemap.md §9, content.md §9).
  * Carries differentiator #1 for the non-technical compliance/legal buyer: human-legible,
- * not API-jargon. Attestations pulled from lib/nav TRUST_BADGES (HIPAA/LegitScript/Surescripts
- * confirmed; SOC 2 shown as in-progress).
+ * not API-jargon. Attestations pulled from lib/nav TRUST_BADGES (HIPAA/LegitScript confirmed;
+ * SOC 2 shown as in-progress; Surescripts removed Nov 2026).
+ *
+ * Nov 2026 refresh: leads with "privacy by architecture" — the member-data story a consumer
+ * health experience needs (per-member keys, provable erasure, PHI-free events, tenant
+ * isolation, fail-closed audit), ahead of the original controls and review proof.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
@@ -13,11 +17,44 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import StatCard from '../components/primitives/StatCard.astro';
 import Badge from '../components/primitives/Badge.astro';
-import { TRUST_BADGES } from '../lib/nav';
+import { TRUST_BADGES, CTA } from '../lib/nav';
 import { STATS, PROOF_LINE } from '../lib/stats';
 
 // E26: each pillar carries one architecture-backed specific — /security and
 // /architecture should read as one story at two altitudes.
+const architecture = [
+  {
+    icon: 'key-round',
+    title: 'A key for every member',
+    body: 'Each member’s health data is encrypted with its own key. When a member asks to be forgotten, the key is destroyed — and the data is unrecoverable, provably.',
+  },
+  {
+    icon: 'eye-off',
+    title: 'Health data stays in the record',
+    body: 'Events, webhooks, and status reads carry references, not health data — so PHI never sprays across your tools, logs, or vendors.',
+  },
+  {
+    icon: 'building',
+    title: 'Isolation you can test',
+    body: 'Every brand is isolated by design, with tenancy derived from credentials. Another tenant’s data answers exactly like data that doesn’t exist.',
+  },
+  {
+    icon: 'scroll-text',
+    title: 'Audit that fails closed',
+    body: 'Every sensitive read is audited in the same transaction — if the audit record can’t be written, the read doesn’t happen.',
+  },
+  {
+    icon: 'users-round',
+    title: 'Operations without PHI',
+    body: 'Your team follows and resolves every order without opening a member’s health answers. Clinical data stays with clinicians.',
+  },
+  {
+    icon: 'ban',
+    title: 'Never sold',
+    body: 'Member data belongs to your brand and your members. We don’t sell it — identified or de-identified.',
+  },
+];
+
 const pillars = [
   {
     icon: 'lock',
@@ -53,19 +90,20 @@ const pillars = [
 ---
 
 <PageLayout
-  title="Security & Compliance — enterprise-grade protection for PHI"
-  description="HIPAA-compliant infrastructure with end-to-end encryption, MFA, and access governance — behind cleared HIPAA, state pharmacy-board, and payment-processor reviews. LegitScript certified, Surescripts connected, SOC 2 in progress. We sign BAAs."
+  title="Privacy & Security — health data protected by architecture"
+  description="Per-member encryption with provable erasure, PHI-free events, tenant isolation, and audit that fails closed — on HIPAA-compliant infrastructure behind cleared reviews. LegitScript Enterprise Partner; SOC 2 in progress."
   path="/security"
 >
   {/* Hero */}
   <Section size="lg">
-    <Eyebrow>Security & Compliance</Eyebrow>
+    <Eyebrow>Privacy & Security</Eyebrow>
     <h1 class="mt-4 max-w-prose font-display text-display text-ink-900">
-      Enterprise-grade protection for protected health information.
+      Your members’ health data, protected by how the platform is built.
     </h1>
     <p class="mt-6 max-w-prose text-body-lg text-ink-500">
-      Security governance, risk management, and continuous compliance are built into the platform —
-      the same controls behind a national telehealth operation, on HIPAA-compliant infrastructure.
+      A consumer health experience collects the most sensitive data people have — labs, devices,
+      prescriptions, history. Purple Label protects it in the architecture itself, on
+      HIPAA-compliant infrastructure with the governance your compliance team expects.
     </p>
     <div class="mt-8 flex flex-wrap items-center gap-3">
       {
@@ -81,13 +119,31 @@ const pillars = [
       }
     </div>
     <div class="mt-8 flex flex-wrap items-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
       <Button variant="link-arrow" href="/platform">See the platform</Button>
     </div>
   </Section>
 
-  {/* Trust pillars */}
+  {/* Privacy by architecture */}
   <Section surface="surface" bordered>
+    <SectionHeader
+      eyebrow="Privacy by architecture"
+      title="Not a policy layered on top. A property of the system."
+      lead="The guarantees members and regulators care about are enforced by design — not by everyone remembering the rules."
+    />
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        architecture.map((p) => (
+          <Card icon={p.icon} title={p.title}>
+            {p.body}
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  {/* Trust pillars */}
+  <Section bordered>
     <SectionHeader
       eyebrow="The controls"
       title="Protection built in at every layer."
@@ -180,7 +236,7 @@ const pillars = [
       title="Bring your compliance team. We'll bring the documentation."
     />
     <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-      <Button variant="primary" href="/contact">Book a consult</Button>
+      <Button variant="primary" href={CTA.consult.href}>{CTA.consult.label}</Button>
       <Button variant="secondary" href="/platform">Explore the platform</Button>
     </div>
   </Section>

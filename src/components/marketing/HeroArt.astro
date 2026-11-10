@@ -4,7 +4,7 @@
  * this animation into one of the hero CTA buttons, showing the journey automatically
  * and taking the client down the page").
  *
- * The hero's `POST /v1/orders` button (id="run-journey" in index.astro) IS the API
+ * Lives on /developers since the Nov 2026 refresh. The `#run-journey` button there IS the API
  * call: clicking it plays the ~8s journey while the viewport glides down in sync with
  * the comet (ScrollToPlugin, autoKill so a user wheel/touch cancels the glide), ending
  * on the completed journey and its `status: REFILL_DUE` bookend. If the reader scrolls
@@ -33,14 +33,15 @@ const NODES = [
   { id: 'follow', label: '07 follow-up', icon: 'refresh-cw', cx: 300, cy: 460 },
 ];
 
-// Event chips that light up as the comet passes — the platform's canonical event names.
+// Event chips that light up as the comet passes — the public journey.*.v1 webhook event
+// names (docs.purplelabelmd.com), shown without the journey. prefix / .v1 suffix.
 // They stay lit once fired, so the journey accumulates an event log as you descend.
 const EVENTS = [
-  { node: 'qualify', text: 'patient.qualified', x: 420, y: 96 },
-  { node: 'pay', text: 'payment.captured', x: 280, y: 96 },
+  { node: 'qualify', text: 'intake.submitted', x: 420, y: 96 },
+  { node: 'pay', text: 'payment.succeeded', x: 280, y: 96 },
   { node: 'visit', text: 'visit.completed', x: 160, y: 266 },
-  { node: 'rx', text: 'rx.prescribed', x: 320, y: 264 },
-  { node: 'deliver', text: 'shipment.updated', x: 440, y: 264 },
+  { node: 'rx', text: 'rx.transmitted', x: 320, y: 264 },
+  { node: 'deliver', text: 'shipment.shipped', x: 440, y: 264 },
 ];
 
 // Tall serpentine, top-right to bottom: down from the POST chip, row 1 right-to-left,
