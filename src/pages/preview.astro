@@ -1,13 +1,20 @@
 ---
 /**
- * Preview `/preview` — "See it under your brand" (Nov 2026 refresh plan
- * §4.5; a branded-preview generator that shows the whole health experience, not just a
- * storefront). The visitor types a brand name and picks a color or an audience preset, and
- * the member-app mock re-skins live.
+ * Preview `/preview` — "See it under your brand" (Nov 2026 refresh plan §4.5; reworked
+ * 2026-11-10 per Gregg: "great concept, but nothing really happens when you click").
  *
- * Client-only by design: nothing is fetched or sent anywhere (no server-side URL fetch → no
- * SSRF surface, no PII leaves the browser) until the visitor chooses "Take it live", which
- * pre-fills the existing lead modal with the brand name and color.
+ * A small brand builder: name, color (swatches + picker), optional logo, and — the part
+ * that makes clicks visibly matter — a "what members see" switcher that swaps the whole
+ * member-app screen between five tracks (health & fitness, GLP-1, peptides, TRT, intake).
+ * Audience quick-starts set name + color + the matching track in one click. A "what powers
+ * this screen" list names the platform modules behind the current view.
+ *
+ * State lives in the URL (?name=&color=&track=) so a preview can be shared; "Take it live"
+ * pre-fills the lead modal with the whole configuration.
+ *
+ * Client-only by design: nothing is fetched or sent (no server-side URL fetch → no SSRF
+ * surface). An uploaded logo is read as an object URL and never leaves the browser, and is
+ * not put in the share link.
  */
 import PageLayout from '../layouts/PageLayout.astro';
 import Section from '../components/layout/Section.astro';
@@ -17,114 +24,347 @@ import Button from '../components/primitives/Button.astro';
 import Card from '../components/primitives/Card.astro';
 import MemberAppMock from '../components/marketing/MemberAppMock.astro';
 import { Icon } from 'astro-icon/components';
-import { SOLUTIONS } from '../lib/solutions';
+import { SOLUTIONS, type MockBrandTheme, type MockScreen } from '../lib/solutions';
+import { moduleBySlug, type PlatformModule } from '../lib/modules';
 import { CTA } from '../lib/nav';
 
-const presets = SOLUTIONS.map((s) => ({ audience: s.audience, ...s.example }));
-const initial = presets[0];
+const tracks: { id: MockScreen; label: string; icon: string; desc: string; modules: string[] }[] = [
+  {
+    id: 'health',
+    label: 'Health & fitness',
+    icon: 'activity',
+    desc: 'Score, wearables, and biomarkers',
+    modules: ['labs', 'wearables', 'insights', 'health-record', 'protocols'],
+  },
+  {
+    id: 'glp1',
+    label: 'GLP-1 weight loss',
+    icon: 'trending-down',
+    desc: 'Progress, dosing, and refills',
+    modules: ['clinical-care', 'pharmacy-fulfillment', 'wearables', 'payments', 'member-app'],
+  },
+  {
+    id: 'orders',
+    label: 'Peptides',
+    icon: 'snowflake',
+    desc: 'An order, from ID check to cold-chain delivery',
+    modules: ['intake', 'clinical-care', 'pharmacy-fulfillment', 'member-app'],
+  },
+  {
+    id: 'trt',
+    label: 'TRT',
+    icon: 'flask-conical',
+    desc: 'Monitoring labs and vial delivery',
+    modules: ['labs', 'clinical-care', 'pharmacy-fulfillment', 'protocols'],
+  },
+  {
+    id: 'intake',
+    label: 'Intake',
+    icon: 'clipboard-list',
+    desc: 'One question at a time, clinician-reviewed',
+    modules: ['intake', 'clinical-care', 'payments'],
+  },
+];
+
+const startBrand = SOLUTIONS[0].example;
+// One slide per track, all in the starting brand — the switcher shows one at a time.
+const slides: MockBrandTheme[] = tracks.map((t) => ({ ...startBrand, screen: t.id }));
+const startIndex = tracks.findIndex((t) => t.id === (startBrand.screen ?? 'health'));
+
+const presets = SOLUTIONS.map((s) => ({
+  audience: s.audience,
+  icon: s.icon,
+  name: s.example.name,
+  primary: s.example.primary,
+  track: s.example.screen ?? 'health',
+}));
+
+const swatches = [
+  '#5a2c9e',
+  '#2563eb',
+  '#0f766e',
+  '#15803d',
+  '#ea580c',
+  '#be185d',
+  '#b91c1c',
+  '#334155',
+];
+
+const trackModules = (t: (typeof tracks)[number]) =>
+  t.modules.map((slug) => moduleBySlug(slug)).filter(Boolean) as PlatformModule[];
+
+const label = 'block text-sm font-semibold text-ink-900';
+const stepNum =
+  'grid size-6 shrink-0 place-items-center rounded-full bg-surface-sunken font-mono text-xs text-ink-500';
 ---
 
 <PageLayout
-  title="See it under your brand — a live preview of your health experience"
-  description="Type your brand name, pick a color, and see the member experience — results, health score, protocol, and orders — re-skinned as yours in seconds."
+  title="See it under your brand — build a live preview of your health experience"
+  description="Name it, pick your color, add your logo, and switch between health & fitness, GLP-1, peptides, TRT, and intake — see your branded member experience come together in seconds."
   path="/preview"
 >
-  <Section size="lg">
-    <div class="grid gap-12 lg:grid-cols-12 lg:items-start">
-      <div class="lg:col-span-5">
-        <Eyebrow>Live preview</Eyebrow>
-        <h1 class="mt-4 font-display text-h1 text-ink-900">See it under your brand.</h1>
-        <p class="mt-6 text-body-lg text-ink-500">
-          This is the member experience your brand launches on Purple Label — results, a health
-          score with your name on it, a clinician-reviewed protocol, and orders — re-skinned as you
-          type.
-        </p>
+  <Section size="sm">
+    <div class="max-w-3xl">
+      <Eyebrow>Live preview</Eyebrow>
+      <h1 class="mt-4 font-display text-h1 text-ink-900">See it under your brand.</h1>
+      <p class="mt-4 text-body-lg text-ink-500">
+        Make it yours, then switch what members see. Every screen is the same platform — re-skinned
+        as you go.
+      </p>
+    </div>
 
-        <form id="preview-form" class="mt-10 flex flex-col gap-6" novalidate>
-          <div>
-            <label for="pv-name" class="block text-sm font-semibold text-ink-900">Brand name</label>
+    {/* Quick starts */}
+    <div class="mt-10">
+      <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+        Start from an example
+      </p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        {
+          presets.map((p) => (
+            <button
+              type="button"
+              class="pv-chip inline-flex h-10 items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink-700 transition-colors duration-150 hover:border-purple-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+              data-preset={JSON.stringify(p)}
+              aria-pressed="false"
+            >
+              <Icon name={`lucide:${p.icon}`} class="icon size-4 text-purple-600" />
+              {p.audience}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-10 grid gap-10 lg:grid-cols-12 lg:items-start">
+      {/* Builder */}
+      <form id="pv-form" class="flex flex-col gap-8 lg:col-span-5" novalidate>
+        {/* 1. Name */}
+        <div class="flex gap-4">
+          <span class={stepNum}>1</span>
+          <div class="flex-1">
+            <label for="pv-name" class={label}>Name your brand</label>
             <input
               id="pv-name"
               name="brand"
               type="text"
               maxlength="32"
               autocomplete="organization"
-              value={initial.name}
+              value={startBrand.name}
               class="mt-2 h-11 w-full rounded-md border border-line bg-surface px-3 text-body text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
             />
           </div>
-          <div>
-            <label for="pv-color" class="block text-sm font-semibold text-ink-900"
-              >Brand color</label
-            >
-            <div class="mt-2 flex items-center gap-3">
-              <input
-                id="pv-color"
-                name="color"
-                type="color"
-                value={initial.primary}
-                class="h-11 w-16 cursor-pointer rounded-md border border-line bg-surface p-1"
-              />
-              <span id="pv-color-hex" class="font-mono text-sm text-ink-500">{initial.primary}</span
-              >
-            </div>
-          </div>
-          <fieldset>
-            <legend class="text-sm font-semibold text-ink-900">Or start from an example</legend>
-            <div class="mt-3 flex flex-wrap gap-2">
+        </div>
+
+        {/* 2. Color */}
+        <fieldset class="flex gap-4">
+          <span class={stepNum}>2</span>
+          <div class="flex-1">
+            <legend class={label}>Pick your color</legend>
+            <div class="mt-3 flex flex-wrap items-center gap-2">
               {
-                presets.map((p) => (
+                swatches.map((c) => (
                   <button
                     type="button"
-                    class="inline-flex h-11 items-center gap-2 rounded-md border border-line bg-surface px-3 text-sm font-medium text-ink-700 transition-colors duration-150 hover:border-purple-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
-                    data-preset={JSON.stringify(p)}
+                    class="pv-swatch size-9 rounded-full border-2 border-surface transition-transform duration-150 hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                    style={`background:${c}`}
+                    data-swatch={c}
+                    aria-label={`Use color ${c}`}
+                    aria-pressed="false"
+                  />
+                ))
+              }
+              <label
+                class="relative inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface pl-1 pr-3 text-sm text-ink-500"
+              >
+                <input
+                  id="pv-color"
+                  name="color"
+                  type="color"
+                  value={startBrand.primary}
+                  class="size-7 cursor-pointer rounded-full border-0 bg-transparent p-0"
+                  aria-label="Custom color"
+                />
+                <span id="pv-color-hex" class="font-mono text-xs">{startBrand.primary}</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        {/* 3. Logo */}
+        <div class="flex gap-4">
+          <span class={stepNum}>3</span>
+          <div class="flex-1">
+            <p class={label}>
+              Add your logo <span class="font-normal text-ink-400">(optional)</span>
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+              <label
+                class="inline-flex h-11 cursor-pointer items-center gap-2 rounded-md border border-dashed border-line bg-surface px-4 text-sm font-medium text-ink-700 transition-colors duration-150 hover:border-purple-200 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-purple-500"
+              >
+                <Icon name="lucide:image-up" class="icon size-4 text-purple-600" />
+                <span id="pv-logo-label">Upload a logo</span>
+                <input
+                  id="pv-logo"
+                  type="file"
+                  accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                  class="sr-only"
+                />
+              </label>
+              <button
+                type="button"
+                id="pv-logo-clear"
+                hidden
+                class="text-sm font-semibold text-ink-500 hover:text-ink-900"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Track */}
+        <fieldset class="flex gap-4">
+          <span class={stepNum}>4</span>
+          <div class="flex-1">
+            <legend class={label}>Choose what members see</legend>
+            <div class="mt-3 grid gap-2 sm:grid-cols-2" role="group" aria-label="Member screen">
+              {
+                tracks.map((t, i) => (
+                  <button
+                    type="button"
+                    class="pv-track flex items-start gap-3 rounded-lg border border-line bg-surface p-3 text-left transition-colors duration-150 hover:border-purple-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                    data-track={t.id}
+                    aria-pressed={i === startIndex ? 'true' : 'false'}
                   >
-                    {p.audience}
+                    <Icon
+                      name={`lucide:${t.icon}`}
+                      class="icon mt-0.5 size-5 shrink-0 text-purple-600"
+                    />
+                    <span>
+                      <span class="block text-sm font-semibold text-ink-900" data-track-name>
+                        {t.label}
+                      </span>
+                      <span class="mt-0.5 block text-xs text-ink-400">{t.desc}</span>
+                    </span>
                   </button>
                 ))
               }
             </div>
-          </fieldset>
-        </form>
+          </div>
+        </fieldset>
 
-        <div class="mt-10 flex flex-wrap items-center gap-4">
-          <Button variant="primary" href={CTA.consult.href} id="pv-take-live">
-            Take it live on a call
-            <Icon name="lucide:arrow-right" class="icon size-4" />
-          </Button>
+        {/* Actions */}
+        <div class="flex flex-col gap-4 border-t border-line pt-8">
+          <div class="flex flex-wrap items-center gap-3">
+            <Button variant="primary" href={CTA.consult.href} id="pv-take-live">
+              Take it live on a call
+              <Icon name="lucide:arrow-right" class="icon size-4" />
+            </Button>
+            <Button variant="secondary" type="button" id="pv-share">
+              <Icon name="lucide:link" class="icon size-4 text-purple-600" />
+              <span id="pv-share-label">Copy share link</span>
+            </Button>
+          </div>
+          <p class="flex items-start gap-1.5 text-xs text-ink-400">
+            <Icon name="lucide:lock" class="icon mt-0.5 size-3.5 shrink-0" />
+            Your preview stays in your browser. Nothing is sent until you choose to talk to us, and your
+            logo is never uploaded.
+          </p>
         </div>
-        <p class="mt-4 flex items-center gap-1.5 text-xs text-ink-400">
-          <Icon name="lucide:lock" class="icon size-3.5" />
-          Your preview stays in your browser — nothing is sent until you choose to talk to us.
-        </p>
-      </div>
+      </form>
+
+      {/* Preview */}
       <div class="lg:sticky lg:top-24 lg:col-span-7">
-        <MemberAppMock brand={initial} id="pv-mock" />
+        <MemberAppMock brands={slides} controlled id="pv-mock" />
+
+        <div class="mt-8 rounded-lg border border-line bg-surface p-5">
+          <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+            What powers this screen
+          </p>
+          {
+            tracks.map((t, i) => (
+              <ul
+                class="mt-3 flex flex-wrap gap-2"
+                data-track-modules={t.id}
+                hidden={i !== startIndex}
+              >
+                {trackModules(t).map((m) => (
+                  <li>
+                    <a
+                      href={`/platform/${m.slug}`}
+                      class="inline-flex h-9 items-center gap-2 rounded-md border border-line bg-paper px-3 text-sm font-medium text-ink-700 transition-colors duration-150 hover:border-purple-200 hover:text-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                    >
+                      <Icon name={`lucide:${m.icon}`} class="icon size-4 text-purple-600" />
+                      {m.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ))
+          }
+        </div>
       </div>
     </div>
   </Section>
 
   <Section surface="surface" bordered>
     <SectionHeader
-      eyebrow="What you just changed"
+      eyebrow="Beyond the preview"
       title="Your brand on every surface a member touches."
+      lead="What you just built is one screen. On the platform, the same brand runs end to end."
     />
     <div class="mt-12 grid gap-6 md:grid-cols-3">
-      <Card icon="palette" title="Your look" href="/platform/member-app">
-        Logo, palette, type, and voice drive every screen — members never see ours.
+      <Card icon="palette" title="Your look, everywhere" href="/platform/member-app">
+        Logo, palette, type, and voice drive the member app, intake, checkout, and messages —
+        members never see ours.
       </Card>
       <Card icon="globe" title="Your domains" href="/platform/member-app">
-        The member app and sign-in run on your own domains.
+        The member app and sign-in run on your own domains, with certificates managed for you.
       </Card>
-      <Card icon="gauge" title="Your score" href="/platform/insights">
-        The health score, the protocols, and the AI guide all carry your name.
+      <Card icon="gauge" title="Your score, your protocols" href="/platform/insights">
+        The health score, the protocols, and the AI guide all carry your name and your philosophy.
       </Card>
     </div>
   </Section>
 </PageLayout>
 
+<style>
+  .pv-chip[aria-pressed='true'],
+  .pv-track[aria-pressed='true'] {
+    border-color: var(--pl-purple-300);
+    background: var(--pl-purple-50);
+  }
+
+  .pv-swatch[aria-pressed='true'] {
+    box-shadow: 0 0 0 2px var(--pl-ink-900);
+  }
+
+  /* Native color input: show only the swatch. */
+  #pv-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  #pv-color::-webkit-color-swatch {
+    border: none;
+    border-radius: 9999px;
+  }
+
+  #pv-color::-moz-color-swatch {
+    border: none;
+    border-radius: 9999px;
+  }
+</style>
+
 <script>
-  type Brand = { name: string; primary: string; tint: string; mark: string };
+  type Brand = {
+    name: string;
+    primary: string;
+    tint: string;
+    mark: string;
+    logo?: string | null;
+  };
+  type Track = 'health' | 'glp1' | 'orders' | 'trt' | 'intake';
+
   // Resolved at call time: MemberAppMock's module script defines it, and module script
   // order isn't guaranteed.
   const getApply = () =>
@@ -134,6 +374,22 @@ const initial = presets[0];
   const nameEl = document.getElementById('pv-name') as HTMLInputElement | null;
   const colorEl = document.getElementById('pv-color') as HTMLInputElement | null;
   const hexEl = document.getElementById('pv-color-hex');
+  const logoEl = document.getElementById('pv-logo') as HTMLInputElement | null;
+  const logoLabel = document.getElementById('pv-logo-label');
+  const logoClear = document.getElementById('pv-logo-clear');
+  const trackBtns = [...document.querySelectorAll<HTMLButtonElement>('.pv-track')];
+  const presetBtns = [...document.querySelectorAll<HTMLButtonElement>('[data-preset]')];
+  const swatchBtns = [...document.querySelectorAll<HTMLButtonElement>('[data-swatch]')];
+  const TRACKS = trackBtns.map((b) => b.dataset.track as Track);
+  const HEX = /^#[0-9a-f]{6}$/i;
+
+  const state = {
+    name: nameEl?.value ?? 'Your Brand',
+    color: (colorEl?.value ?? '#5a2c9e').toLowerCase(),
+    track: (trackBtns.find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.track ??
+      'health') as Track,
+    logo: null as string | null,
+  };
 
   /** Light tint of a hex color: mix 88% toward white. */
   const tintOf = (hex: string) => {
@@ -144,34 +400,141 @@ const initial = presets[0];
   };
   const markOf = (name: string) => (name.trim().match(/[A-Za-z0-9]/)?.[0] ?? 'Y').toUpperCase();
 
-  const render = () => {
-    const apply = getApply();
-    if (!mock || !apply || !nameEl || !colorEl) return;
-    const name = nameEl.value.trim() || 'Your Brand';
-    const primary = /^#[0-9a-f]{6}$/i.test(colorEl.value) ? colorEl.value : '#5a2c9e';
-    if (hexEl) hexEl.textContent = primary;
-    apply(mock, { name, primary, tint: tintOf(primary), mark: markOf(name) });
+  const syncUrl = () => {
+    const q = new URLSearchParams({ name: state.name, color: state.color, track: state.track });
+    history.replaceState(null, '', `${location.pathname}?${q}`);
   };
 
-  nameEl?.addEventListener('input', render);
-  colorEl?.addEventListener('input', render);
-  document.querySelectorAll<HTMLButtonElement>('[data-preset]').forEach((btn) =>
-    btn.addEventListener('click', () => {
-      const p = JSON.parse(btn.dataset.preset ?? '{}') as Brand;
-      if (nameEl) nameEl.value = p.name;
-      if (colorEl) colorEl.value = p.primary;
+  const render = () => {
+    const name = state.name.trim() || 'Your Brand';
+    if (hexEl) hexEl.textContent = state.color;
+    if (colorEl && colorEl.value.toLowerCase() !== state.color) colorEl.value = state.color;
+    swatchBtns.forEach((b) =>
+      b.setAttribute('aria-pressed', String(b.dataset.swatch === state.color)),
+    );
+    trackBtns.forEach((b) =>
+      b.setAttribute('aria-pressed', String(b.dataset.track === state.track)),
+    );
+    document.querySelectorAll<HTMLElement>('[data-track-modules]').forEach((ul) => {
+      ul.hidden = ul.dataset.trackModules !== state.track;
+    });
+    if (mock) {
+      getApply()?.(mock, {
+        name,
+        primary: state.color,
+        tint: tintOf(state.color),
+        mark: markOf(name),
+        logo: state.logo,
+      });
+      mock.dispatchEvent(new CustomEvent('mb:show', { detail: TRACKS.indexOf(state.track) }));
+    }
+    syncUrl();
+  };
+
+  const clearPresetHighlight = () =>
+    presetBtns.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+
+  nameEl?.addEventListener('input', () => {
+    state.name = nameEl.value;
+    clearPresetHighlight();
+    render();
+  });
+  colorEl?.addEventListener('input', () => {
+    if (HEX.test(colorEl.value)) state.color = colorEl.value.toLowerCase();
+    clearPresetHighlight();
+    render();
+  });
+  swatchBtns.forEach((b) =>
+    b.addEventListener('click', () => {
+      state.color = b.dataset.swatch!;
+      clearPresetHighlight();
       render();
     }),
   );
+  trackBtns.forEach((b) =>
+    b.addEventListener('click', () => {
+      state.track = b.dataset.track as Track;
+      render();
+    }),
+  );
+  presetBtns.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const p = JSON.parse(btn.dataset.preset ?? '{}') as {
+        name: string;
+        primary: string;
+        track: Track;
+      };
+      state.name = p.name;
+      state.color = p.primary.toLowerCase();
+      state.track = p.track;
+      if (nameEl) nameEl.value = p.name;
+      presetBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      render();
+    }),
+  );
+
+  // Logo: object URL only — never uploaded, never put in the share link.
+  logoEl?.addEventListener('change', () => {
+    const file = logoEl.files?.[0];
+    if (!file || !file.type.startsWith('image/') || file.size > 5_000_000) return;
+    if (state.logo) URL.revokeObjectURL(state.logo);
+    state.logo = URL.createObjectURL(file);
+    if (logoLabel) logoLabel.textContent = file.name.length > 24 ? 'Logo added' : file.name;
+    logoClear?.removeAttribute('hidden');
+    render();
+  });
+  logoClear?.addEventListener('click', () => {
+    if (state.logo) URL.revokeObjectURL(state.logo);
+    state.logo = null;
+    if (logoEl) logoEl.value = '';
+    if (logoLabel) logoLabel.textContent = 'Upload a logo';
+    logoClear.setAttribute('hidden', '');
+    render();
+  });
+
+  // Share link
+  const shareLabel = document.getElementById('pv-share-label');
+  document.getElementById('pv-share')?.addEventListener('click', async () => {
+    syncUrl();
+    try {
+      await navigator.clipboard.writeText(location.href);
+      if (shareLabel) shareLabel.textContent = 'Link copied';
+    } catch {
+      if (shareLabel) shareLabel.textContent = 'Copy the URL above';
+    }
+    window.setTimeout(() => {
+      if (shareLabel) shareLabel.textContent = 'Copy share link';
+    }, 2200);
+  });
 
   // Carry the preview into the lead modal (opened by LeadModal's document click handler,
   // which runs after this element-level listener).
   document.getElementById('pv-take-live')?.addEventListener('click', () => {
     const company = document.getElementById('lead-company') as HTMLInputElement | null;
     const message = document.getElementById('lead-message') as HTMLTextAreaElement | null;
-    if (company && nameEl && !company.value) company.value = nameEl.value.trim();
-    if (message && !message.value && nameEl && colorEl) {
-      message.value = `From the live preview: "${nameEl.value.trim()}" in ${colorEl.value}.`;
+    const trackName =
+      trackBtns
+        .find((b) => b.dataset.track === state.track)
+        ?.querySelector('[data-track-name]')
+        ?.textContent?.trim() ?? state.track;
+    if (company && !company.value) company.value = state.name.trim();
+    if (message && !message.value) {
+      message.value = `From the live preview: "${state.name.trim()}" in ${state.color}, showing ${trackName}.`;
     }
   });
+
+  // Restore from a shared link.
+  const q = new URLSearchParams(location.search);
+  const qName = q.get('name');
+  const qColor = q.get('color');
+  const qTrack = q.get('track') as Track | null;
+  if (qName) {
+    state.name = qName.slice(0, 32);
+    if (nameEl) nameEl.value = state.name;
+  }
+  if (qColor && HEX.test(qColor)) state.color = qColor.toLowerCase();
+  if (qTrack && TRACKS.includes(qTrack)) state.track = qTrack;
+
+  // First paint: wait a tick so MemberAppMock's script has registered its handlers.
+  window.setTimeout(render, 0);
 </script>

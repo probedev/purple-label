@@ -11,13 +11,15 @@
  *            next dose, auto-refill, care-team message.
  *   orders — peptide track: one order end to end — placed → ID verified → clinician
  *            approved → compounded → cold-chain shipped → delivered.
+ *   intake — the branded intake: one question at a time, progress, clinician-review note.
  *   trt    — TRT track: the hormone panel TRT is monitored on (total/free testosterone,
  *            estradiol, hematocrit, PSA) baseline → week 8, the next lab kit, and the
  *            vial-and-supplies shipment.
  *
  * Pass `brands` (2+) to stack slides in one grid cell (so every slide is exactly the same
  * size) and crossfade between them, with clickable dots; or a single `brand` for a static
- * mock. Auto-rotation pauses on hover/focus and is off under prefers-reduced-motion.
+ * mock. `controlled` stacks the slides without auto-rotation or dots — the page drives it by
+ * dispatching `mb:show` (detail = slide index) on the root (/preview's track switcher). Auto-rotation pauses on hover/focus and is off under prefers-reduced-motion.
  *
  * Theming: mock-brand colors are CONTENT (fictional brands from src/lib/solutions.ts, or the
  * visitor's input on /preview), not site tokens — they ride in as --mb-primary / --mb-tint on
@@ -33,11 +35,20 @@ interface Props {
   brands?: MockBrandTheme[];
   /** Compact trims the health screen's biomarker table (tight layouts). */
   compact?: boolean;
+  /** Stack `brands` as slides driven externally via `mb:show` (no timer, no dots). */
+  controlled?: boolean;
   id?: string;
   class?: string;
 }
 
-const { brand, brands, compact = false, id, class: className = '' } = Astro.props;
+const {
+  brand,
+  brands,
+  compact = false,
+  controlled = false,
+  id,
+  class: className = '',
+} = Astro.props;
 const slides = brands && brands.length > 0 ? brands : brand ? [brand] : [];
 const rotating = slides.length > 1;
 
@@ -53,7 +64,19 @@ const TRACK: Record<MockScreen, { label: string; chip: string }> = {
     chip: 'Order on its way',
   },
   trt: { label: 'TRT — monitoring labs, dosing, and vial delivery', chip: 'Labs back' },
+  intake: {
+    label: 'Intake — one question at a time, reviewed by a clinician',
+    chip: 'Step 3 of 9',
+  },
 };
+
+// ── intake ──
+const intakeOptions = [
+  { label: 'Lose weight and keep it off', on: true },
+  { label: 'More energy and better sleep', on: false },
+  { label: 'Balance my hormones', on: false },
+  { label: 'Understand my overall health', on: false },
+];
 
 // ── health ──
 const areas = [
@@ -133,6 +156,7 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
   class:list={['member-app', className]}
   data-member-app
   data-rotating={rotating ? '' : undefined}
+  data-controlled={controlled ? '' : undefined}
 >
   <div class="mb-stack grid">
     {
@@ -168,6 +192,7 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
                   <div class="flex min-w-0 items-center gap-2.5">
                     <span class="mb-mark grid size-8 shrink-0 place-items-center rounded-md text-sm font-bold">
                       <span data-mb-mark>{b.mark}</span>
+                      <img data-mb-logo alt="" hidden class="size-full rounded-md object-contain" />
                     </span>
                     <span
                       class="truncate font-display text-base font-semibold text-ink-900"
@@ -437,6 +462,71 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
                   </>
                 )}
 
+                {screen === 'intake' && (
+                  <>
+                    <div class="mt-5 flex items-center gap-3">
+                      <div class="flex h-1.5 flex-1 gap-1" aria-hidden="true">
+                        {Array.from({ length: 9 }, (_, i) => (
+                          <span
+                            class:list={[
+                              'flex-1 rounded-full',
+                              i < 3 ? 'mb-fill' : 'bg-surface-sunken',
+                            ]}
+                          />
+                        ))}
+                      </div>
+                      <span class="font-mono text-xs text-ink-400">3/9</span>
+                    </div>
+                    <div class="mt-5 rounded-lg border border-line p-5">
+                      <p class="text-xs font-semibold uppercase tracking-eyebrow text-ink-400">
+                        About your goals
+                      </p>
+                      <p class="mt-2 font-display text-h4 text-ink-900">
+                        What’s your main goal right now?
+                      </p>
+                      <ul class="mt-4 flex flex-col gap-2">
+                        {intakeOptions.map((o) => (
+                          <li
+                            class:list={[
+                              'flex items-center gap-3 rounded-md border px-3.5 py-3 text-sm',
+                              o.on
+                                ? 'mb-selected font-semibold text-ink-900'
+                                : 'border-line text-ink-700',
+                            ]}
+                          >
+                            <span
+                              class:list={[
+                                'grid size-4 shrink-0 place-items-center rounded-full border',
+                                o.on ? 'mb-radio' : 'border-line',
+                              ]}
+                            >
+                              {o.on && <span class="mb-fill size-2 rounded-full" />}
+                            </span>
+                            {o.label}
+                          </li>
+                        ))}
+                      </ul>
+                      <span class="mb-button mt-5 flex h-10 items-center justify-center rounded-md text-sm font-semibold">
+                        Continue
+                      </span>
+                    </div>
+                    <ul class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-ink-400">
+                      <li class="flex items-center gap-1.5">
+                        <Icon name="lucide:user-check" class="icon size-3.5" />
+                        Reviewed by a licensed clinician
+                      </li>
+                      <li class="flex items-center gap-1.5">
+                        <Icon name="lucide:lock" class="icon size-3.5" />
+                        Private and encrypted
+                      </li>
+                      <li class="flex items-center gap-1.5">
+                        <Icon name="lucide:clock" class="icon size-3.5" />
+                        About 4 minutes
+                      </li>
+                    </ul>
+                  </>
+                )}
+
                 {screen === 'trt' && (
                   <>
                     {/* Monitoring panel */}
@@ -531,7 +621,7 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
 
   <figcaption class="mt-3 flex flex-col items-center gap-2 text-center">
     {
-      rotating && (
+      rotating && !controlled && (
         <span class="flex items-center gap-2" role="group" aria-label="Example brands">
           {slides.map((b, i) => (
             <button
@@ -582,6 +672,24 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
 
   .member-app .mb-fill {
     background: var(--mb-primary);
+  }
+
+  .member-app .mb-selected {
+    border-color: var(--mb-primary);
+    background: var(--mb-tint);
+  }
+
+  .member-app .mb-radio {
+    border-color: var(--mb-primary);
+  }
+
+  /* An uploaded logo replaces the initials tile (/preview). */
+  .member-app[data-has-logo] .mb-mark {
+    background: transparent;
+  }
+
+  .member-app[data-has-logo] [data-mb-mark] {
+    display: none;
   }
 
   .member-app .mb-ring,
@@ -636,7 +744,7 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
   }
 
   /* In dark mode the mock brand tint would glare; mix it toward the surface. */
-  :global(:root[data-theme='dark']) .member-app :where(.mb-chip, .mb-tint) {
+  :global(:root[data-theme='dark']) .member-app :where(.mb-chip, .mb-tint, .mb-selected) {
     background: color-mix(in srgb, var(--mb-primary) 22%, var(--pl-surface));
     color: var(--pl-ink-900);
   }
@@ -654,8 +762,11 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
 
   const domainOf = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.com';
 
-  /** Re-skin every slide of one mock in place. Exposed on window for /preview. */
-  function applyBrand(root: HTMLElement, b: MockBrandTheme) {
+  /**
+   * Re-skin every slide of one mock in place. Exposed on window for /preview. `logo` is an
+   * optional object/data URL (the visitor's upload — it never leaves the browser).
+   */
+  function applyBrand(root: HTMLElement, b: MockBrandTheme & { logo?: string | null }) {
     root.setAttribute('data-live', '');
     root.querySelectorAll<HTMLElement>('[data-mb-slide]').forEach((slide) => {
       slide.style.setProperty('--mb-primary', b.primary);
@@ -667,6 +778,11 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
       .forEach((n) => (n.textContent = b.name.split(' ')[0] || b.name));
     root.querySelectorAll('[data-mb-mark]').forEach((n) => (n.textContent = b.mark));
     root.querySelectorAll('[data-mb-domain]').forEach((n) => (n.textContent = domainOf(b.name)));
+    root.querySelectorAll<HTMLImageElement>('[data-mb-logo]').forEach((img) => {
+      if (b.logo) img.src = b.logo;
+      img.hidden = !b.logo;
+    });
+    root.toggleAttribute('data-has-logo', Boolean(b.logo));
   }
   (window as unknown as { plApplyBrand: typeof applyBrand }).plApplyBrand = applyBrand;
 
@@ -700,6 +816,11 @@ const trtKit = ['Multi-dose vial', 'Syringes', 'Alcohol pads', 'Sharps box'];
       stop();
       timer = window.setInterval(() => show(current + 1), 5000);
     };
+
+    if (root.hasAttribute('data-controlled')) {
+      root.addEventListener('mb:show', (e) => show((e as CustomEvent<number>).detail));
+      return;
+    }
 
     dots.forEach((d, i) =>
       d.addEventListener('click', () => {

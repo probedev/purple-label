@@ -17,8 +17,9 @@
  *   glp1   — GLP-1 weight loss: progress, dose titration, refills, care team
  *   orders — peptides: one order from ID check to cold-chain delivery
  *   trt    — TRT: hormone lab panel baseline → follow-up, next lab, vial shipment
+ *   intake — the branded intake: one question at a time
  */
-export type MockScreen = 'health' | 'glp1' | 'orders' | 'trt';
+export type MockScreen = 'health' | 'glp1' | 'orders' | 'trt' | 'intake';
 
 export interface MockBrandTheme {
   /** Fictional brand name shown in the member-app mock. */
@@ -264,7 +265,13 @@ export const SOLUTIONS: Solution[] = [
     programs: ['weight-loss', 'peptides', 'trt', 'womens-health'],
     launchStory:
       'A physician-creator launches a branded program — baseline labs, their own protocol, a health score, and clinician-led hormone and weight care — with our team running operations behind it.',
-    example: { name: 'Dr. Rivera Method', primary: '#be185d', tint: '#fbe7f0', mark: 'R' },
+    example: {
+      name: 'Dr. Rivera Method',
+      primary: '#be185d',
+      tint: '#fbe7f0',
+      mark: 'R',
+      screen: 'intake',
+    },
     faqs: [
       {
         q: 'Do I need a technical team?',
